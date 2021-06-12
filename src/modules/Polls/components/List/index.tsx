@@ -152,8 +152,8 @@ class Index extends PureComponent<Props, IndexState> {
                     url={`/poll/detail/${poll.id}`}
                     link={poll.link}
                     title={poll.title}
-                    yes_votes={poll.yes_votes}
-                    no_votes={poll.no_votes}
+                    for_votes={poll.for_votes}
+                    against_votes={poll.against_votes}
                     status={poll.status}
                     end_time={poll.end_time}
                   />

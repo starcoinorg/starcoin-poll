@@ -32,7 +32,7 @@
   "poll": {
     "title": "提案",
     "NoPoll": "没有提案",
-    "polls": "[{\"creator\":\"0xb2aa52f94db4516c5beecef363af850a\",\"deposit_amount\":\"100000000\",\"description\":\"\",\"end_height\":3357026,\"execute_data\":null,\"id\":0,\"link\":\"https://github.com/starcoinorg/starcoin/discussions/2578\",\"no_votes\":\"98083974523\",\"status\":\"in_progress\",\"title\":\"Starcoin Move 合约标准库版升级投票指南\",\"total_balance_at_end_poll\":null,\"yes_votes\":\"459843932677\",\"end_time\":\"1623744459856\"}]",
+    "polls": "[{\"creator\":\"0xb2aa52f94db4516c5beecef363af850a\",\"description\":\"\",\"id\":0,\"link\":\"https://github.com/starcoinorg/starcoin/discussions/2578\",\"status\":\"in_progress\",\"title\":\"Starcoin Move 合约标准库版升级投票指南\",\"for_votes\":\"57140700202048\",\"against_votes\":\"1000000000\",\"end_time\":\"1623744459856\"}]",
     "": ""
   },
   "block": {

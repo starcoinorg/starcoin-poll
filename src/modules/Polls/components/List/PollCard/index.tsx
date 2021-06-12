@@ -73,8 +73,8 @@ interface ExternalProps {
   link: string,
   className?: string,
   id: number,
-  yes_votes: number,
-  no_votes: number,
+  for_votes: number,
+  against_votes: number,
   status: string,
   end_time: number,
 }
@@ -97,8 +97,8 @@ class Index extends PureComponent<Props, IndexState> {
     url: undefined,
     link: undefined,
     id: undefined,
-    yes_votes: undefined,
-    no_votes: undefined,
+    for_votes: undefined,
+    against_votes: undefined,
     status: undefined,
     end_time: undefined,
   };
@@ -119,7 +119,7 @@ class Index extends PureComponent<Props, IndexState> {
   }
 
   render() {
-    const { title, id, link, url, yes_votes, no_votes, status, end_time, classes } = this.props;
+    const { title, id, url, for_votes, against_votes, status, end_time, classes } = this.props;
     const openLink = () => {
       window.open(url, '_blank');
     };
@@ -143,19 +143,16 @@ class Index extends PureComponent<Props, IndexState> {
             id: {id}
           </Typography>
           <Typography className={classes.text} variant="body2">
-            yes: {yes_votes}
+            yes: {for_votes}
           </Typography>
           <Typography className={classes.text} variant="body2">
-            no: {no_votes}
+            no: {against_votes}
           </Typography>
           <Typography className={classes.text} variant="body2">
             status: {status}
           </Typography>
           <Typography className={classes.text} variant="body2">
             end_time: {end_time}
-          </Typography>
-          <Typography className={classes.text} variant="body2">
-            link: {link}
           </Typography>
         </Card>
       </div>
