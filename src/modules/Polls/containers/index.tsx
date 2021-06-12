@@ -3,11 +3,11 @@ import { Route, Switch } from 'react-router-dom';
 import List from '../components/List/adapter';
 import Detail from '../components/Detail/adapter';
 
-interface ProposalsRouterProps {
+interface PollsRouterProps {
   computedMatch: any;
 }
 
-class ProposalsRouter extends PureComponent<ProposalsRouterProps> {
+class PollsRouter extends PureComponent<PollsRouterProps> {
   render() {
     const { computedMatch: match } = this.props;
     return (
@@ -19,4 +19,4 @@ class ProposalsRouter extends PureComponent<ProposalsRouterProps> {
   }
 }
 
-export default ProposalsRouter;
+export default PollsRouter;

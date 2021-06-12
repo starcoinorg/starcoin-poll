@@ -85,9 +85,9 @@ interface ExternalProps {
 }
 
 interface InternalProps {
-  proposalList: any,
+  pollList: any,
   isLoadingMore: boolean,
-  getProposalList: (contents: any, callback?: any) => any,
+  getPollList: (contents: any, callback?: any) => any,
   classes: any,
   t: any,
   match: any,
@@ -103,9 +103,9 @@ interface IndexState {
 class Index extends PureComponent<Props, IndexState> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
-    proposalList: null,
+    pollList: null,
     isLoadingMore: undefined,
-    getProposalList: () => { }
+    getPollList: () => { }
   };
 
   constructor(props: Props) {
@@ -121,7 +121,7 @@ class Index extends PureComponent<Props, IndexState> {
   }
 
   fetchListPage = (page: number) => {
-    this.props.getProposalList({ page });
+    this.props.getPollList({ page });
   };
 
   setFilter = (value: string) => {
@@ -129,27 +129,27 @@ class Index extends PureComponent<Props, IndexState> {
   }
 
   render() {
-    // const { proposalList, classes, t, className, isLoadingMore } = this.props;
+    // const { pollList, classes, t, className, isLoadingMore } = this.props;
     const { t, classes } = this.props;
-    const list = JSON.parse(t('proposal.proposals'));
+    const list = JSON.parse(t('poll.polls'));
     console.log(list);
 
     return (
       <div>
         <Helmet>
-          <title>{t('header.blocks')}</title>
+          <title>{t('header.polls')}</title>
         </Helmet>
 
         <CenteredView>
           <Card>
-            <CommonHeader name={t('proposal.title')} pluralName={t('proposal.title')} />
+            <CommonHeader name={t('header.polls')} pluralName={t('header.polls')} />
             <div className={classes.gridCards}>
               {list.length ? (
                 list.map((poll: any, index: number) => (
                   <PollCard
                     key={`key_${index}`}
                     id={poll.id}
-                    url={`/proposal/detail/${poll.id}`}
+                    url={`/poll/detail/${poll.id}`}
                     link={poll.link}
                     title={poll.title}
                     yes_votes={poll.yes_votes}
@@ -158,13 +158,13 @@ class Index extends PureComponent<Props, IndexState> {
                     end_time={poll.end_time}
                   />
                 ))
-              ) : t('proposal.NoProposal')}
+              ) : t('poll.NoPoll')}
             </div>
           </Card>
         </CenteredView>
         {/* {!list.length ? (
             <Card>
-              <p className="empty">{t('proposal.NoProposal')}</p>
+              <p className="empty">{t('poll.NoPoll')}</p>
             </Card>
           ) : (
             <Grid wrap={2}>

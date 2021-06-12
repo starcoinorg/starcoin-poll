@@ -170,10 +170,10 @@ function Index(props: any) {
   const buttons = [
     {
       className: classes.button,
-      id: 'proposals',
-      label: t('header.proposals'),
-      selected: location.pathname.startsWith('/proposals'),
-      href: '/proposals/1',
+      id: 'polls',
+      label: t('header.polls'),
+      selected: location.pathname.startsWith('/polls'),
+      href: '/polls/1',
     },
   ];
 

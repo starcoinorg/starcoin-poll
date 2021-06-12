@@ -11,8 +11,8 @@
       "@/rootStore/*": [
         "rootStore/*"
       ],
-      "@/Proposals/*": [
-        "modules/Proposals/*"
+      "@/Polls/*": [
+        "modules/Polls/*"
       ],
       "@/Blocks/*": [
         "modules/Blocks/*"

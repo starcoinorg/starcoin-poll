@@ -3,8 +3,8 @@ import * as types from './constants';
 
 const selector = (state: any) => state[types.SCOPENAME];
 
-export const proposalSelector = createSelector(
+export const pollSelector = createSelector(
   selector,
-  state => state.block
+  state => state.poll
 );
 

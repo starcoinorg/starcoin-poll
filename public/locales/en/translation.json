@@ -1,7 +1,7 @@
 {
   "header": {
     "home": "Home",
-    "proposals": "Proposals",
+    "polls": "Polls",
     "blocks": "Blocks",
     "transactions": "Transactions",
     "events": "Events",
@@ -29,10 +29,10 @@
     "CurrentHashRate": "Current Hash Rate(H/s)",
     "": ""
   },
-  "proposal": {
-    "title": "Proposal",
-    "NoProposal": "No Proposal Found",
-    "proposals": "[{\"creator\":\"0xb2aa52f94db4516c5beecef363af850a\",\"deposit_amount\":\"100000000\",\"description\":\"\",\"end_height\":3357026,\"execute_data\":null,\"id\":0,\"link\":\"https://github.com/starcoinorg/starcoin/discussions/2578\",\"no_votes\":\"98083974523\",\"status\":\"in_progress\",\"title\":\"Starcoin Move stdlib upgrade Guide\",\"total_balance_at_end_poll\":null,\"yes_votes\":\"459843932677\",\"end_time\":\"1623744459856\"}]",
+  "poll": {
+    "title": "Poll",
+    "NoPoll": "No Poll Found",
+    "polls": "[{\"creator\":\"0xb2aa52f94db4516c5beecef363af850a\",\"deposit_amount\":\"100000000\",\"description\":\"\",\"end_height\":3357026,\"execute_data\":null,\"id\":0,\"link\":\"https://github.com/starcoinorg/starcoin/discussions/2578\",\"no_votes\":\"98083974523\",\"status\":\"in_progress\",\"title\":\"Starcoin Move stdlib upgrade Guide\",\"total_balance_at_end_poll\":null,\"yes_votes\":\"459843932677\",\"end_time\":\"1623744459856\"}]",
     "": ""
   },
   "block": {

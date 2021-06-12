@@ -1,7 +1,7 @@
 {
   "header": {
     "home": "首页",
-    "proposals": "提案",
+    "polls": "提案",
     "blocks": "区块",
     "events": "事件",
     "transactions": "交易",
@@ -29,10 +29,10 @@
     "CurrentHashRate": "当前全网算力(哈希/秒)",
     "": ""
   },
-  "proposal": {
+  "poll": {
     "title": "提案",
-    "NoProposal": "没有提案",
-    "proposals": "[{\"creator\":\"0xb2aa52f94db4516c5beecef363af850a\",\"deposit_amount\":\"100000000\",\"description\":\"\",\"end_height\":3357026,\"execute_data\":null,\"id\":0,\"link\":\"https://github.com/starcoinorg/starcoin/discussions/2578\",\"no_votes\":\"98083974523\",\"status\":\"in_progress\",\"title\":\"Starcoin Move 合约标准库版升级投票指南\",\"total_balance_at_end_poll\":null,\"yes_votes\":\"459843932677\",\"end_time\":\"1623744459856\"}]",
+    "NoPoll": "没有提案",
+    "polls": "[{\"creator\":\"0xb2aa52f94db4516c5beecef363af850a\",\"deposit_amount\":\"100000000\",\"description\":\"\",\"end_height\":3357026,\"execute_data\":null,\"id\":0,\"link\":\"https://github.com/starcoinorg/starcoin/discussions/2578\",\"no_votes\":\"98083974523\",\"status\":\"in_progress\",\"title\":\"Starcoin Move 合约标准库版升级投票指南\",\"total_balance_at_end_poll\":null,\"yes_votes\":\"459843932677\",\"end_time\":\"1623744459856\"}]",
     "": ""
   },
   "block": {

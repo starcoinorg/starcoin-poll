@@ -155,10 +155,10 @@ function Index(props: any) {
       tabs={[
         {
           className: classes.button,
-          id: 'proposals',
-          label: t('header.proposals'),
-          selected: pathname.startsWith('/proposals'),
-          href: '/proposals/1',
+          id: 'polls',
+          label: t('header.polls'),
+          selected: pathname.startsWith('/polls'),
+          href: '/polls/1',
         },
       ]}
     />
