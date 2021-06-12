@@ -10,3 +10,11 @@ export const LANGUAGES_LABEL = [
 ];
 
 export const POLLING_INTERVAL = 19000;
+
+
+export enum PollStatus {
+  InProgress = "in_progress",
+  Passed = "passed",
+  Rejected = "rejected",
+  Executed = "executed",
+}

@@ -1,15 +1,82 @@
-// import React, { PureComponent, useState } from 'react';
 import React, { PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
 import Helmet from 'react-helmet';
-import { createStyles, withStyles } from '@material-ui/core/styles';
-// import styles from './Polls.module.scss';
+import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+// import { PollStatus } from '@/utils/constants';
+// import { isEmphasizedPoll } from '@/utils/helper';
+// import Icon from '@/common/Icon';
+import CommonHeader from '@/common/View/CommonHeader';
+import CenteredView from '@/common/View/CenteredView';
+import PollCard from './PollCard';
 
-const useStyles = () => createStyles({
+const useStyles = (theme: Theme) => createStyles({
   pagerArea: {
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'flex-end',
+  },
+
+  component: {
+    marginTop: '30px',
+  },
+
+  header: {
+    marginBottom: '20px',
+  },
+
+  title: {
+    color: 'white',
+    fontSize: '16px',
+  },
+
+  wrapper: {
+    position: 'relative',
+    i: {
+      position: 'absolute',
+      top: '50%',
+      right: '6px',
+      transform: 'translate(0, -50%)',
+      pointerEvents: 'none'
+    }
+  },
+
+  select: {
+    appearance: 'none',
+    border: '1px solid $slate',
+    borderRadius: '3px',
+    fontSize: '12px',
+    padding: '6px 10px',
+    paddingRight: '32px',
+    textTransform: 'capitalize'
+  },
+
+  dim: {
+    opacity: '0.5',
+  },
+  [theme.breakpoints.down('xs')]: {
+    gridCards: {
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      gridGap: `${theme.spacing(1) * 2}px ${theme.spacing(1) * 2}px`,
+      padding: theme.spacing(1) * 2,
+    },
+  },
+  [theme.breakpoints.up('sm')]: {
+    gridCards: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gridGap: `${theme.spacing(1) * 2}px ${theme.spacing(1) * 2}px`,
+      padding: theme.spacing(1) * 2,
+    },
+  },
+  [theme.breakpoints.up('lg')]: {
+    gridCards: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gridGap: `${theme.spacing(1) * 2}px ${theme.spacing(1) * 2}px`,
+      padding: theme.spacing(1) * 2,
+    },
   },
 });
 
@@ -29,7 +96,8 @@ interface InternalProps {
 interface Props extends ExternalProps, InternalProps { }
 
 interface IndexState {
-  currentPage: number
+  currentPage: number,
+  filter: string
 }
 
 class Index extends PureComponent<Props, IndexState> {
@@ -44,6 +112,7 @@ class Index extends PureComponent<Props, IndexState> {
     super(props);
     this.state = {
       currentPage: parseInt(props.match.params.page, 10) || 1,
+      filter: ''
     };
   }
 
@@ -55,43 +124,63 @@ class Index extends PureComponent<Props, IndexState> {
     this.props.getProposalList({ page });
   };
 
+  setFilter = (value: string) => {
+    this.setState({ filter: value });
+  }
+
   render() {
     // const { proposalList, classes, t, className, isLoadingMore } = this.props;
-    const { proposalList, t } = this.props;
-    console.log(proposalList);
-    const proposals = JSON.parse(t('proposal.proposals'));
-    console.log(proposals);
-    // const [filter, setFilter] = useState<PollStatus | "">("")
+    const { t, classes } = this.props;
+    const list = JSON.parse(t('proposal.proposals'));
+    console.log(list);
+
     return (
       <div>
         <Helmet>
           <title>{t('header.blocks')}</title>
         </Helmet>
-        {/* <article className={styles.component}>
-          <header className={styles.header}>
-            <LoadingTitle loading={loading} className={styles.title}>
-              <TooltipIcon content={Tooltip.Gov.Polls}>
-                <h1>{title}</h1>
-              </TooltipIcon>
-            </LoadingTitle>
 
-            <div className={styles.wrapper}>
-              <select
-                className={styles.select}
-                value={filter}
-                onChange={(e) => setFilter(e.target.value as PollStatus)}
-              >
-                <option value="">All</option>
-                {Object.values(PollStatus).map((value) => (
-                  <option value={value} key={value}>
-                    {value.replace("_", " ")}
-                  </option>
-                ))}
-              </select>
-              <Icon name="arrow_drop_down" size={16} />
+        <CenteredView>
+          <Card>
+            <CommonHeader name={t('proposal.title')} pluralName={t('proposal.title')} />
+            <div className={classes.gridCards}>
+              {list.length ? (
+                list.map((poll: any, index: number) => (
+                  <PollCard
+                    key={`key_${index}`}
+                    id={poll.id}
+                    url={`/proposal/detail/${poll.id}`}
+                    link={poll.link}
+                    title={poll.title}
+                    yes_votes={poll.yes_votes}
+                    no_votes={poll.no_votes}
+                    status={poll.status}
+                    end_time={poll.end_time}
+                  />
+                ))
+              ) : t('proposal.NoProposal')}
             </div>
-          </header>
-        </article> */}
+          </Card>
+        </CenteredView>
+        {/* {!list.length ? (
+            <Card>
+              <p className="empty">{t('proposal.NoProposal')}</p>
+            </Card>
+          ) : (
+            <Grid wrap={2}>
+              {list
+                .filter((item) => !this.state.filter || item.status === this.state.filter)
+                .map((item) => {
+                  const dim = !this.state.filter && !isEmphasizedPoll(polls.data[id])
+
+                  return (
+                    <Card to={`${url}/poll/${id}`} className={cx({ dim })} key={id}>
+                      <PollItem id={id} />
+                    </Card>
+                  )
+                })}
+            </Grid>
+          )} */}
       </div>
     );
   }
