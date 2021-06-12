@@ -11,7 +11,6 @@ import Collapse from '@material-ui/core/Collapse';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Accordion from '@material-ui/core/Accordion';
@@ -164,22 +163,6 @@ function Index(props: any) {
   };
 
   const userNetwork = getNetwork();
-  const handleNetworkExpandedChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
-    setExpanded(isExpanded ? panel : false);
-  };
-  const onClickButtonNetwork = (network?: string) => {
-    if (network && network !== userNetwork) {
-      localStorage.setItem('network', network);
-      window.location.href = '/';
-    }
-    setExpanded(false);
-    setShowMenu(false);
-  };
-
-  const networks = process.env.REACT_APP_STARCOIN_NETWORKS || '';
-  const availableNetworks = networks.split(',');
-  const currentNetwork = availableNetworks.filter((network) => network === userNetwork);
-  const currentNetworkLabel = currentNetwork[0] || '-';
 
   // set a default value before locales/*/transaction.json is loaded
   const current = LANGUAGES_LABEL.filter((language) => language.code === userLanguage);
@@ -190,38 +173,10 @@ function Index(props: any) {
   const buttons = [
     {
       className: classes.button,
-      id: 'blocks',
-      label: t('header.blocks'),
-      selected: location.pathname.startsWith('/blocks'),
-      href: `/${userNetwork}/blocks/1`,
-    },
-    {
-      className: classes.button,
-      id: 'transactions',
-      label: t('header.transactions'),
-      selected: location.pathname.startsWith('/transactions'),
-      href: `/${userNetwork}/transactions`,
-    },
-    {
-      className: classes.button,
-      id: 'ecosystem',
-      label: t('header.ecosystems'),
-      selected: location.pathname.startsWith('/ecosystem'),
-      href: '/ecosystems',
-    },
-    {
-      className: classes.button,
-      id: 'faq',
-      label: t('header.faq'),
-      selected: location.pathname.startsWith('/faq'),
-      href: '/faq',
-    },
-    {
-      className: classes.button,
-      id: 'terms',
-      label: t('header.terms'),
-      selected: location.pathname.startsWith('/terms'),
-      href: '/terms',
+      id: 'proposals',
+      label: t('header.proposals'),
+      selected: location.pathname.startsWith('/proposals'),
+      href: `/${userNetwork}/proposals/1`,
     },
   ];
 
@@ -258,34 +213,6 @@ function Index(props: any) {
                 </Button>
               </BaseRouteLink>
             ))}
-            <Accordion expanded={expanded === 'panel1'} onChange={handleNetworkExpandedChange('panel1')} className={classes.i18n}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <SettingsEthernetIcon fontSize="small" />&nbsp;
-                <Typography variant="body1" gutterBottom>{currentNetworkLabel}</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <div className={classes.i18nMenu}>
-                  {
-                    availableNetworks.map((network) => {
-                      return (
-                        <Button
-                          color={network === userNetwork ? 'primary' : 'default'}
-                          key={network}
-                          className={classNames(classes.button, classes.noUpperCase)}
-                          onClick={() => onClickButtonNetwork(network)}
-                        >
-                          <Typography variant="body1" className={classes.buttonLabel}>{network}</Typography>
-                        </Button>
-                      );
-                    })
-                  }
-                </div>
-              </AccordionDetails>
-            </Accordion>
             <Accordion expanded={expanded === 'panel2'} onChange={handleI18nExpandedChange('panel2')} className={classes.i18n}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}

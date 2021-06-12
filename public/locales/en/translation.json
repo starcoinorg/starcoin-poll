@@ -1,6 +1,7 @@
 {
   "header": {
     "home": "Home",
+    "proposals": "Proposals",
     "blocks": "Blocks",
     "transactions": "Transactions",
     "events": "Events",

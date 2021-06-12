@@ -9,7 +9,6 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
-import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
 import LanguageIcon from '@material-ui/icons/Translate';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { LANGUAGES_LABEL } from '@/utils/constants';
@@ -152,59 +151,6 @@ function Index(props: any) {
   );
 
   const userNetwork = getNetwork();
-  const [networkMenu, setNetworkMenu] = React.useState(null);
-  const handleNetworkIconClick = (event: any) => {
-    setNetworkMenu(event.currentTarget);
-  };
-
-  const handleNetworkMenuClose = (network?: string) => {
-    if (network) {
-      localStorage.setItem('network', network);
-      window.location.href = '/';
-    }
-    setNetworkMenu(null);
-  };
-
-  const networks = process.env.REACT_APP_STARCOIN_NETWORKS || '';
-  const availableNetworks = networks.split(',');
-  const currentNetwork = availableNetworks.filter((network) => network === userNetwork);
-  const currentNetworkLabel = currentNetwork[0] || '-';
-  const networkMenus = (
-    <>
-      <Tooltip title={t('header.changeNetwork')} enterDelay={300}>
-        <Button
-          className={classNames(classes.i18n, classes.noUpperCase)}
-          color="inherit"
-          aria-owns={networkMenu ? 'network-menu' : undefined}
-          aria-haspopup="true"
-          onClick={handleNetworkIconClick}
-        >
-          <SettingsEthernetIcon fontSize="small" />&nbsp;
-          <span className={classes.language}>
-            {currentNetworkLabel}
-          </span>
-          <ExpandMoreIcon fontSize="small" />
-        </Button>
-      </Tooltip>
-      <Menu
-        id="network-menu"
-        anchorEl={networkMenu}
-        open={Boolean(networkMenu)}
-        onClose={() => handleNetworkMenuClose()}
-      >
-        {availableNetworks.map((network) => (
-          <MenuItem
-            className={classes.noUpperCase}
-            key={network}
-            selected={userNetwork === network}
-            onClick={() => handleNetworkMenuClose(network)}
-          >
-            {network}
-          </MenuItem>
-        ))}
-      </Menu>
-    </>
-  );
 
   const pathname = window.location.pathname;
   const tabs = (
@@ -212,38 +158,10 @@ function Index(props: any) {
       tabs={[
         {
           className: classes.button,
-          id: 'blocks',
-          label: t('header.blocks'),
-          selected: pathname.startsWith('/blocks'),
-          href: `/${userNetwork}/blocks/1`,
-        },
-        {
-          className: classes.button,
-          id: 'transactions',
-          label: t('header.transactions'),
-          selected: pathname.startsWith('/transactions'),
-          href: `/${userNetwork}/transactions`,
-        },
-        {
-          className: classes.button,
-          id: 'ecosystems',
-          label: t('header.ecosystems'),
-          selected: pathname.startsWith('/ecosystems'),
-          href: '/ecosystems',
-        },
-        {
-          className: classes.button,
-          id: 'faq',
-          label: t('header.faq'),
-          selected: pathname.startsWith('/faq'),
-          href: '/faq',
-        },
-        {
-          className: classes.button,
-          id: 'terms',
-          label: t('header.terms'),
-          selected: pathname.startsWith('/terms'),
-          href: '/terms',
+          id: 'proposals',
+          label: t('header.proposals'),
+          selected: pathname.startsWith('/proposals'),
+          href: `/${userNetwork}/proposals/1`,
         },
       ]}
     />
@@ -272,7 +190,6 @@ function Index(props: any) {
             </div>
           </BaseRouteLink>
           {tabs}
-          {networkMenus}
           {i18nMenu}
         </div>
       </div>
