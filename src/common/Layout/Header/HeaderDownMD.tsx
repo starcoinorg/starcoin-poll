@@ -16,7 +16,6 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Accordion from '@material-ui/core/Accordion';
 import LanguageIcon from '@material-ui/icons/Translate';
 import { LANGUAGES_LABEL } from '@/utils/constants';
-import { getNetwork } from '@/utils/helper';
 
 const useStyles = (theme: Theme) => createStyles({
   [theme.breakpoints.down('sm')]: {
@@ -162,8 +161,6 @@ function Index(props: any) {
     }
   };
 
-  const userNetwork = getNetwork();
-
   // set a default value before locales/*/transaction.json is loaded
   const current = LANGUAGES_LABEL.filter((language) => language.code === userLanguage);
   const currentLabel = current[0] && current[0].text || '-';
@@ -176,7 +173,7 @@ function Index(props: any) {
       id: 'proposals',
       label: t('header.proposals'),
       selected: location.pathname.startsWith('/proposals'),
-      href: `/${userNetwork}/proposals/1`,
+      href: '/proposals/1',
     },
   ];
 

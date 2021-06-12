@@ -12,7 +12,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import LanguageIcon from '@material-ui/icons/Translate';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { LANGUAGES_LABEL } from '@/utils/constants';
-import { getNetwork } from '@/utils/helper';
 import Tabs from './Tabs';
 
 const useStyles = (theme: Theme) => createStyles({
@@ -150,8 +149,6 @@ function Index(props: any) {
     </>
   );
 
-  const userNetwork = getNetwork();
-
   const pathname = window.location.pathname;
   const tabs = (
     <Tabs
@@ -161,7 +158,7 @@ function Index(props: any) {
           id: 'proposals',
           label: t('header.proposals'),
           selected: pathname.startsWith('/proposals'),
-          href: `/${userNetwork}/proposals/1`,
+          href: '/proposals/1',
         },
       ]}
     />

@@ -2,14 +2,33 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
-      "@/common/*": ["common/*"],
-      "@/sagaMiddleware/*": ["sagaMiddleware/*"],
-      "@/rootStore/*": ["rootStore/*"],
-      "@/Blocks/*": ["modules/Blocks/*"],
-      "@/Transactions/*": ["modules/Transactions/*"],
-      "@/Address/*": ["modules/Address/*"],
-      "@/Search/*": ["modules/Search/*"],
-      "@/utils/*": ["utils/*"]
+      "@/common/*": [
+        "common/*"
+      ],
+      "@/sagaMiddleware/*": [
+        "sagaMiddleware/*"
+      ],
+      "@/rootStore/*": [
+        "rootStore/*"
+      ],
+      "@/Proposals/*": [
+        "modules/Proposals/*"
+      ],
+      "@/Blocks/*": [
+        "modules/Blocks/*"
+      ],
+      "@/Transactions/*": [
+        "modules/Transactions/*"
+      ],
+      "@/Address/*": [
+        "modules/Address/*"
+      ],
+      "@/Search/*": [
+        "modules/Search/*"
+      ],
+      "@/utils/*": [
+        "utils/*"
+      ]
     }
   }
 }
