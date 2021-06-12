@@ -29,6 +29,11 @@
     "CurrentHashRate": "当前全网算力(哈希/秒)",
     "": ""
   },
+  "proposal": {
+    "title": "Proposal",
+    "proposals": "[{\"creator\":\"terra15djyahqqrap3pfs3gkxnj3f6hs4r6m754z0alt\",\"deposit_amount\":\"100000000\",\"description\":\"The uranium marketplace is one of the most dislocated in the past few decades. The total uranium industry is valued at a mere $21b. The risk / reward with this trade is 40% downside / 5-8x upside.\\nListed Exchange: NYSE\",\"end_height\":3357026,\"execute_data\":null,\"id\":102,\"link\":\"https://www.youtube.com/watch?v=qp80SfObROE\",\"no_votes\":\"98083974523\",\"status\":\"in_progress\",\"title\":\"[Whitelist] Uranium Mining ETF, North Shore Global (URNM)\",\"total_balance_at_end_poll\":null,\"yes_votes\":\"459843932677\"},{\"creator\":\"terra170rwqu2qez5h6vdx0wmjue37htf5csrp5urr5c\",\"deposit_amount\":\"100000000\",\"description\":\"ARKK is an ETF that seeks long-term growth of capital by investing in domestic and foreign equity securities of companies that are relevant to the Fund’s investment theme of disruptive innovation.\\nListed Exchange: NYSE\\nSuggested Oracle: Band\",\"end_height\":3308034,\"execute_data\":null,\"id\":101,\"link\":\"https://finance.yahoo.com/quote/ARKK/\",\"no_votes\":\"31727093155\",\"status\":\"passed\",\"title\":\"[Whitelist] ARK Innovation ETF (ARKK)\",\"total_balance_at_end_poll\":\"25632542577653\",\"yes_votes\":\"3534225365354\"},{\"creator\":\"terra170rwqu2qez5h6vdx0wmjue37htf5csrp5urr5c\",\"deposit_amount\":\"100000000\",\"description\":\"Canoo Inc., is a startup American manufacturer of electric vehicles. The company's also plans to produce commercial electric vehicles such as vans for vehicle rental and ride sharing services.\\nListed Exchange: NASDAQ\\nSuggested Oracle: Band\",\"end_height\":3307503,\"execute_data\":null,\"id\":100,\"link\":\"https://finance.yahoo.com/quote/GOEV/\",\"no_votes\":\"93774903420\",\"status\":\"rejected\",\"title\":\"[Whitelist] Canoo (GOEV)\",\"total_balance_at_end_poll\":\"25622799824590\",\"yes_votes\":\"129161694416\"}]",
+    "": ""
+  },
   "block": {
     "title": "区块",
     "NoBlockData": "没有区块数据",

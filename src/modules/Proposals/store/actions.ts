@@ -1,44 +1,37 @@
 import * as types from './constants';
 
-export function getBlock(payload: any) {
+export function getProposal(payload: any) {
   return {
-    type: types.GET_BLOCK,
+    type: types.GET_PROPOSAL,
     payload
   };
 }
 
-export function setBlock(payload: any) {
+export function setProposal(payload: any) {
   return {
-    type: types.SET_BLOCK,
+    type: types.SET_PROPOSAL,
     payload
   };
 }
 
-export function getBlockByHeight(payload: any) {
+export function getProposalByHeight(payload: any) {
   return {
-    type: types.GET_BLOCK_BY_HEIGHT,
+    type: types.GET_PROPOSAL_BY_HEIGHT,
     payload
   };
 }
 
-export function getBlockList(payload: any, callback?: any) {
+export function getProposalList(payload: any, callback?: any) {
   return {
-    type: types.GET_BLOCK_LIST,
+    type: types.GET_PROPOSAL_LIST,
     payload,
     callback
   };
 }
 
-export function setBlockList(payload: any) {
+export function setProposalList(payload: any) {
   return {
-    type: types.SET_BLOCK_LIST,
-    payload
-  };
-}
-
-export function getBlockListInDelay(payload: any) {
-  return {
-    type: types.GET_BLOCK_LIST_IN_DELAY,
+    type: types.SET_PROPOSAL_LIST,
     payload
   };
 }

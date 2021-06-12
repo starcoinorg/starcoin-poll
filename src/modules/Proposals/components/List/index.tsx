@@ -1,14 +1,9 @@
+// import React, { PureComponent, useState } from 'react';
 import React, { PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
 import Helmet from 'react-helmet';
 import { createStyles, withStyles } from '@material-ui/core/styles';
-import Loading from '@/common/Loading';
-import ListView from '@/common/View/ListView';
-import Pagination from '@/common/View/Pagination';
-import Typography from '@material-ui/core/Typography';
-import CenteredView from '@/common/View/CenteredView';
-import { getNetwork } from '@/utils/helper';
-import BlockTable from '../Table';
+// import styles from './Polls.module.scss';
 
 const useStyles = () => createStyles({
   pagerArea: {
@@ -23,9 +18,9 @@ interface ExternalProps {
 }
 
 interface InternalProps {
-  blockList: any,
+  proposalList: any,
   isLoadingMore: boolean,
-  getBlockList: (contents: any, callback?: any) => any,
+  getProposalList: (contents: any, callback?: any) => any,
   classes: any,
   t: any,
   match: any,
@@ -40,9 +35,9 @@ interface IndexState {
 class Index extends PureComponent<Props, IndexState> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
-    blockList: null,
+    proposalList: null,
     isLoadingMore: undefined,
-    getBlockList: () => { }
+    getProposalList: () => { }
   };
 
   constructor(props: Props) {
@@ -53,77 +48,50 @@ class Index extends PureComponent<Props, IndexState> {
   }
 
   componentDidMount() {
-    this.fetchListPage(this.state.currentPage);
+    // this.fetchListPage(this.state.currentPage);
   }
 
   fetchListPage = (page: number) => {
-    this.props.getBlockList({ page });
-  };
-
-  pagination = (type: string) => {
-    const total = this.props.blockList && this.props.blockList.total.value || 0;
-    if (type === 'prev' && this.state.currentPage > 1) {
-      const page = this.state.currentPage - 1;
-      this.props.getBlockList({ page, total }, () => { this.pagenationCallback(page); });
-    } else if (type === 'next') {
-      const page = this.state.currentPage + 1;
-      this.props.getBlockList({ page, total }, () => { this.pagenationCallback(page); });
-    }
-  };
-
-  pagenationCallback = (page: number) => {
-    this.setState({ currentPage: page });
-    window.history.replaceState(null, '', `/${getNetwork()}/blocks/${page}`);
+    this.props.getProposalList({ page });
   };
 
   render() {
-    const { blockList, classes, t, className, isLoadingMore } = this.props;
-    const isInitialLoad = !blockList;
-    const hits = blockList && blockList.contents || [];
-    const blocks = hits.sort((a: any, b: any) => b.header.number - a.header.number);
-    const blocksList = blocks.length ? (
-      <BlockTable
-        blocks={blocks}
-        sizeVisibleAt="xs"
-        authorVisibleAt="md"
-      />
-    ) : (
-      <CenteredView>
-        <div className={classes.header}>
-          <Typography variant="h5" gutterBottom className={classes.title}>
-            {t('block.NoBlockData')}
-          </Typography>
-        </div>
-      </CenteredView>
-    );
+    // const { proposalList, classes, t, className, isLoadingMore } = this.props;
+    const { proposalList, t } = this.props;
+    console.log(proposalList);
+    const proposals = JSON.parse(t('proposal.proposals'));
+    console.log(proposals);
+    // const [filter, setFilter] = useState<PollStatus | "">("")
     return (
       <div>
         <Helmet>
           <title>{t('header.blocks')}</title>
         </Helmet>
-        <ListView
-          className={className}
-          title={t('header.blocks')}
-          name={t('header.blocks')}
-          pluralName={t('header.blocks')}
-          content={
-            <div>
-              {isInitialLoad ? <Loading /> : blocksList}
-              <div className={classes.pagerArea}>
-                <Pagination
-                  page={this.state.currentPage}
-                  pageSize={20}
-                  currentPageSize={blocks == null ? null : blocks.length}
-                  hasPreviousPage={this.state.currentPage > 1}
-                  hasNextPage={!!true}
-                  onPrevPage={() => this.pagination('prev')}
-                  onNextPage={() => this.pagination('next')}
-                  isLoading={isLoadingMore}
-                />
-              </div>
+        {/* <article className={styles.component}>
+          <header className={styles.header}>
+            <LoadingTitle loading={loading} className={styles.title}>
+              <TooltipIcon content={Tooltip.Gov.Polls}>
+                <h1>{title}</h1>
+              </TooltipIcon>
+            </LoadingTitle>
+
+            <div className={styles.wrapper}>
+              <select
+                className={styles.select}
+                value={filter}
+                onChange={(e) => setFilter(e.target.value as PollStatus)}
+              >
+                <option value="">All</option>
+                {Object.values(PollStatus).map((value) => (
+                  <option value={value} key={value}>
+                    {value.replace("_", " ")}
+                  </option>
+                ))}
+              </select>
+              <Icon name="arrow_drop_down" size={16} />
             </div>
-          }
-        />
+          </header>
+        </article> */}
       </div>
     );
   }
