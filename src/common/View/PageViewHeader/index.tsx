@@ -84,6 +84,7 @@ const useStyles = (theme: Theme) => createStyles({
   },
   backgroundColor: {
     // backgroundColor: '#3d454d',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.075)',
   },
   id: {
     flex: '0 1 auto',
