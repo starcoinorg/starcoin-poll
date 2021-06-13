@@ -149,7 +149,7 @@ class Index extends PureComponent<Props, IndexState> {
                   <PollCard
                     key={`key_${index}`}
                     id={poll.id}
-                    url={`/poll/detail/${poll.id}`}
+                    url={`/polls/detail/${poll.id}`}
                     link={poll.link}
                     title={poll.title}
                     for_votes={poll.for_votes}

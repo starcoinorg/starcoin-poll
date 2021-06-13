@@ -49,3 +49,12 @@ export async function getEpochData() {
     return false;
   }
 }
+
+export async function getPollData(hash: string) {
+  try {
+    const result = await provider.getResource(hash, '0x1::Dao::Proposal<0x1::STC::STC,0x1::UpgradeModuleDaoProposal::UpgradeModuleV2>');
+    return result;
+  } catch (error: any) {
+    return false;
+  }
+}

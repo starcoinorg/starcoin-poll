@@ -1,23 +1,27 @@
 import React, { PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
-import get from 'lodash/get';
-import { onchain_events } from '@starcoin/starcoin';
-import { createStyles, withStyles } from '@material-ui/core/styles';
+// import get from 'lodash/get';
+// import { onchain_events } from '@starcoin/starcoin';
+import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import Grid from '@material-ui/core/Grid';
 import Loading from '@/common/Loading';
-import TransactionTable from '@/Transactions/components/Table';
+// import TransactionTable from '@/Transactions/components/Table';
 import PageView from '@/common/View/PageView';
 import CommonLink from '@/common/Link';
+import Markdown from '@/common/Markdown';
 import formatNumber from '@/utils/formatNumber';
-import { toObject } from '@/utils/helper';
+// import { toObject } from '@/utils/helper';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import PageViewTable from '@/common/View/PageViewTable';
-import EventViewTable from '@/common/View/EventViewTable';
+import { getPollData } from '@/utils/sdk';
+// import PageViewTable from '@/common/View/PageViewTable';
+// import EventViewTable from '@/common/View/EventViewTable';
 
-const useStyles = () => createStyles({
+const useStyles = (theme: Theme) => createStyles({
   table: {
     width: '100%',
     display: 'block',
@@ -29,188 +33,186 @@ const useStyles = () => createStyles({
   shrinkCol: {
     flex: '1 10 auto',
   },
+  [theme.breakpoints.down('sm')]: {
+    cardContainer: {
+      marginBottom: theme.spacing(1),
+    },
+    cardHeader: {
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
+    metric: {
+      paddingLeft: theme.spacing(2),
+    }
+  },
+  [theme.breakpoints.up('sm')]: {
+    cardContainer: {
+      marginBottom: theme.spacing(2),
+    },
+    cardHeader: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+    },
+    metric: {
+      paddingLeft: theme.spacing(4),
+    }
+  },
+  [theme.breakpoints.down('md')]: {
+    textFieldLabel: {
+      fontSize: '0.75em'
+    }
+  },
+  [theme.breakpoints.up('md')]: {
+    textFieldLabel: {
+      fontSize: '1em'
+    }
+  },
+  root: {
+    alignItems: 'center',
+    display: 'flex',
+    flex: '1 1 auto',
+  },
+  cardContainer: {
+  },
+  card: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  cardHeader: {
+    alignItems: 'center',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.075)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+  },
+  textField: {
+    display: 'flex',
+    flex: '1 1 auto',
+    marginRight: theme.spacing(1),
+  },
+  textFieldLabel: {},
+  button: {
+    height: theme.spacing(5),
+  },
+  title: {
+    fontWeight: 700
+  },
+  metric: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    borderLeft: '1px solid rgba(0, 0, 0, 0.075)',
+  }
 });
 
 interface IndexProps {
   classes: any;
   t: any;
   match: any;
-  block: any;
-  blockTransactions: any;
-  getBlock: (data: any, callback?: any) => any;
-  getBlockByHeight: (data: any, callback?: any) => any;
-  getBlockTransactions: (data: any, callback?: any) => any;
-  getBlockTransactionsByHeight: (data: any, callback?: any) => any;
+  poll: any;
+  getPoll: (data: any, callback?: any) => any;
 }
 
 interface IndexState {
-  epochData: any,
-  hash?: string,
-  height?: string,
+  id?: number,
+  pollData: any,
 }
 
 class Index extends PureComponent<IndexProps, IndexState> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     match: {},
-    block: null,
-    blockTransactions: null,
-    getBlock: () => { },
-    getBlockByHeight: () => { },
-    getBlockTransactions: () => { },
-    getBlockTransactionsByHeight: () => { }
+    getPoll: () => { }
   };
 
   constructor(props: IndexProps) {
     super(props);
     this.state = {
-      epochData: undefined,
-      hash: props.match.params.hash,
-      height: props.match.params.height
+      id: parseInt(props.match.params.id, 10),
+      pollData: undefined,
     };
   }
 
   componentDidMount() {
-    this.fetchData();
-  }
-
-  static getDerivedStateFromProps(nextProps: any, prevState: any) {
-    // switch hash only in current page, won't switch height
-    // so only need to empty height while switch to /hash/xxx from height/xxx
-    if (nextProps.match.params.hash !== prevState.hash) {
-      return { ...prevState, hash: nextProps.match.params.hash, height: '' };
-    }
-    return null;
-  }
-
-  componentDidUpdate(prevProps: any, prevState: any) {
-    if (prevProps.match.params.hash !== this.state.hash && prevState.hash !== this.state.hash) {
-      this.fetchData();
-    }
+    // this.fetchData();
+    const { t, match } = this.props;
+    const list = JSON.parse(t('poll.polls'));
+    const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
+    const config = filter[0];
+    getPollData(config.creator).then(data => {
+      if (data && data.id === config.id) {
+        this.setState({ pollData: data });
+      }
+    });
   }
 
   fetchData() {
-    const hash = this.state.hash;
-    const height = this.state.height;
-    if (hash) {
-      this.props.getBlock({ hash });
-      this.props.getBlockTransactions({ hash });
-    }
-    if (height) {
-      this.props.getBlockByHeight({ height });
-      this.props.getBlockTransactionsByHeight({ height });
+    const id = this.state.id;
+    if (id) {
+      this.props.getPoll({ id });
     }
   }
 
   generateExtra() {
-    const { block, blockTransactions, classes, match, t } = this.props;
-    const isInitialLoad = !block;
-    const transactions = get(block, 'body.Full', []);
-    const blockTransactionHits = get(blockTransactions, 'contents');
-    const blockEventsIndex = blockTransactionHits.length - 1;
-    const getBlockEventsString = `contents[${blockEventsIndex.toString()}].events`;
-    const events = get(blockTransactions, getBlockEventsString, []);
-    const eventsTable: any[] = [];
-
-    for (let i = 0; i < events.length; i++) {
-      const columns: any[] = [];
-      const event = events[i];
-      const eventTypeArray = event.type_tag.split('::');
-      const eventModule = eventTypeArray[1];
-      const eventName = eventTypeArray[2];
-      // const eventModule = 'Account';
-      // const eventName = 'WithdrawEvent';
-      let eventDataDetail;
-      let eventKeyDetail;
-      try {
-        const de = onchain_events.decodeEventData(eventName, event.data);
-        eventDataDetail = toObject(de.toJS());
-      } catch (e) {
-        console.log(e);
-        eventDataDetail = event.data;
-      }
-
-      try {
-        const eventKeyInHex = event.event_key;
-        const de = onchain_events.decodeEventKey(eventKeyInHex);
-        eventKeyDetail = toObject(de);
-      } catch (e) {
-        console.log(e);
-        eventKeyDetail = event.event_key;
-      }
-      columns.push([t('event.Data'), eventDataDetail]);
-      columns.push([t('event.Module'), eventModule]);
-      columns.push([t('event.Name'), eventName]);
-      columns.push([t('event.Key'), eventKeyDetail]);
-      columns.push([t('event.Seq'), formatNumber(event.event_seq_number)]);
-      eventsTable.push(<EventViewTable key={event.event_key} columns={columns} />);
+    const { t, classes, match } = this.props;
+    const list = JSON.parse(t('poll.polls'));
+    const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
+    const config = filter[0];
+    const isPollDataLoading = !this.state.pollData;
+    const metrics: any[] = [];
+    if (this.state.pollData) {
+      metrics.push([t('poll.yes'), formatNumber(this.state.pollData.for_votes)]);
+      metrics.push([t('poll.no'), formatNumber(this.state.pollData.against_votes)]);
     }
-
-    const network = match.params.network;
-    const uncles = get(block, 'uncles', []);
-    const unclesTable: any[] = [];
-    uncles.forEach((uncle: any) => {
-      const columns: any[] = [];
-      columns.push([t('common.Hash'), uncle.block_hash]);
-      columns.push([t('block.Height'), formatNumber(uncle.number)]);
-      columns.push([t('common.Time'), new Date(parseInt(uncle.timestamp, 10)).toLocaleString()]);
-      columns.push([t('block.Author'), <CommonLink key={uncle.author} path={`/${network}/address/${uncle.author}`} title={uncle.author} />]);
-      columns.push([t('block.Difficulty'), uncle.difficulty]);
-      columns.push([t('common.GasUsed'), uncle.gas_used]);
-      columns.push([t('block.ParentHash'), <CommonLink key={uncle.parent_hash} path={`/${network}/blocks/detail/${uncle.parent_hash}`} title={uncle.parent_hash} />]);
-      unclesTable.push(<PageViewTable key={uncle.number} columns={columns} />);
-    });
-
-    const transactionsContent = transactions.length ? <TransactionTable
-      transactions={transactions}
-    /> : <Typography variant="body1">{t('transaction.NoTransactionData')}</Typography>;
-
-    const eventsContent = events.length ? eventsTable : <Typography variant="body1">{t('event.NoEventData')}</Typography>;
-    const unclesContent = uncles.length ? unclesTable : <Typography variant="body1">{t('uncle.NoUncleData')}</Typography>;
+    const votes = (
+      <div className={classes.cardContainer}>
+        <Card className={this.props.classes.card}>
+          <Grid container className={classes.root} spacing={2}>
+            {metrics.map((metric) => (
+              <Grid key={metric[0]} item xs={6}>
+                <div className={classes.metric}>
+                  <Typography className={classes.metricTitle} variant="body2">
+                    {metric[0]}
+                  </Typography>
+                  <Typography className={classes.title}>
+                    {metric[1]}
+                  </Typography>
+                </div>
+              </Grid>
+            ))}
+          </Grid>
+        </Card>
+      </div>
+    );
     return (
       <div>
         <br />
-        <Accordion>
+        <Accordion defaultExpanded>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            <Typography variant="h5" gutterBottom>{t('transaction.title')}</Typography>
+            <Typography variant="h5" gutterBottom>{t('poll.description')}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.table}>
-              {isInitialLoad ? <Loading /> : transactionsContent}
+              <Markdown content={config.description} />
             </div>
           </AccordionDetails>
         </Accordion>
         <br />
-        <Accordion>
+        <Accordion defaultExpanded>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            <Typography variant="h5" gutterBottom>{t('header.events')}</Typography>
+            <Typography variant="h5" gutterBottom>{t('poll.votes')}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.table}>
-              {isInitialLoad ? <Loading /> : eventsContent}
-            </div>
-          </AccordionDetails>
-        </Accordion>
-        <br />
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography variant="h5" gutterBottom>{t('block.Uncles')}</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className={classes.table}>
-              {isInitialLoad ? <Loading /> : unclesContent}
+              {isPollDataLoading ? <Loading /> : votes}
             </div>
           </AccordionDetails>
         </Accordion>
@@ -219,33 +221,30 @@ class Index extends PureComponent<IndexProps, IndexState> {
   }
 
   render() {
-    const { block, blockTransactions, match, t } = this.props;
-    const network = match.params.network;
-    const isInitialLoad = !block || !blockTransactions;
+    const { poll, match, t } = this.props;
+    const list = JSON.parse(t('poll.polls'));
+    const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
+    const isInitialLoad = !filter.length && !poll;
     if (isInitialLoad) {
       return <Loading />;
     }
-    if (!block.header) {
-      return null;
-    }
-    const header = block.header;
+
+    const config = filter[0];
     const columns = [
-      [t('common.Hash'), header.block_hash],
-      [t('block.Height'), formatNumber(header.number)],
-      [t('common.Time'), new Date(parseInt(header.timestamp, 10)).toLocaleString()],
-      [t('block.Author'), <CommonLink key={header.author} path={`/${network}/address/${header.author}`} title={header.author} />],
-      [t('block.Difficulty'), header.difficulty],
-      [t('common.GasUsed'), header.gas_used],
-      [t('block.ParentHash'), <CommonLink key={header.parent_hash} path={`/${network}/blocks/detail/${header.parent_hash}`} title={header.parent_hash} />],
+      [t('poll.id'), config.id],
+      [t('poll.title'), config.title],
+      [t('poll.status'), config.status.replace('_', ' ')],
+      [t('poll.creator'), <CommonLink key={config.creator} path={`https://explorer.starcoin.org/main/address/${config.creator}`} title={config.creator} />],
+      [t('poll.endTime'), new Date(parseInt(config.end_time, 10)).toLocaleString()],
+      [t('poll.discussion'), <CommonLink key={config.link} path={config.link} title={config.link} />],
     ];
 
     return (
       <PageView
-        id={header.block_hash}
-        title={t('block.title')}
-        name={t('block.title')}
-        pluralName={t('header.blocks')}
-        searchRoute={`/${network}/blocks`}
+        id={config.id}
+        title={t('poll.detail')}
+        name={t('poll.detail')}
+        pluralName={t('header.polls')}
         bodyColumns={columns}
         extra={this.generateExtra()}
       />

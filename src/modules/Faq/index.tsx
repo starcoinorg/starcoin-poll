@@ -54,7 +54,7 @@ class Index extends PureComponent<IndexProps> {
               </Typography>
             </div>
             <div className={classes.root}>
-              <Markdown indexWord="faq" />
+              <Markdown content={t('faq')} />
             </div>
           </Card>
         </CenteredView>

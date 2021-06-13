@@ -111,11 +111,11 @@ interface InternalProps {
   t: any,
 }
 
-interface Props extends ExternalProps, InternalProps {}
+interface Props extends ExternalProps, InternalProps { }
 
 class Index extends React.PureComponent<Props> {
   render() {
-    const { id, title, name, pluralName, searchRoute, icon, backgroundColorClassName, className, classes, t } = this.props;
+    const { title, name, pluralName, searchRoute, icon, backgroundColorClassName, className, classes, t } = this.props;
     const breadcrumbVariant = 'body1';
     const slash = (
       <Typography
@@ -143,12 +143,6 @@ class Index extends React.PureComponent<Props> {
             component="h1"
           >
             {title}
-          </Typography>
-          <Typography
-            className={classNames(classes.text, classes.id)}
-            variant="body2"
-          >
-            {id}
           </Typography>
         </div>
         <div className={classes.rightHeader}>

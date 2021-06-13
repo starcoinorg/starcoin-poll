@@ -12,7 +12,7 @@ class PollsRouter extends PureComponent<PollsRouterProps> {
     const { computedMatch: match } = this.props;
     return (
       <Switch>
-        <Route path={`${match.path}/detail/:hash`} render={(props: any) => (<Detail {...props} />)} />
+        <Route path={`${match.path}/detail/:id`} render={(props: any) => (<Detail {...props} />)} />
         <Route path={`${match.path}/:page`} render={(props: any) => (<List {...props} />)} />
       </Switch>
     );
