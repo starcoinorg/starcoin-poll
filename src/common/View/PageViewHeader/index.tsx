@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
-import Link from '@/common/Link';
+import ConnectWallet from '@/Polls/components/ConnectWallet/adapter';
 
 const useStyles = (theme: Theme) => createStyles({
   [theme.breakpoints.down('sm')]: {
@@ -63,11 +63,9 @@ const useStyles = (theme: Theme) => createStyles({
   static: {
     overflow: 'initial',
   },
-  margin: {
-    marginRight: theme.spacing(1),
-  },
+
   text: {
-    color: '#fff',
+    // color: '#fff',
   },
   title: {
     fontSize: '1.3125rem',
@@ -85,13 +83,16 @@ const useStyles = (theme: Theme) => createStyles({
     textDecoration: 'underline',
   },
   backgroundColor: {
-    backgroundColor: '#3d454d',
+    // backgroundColor: '#3d454d',
   },
   id: {
     flex: '0 1 auto',
     minWidth: '0',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
   },
 });
 
@@ -104,6 +105,7 @@ interface ExternalProps {
   icon?: string,
   backgroundColorClassName?: string,
   className?: string,
+  accounts?: string[],
 }
 
 interface InternalProps {
@@ -115,17 +117,9 @@ interface Props extends ExternalProps, InternalProps { }
 
 class Index extends React.PureComponent<Props> {
   render() {
-    const { title, name, pluralName, searchRoute, icon, backgroundColorClassName, className, classes, t } = this.props;
-    const breadcrumbVariant = 'body1';
-    const slash = (
-      <Typography
-        className={classNames(classes.text, classes.margin, classes.static)}
-        variant={breadcrumbVariant}
-      >
-        /
-      </Typography>
-    );
+    const { title, icon, backgroundColorClassName, className, classes } = this.props;
     const iconElement = (icon != null) ? <Icon className={classNames(classes.margin, classes.text)}>{icon}</Icon> : null;
+
     return (
       <div
         className={classNames(
@@ -146,32 +140,7 @@ class Index extends React.PureComponent<Props> {
           </Typography>
         </div>
         <div className={classes.rightHeader}>
-          <Link
-            className={classNames(classes.link, classes.margin, classes.static)}
-            variant={breadcrumbVariant}
-            path="/"
-            title={t('header.home')}
-          />
-          {slash}
-          {
-            (pluralName && searchRoute) ? (
-              <>
-                <Link
-                  className={classNames(classes.link, classes.margin, classes.static)}
-                  variant={breadcrumbVariant}
-                  path={searchRoute}
-                  title={pluralName}
-                />
-                {slash}
-              </>
-            ) : null
-          }
-          <Typography
-            className={classNames(classes.linkSelected, classes.static)}
-            variant={breadcrumbVariant}
-          >
-            {name}
-          </Typography>
+          <ConnectWallet />
         </div>
       </div>
     );

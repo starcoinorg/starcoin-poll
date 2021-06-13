@@ -43,6 +43,9 @@
     "votes": "Votes",
     "yes": "Yes",
     "no": "No",
+    "install": "Install Wallet",
+    "connect": "Connect Wallet",
+    "connected": "Wallet Connected",
     "": ""
   },
   "block": {

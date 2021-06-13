@@ -43,6 +43,9 @@
     "votes": "投票",
     "yes": "同意",
     "no": "反对",
+    "install": "安装钱包",
+    "connect": "连接钱包",
+    "connected": "已连接钱包",
     "": ""
   },
   "block": {
