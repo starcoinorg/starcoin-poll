@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
-import createSagaMiddleware  from 'redux-saga';
+import createSagaMiddleware from 'redux-saga';
 import createRootReducer from './reducers';
 import rootSaga from './sagas';
 
@@ -21,10 +21,11 @@ const store = createStore(
     composeEnhancers(applyMiddleware(...middlewares))
 );
 
-declare global{
+declare global {
     interface Window {
-        store: any;
-        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
+        store: any,
+        starcoin: any,
+        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any,
     }
 }
 
