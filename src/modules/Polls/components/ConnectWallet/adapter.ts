@@ -7,7 +7,7 @@ import Index from './index';
 
 const { selector: currentSelector, actions } = store;
 
-const loadingSelector = createLoadingSelector([types.GET_POLL]);
+const loadingSelector = createLoadingSelector([types.GET_POLL, types.GET_POLL_VOTES]);
 
 const selector = createSelector(
   currentSelector,
@@ -20,4 +20,5 @@ const selector = createSelector(
 
 export default connect(selector, {
   getPoll: actions.getPoll,
+  getPollVotes: actions.getPollVotes,
 })(Index) as any;

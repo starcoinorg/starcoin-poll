@@ -46,6 +46,9 @@
     "install": "Install Wallet",
     "connect": "Connect Wallet",
     "connected": "Wallet Connected",
+    "selectedAccount": "Selected Account",
+    "selectedVotes": "Selected Votes",
+    "selectedNoVotes": "Not vote yet",
     "": ""
   },
   "block": {

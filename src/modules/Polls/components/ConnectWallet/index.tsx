@@ -15,6 +15,7 @@ interface IndexProps {
   t: any;
   match: any;
   getPoll: (data: any, callback?: any) => any;
+  getPollVotes: (data: any, callback?: any) => any;
 }
 
 interface IndexState {
@@ -34,8 +35,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     match: {},
-
-    getPoll: () => { }
+    getPoll: () => { },
+    getPollVotes: () => { },
   };
 
   constructor(props: IndexProps) {
@@ -91,7 +92,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
   handleNewAccounts(newAccounts: string[]) {
     console.log('handleNewAccounts', newAccounts);
     this.setState({ accounts: newAccounts });
-    const { t } = this.props;
+    const { t, getPollVotes } = this.props;
     const isStarMaskConnected = this.isStarMaskConnected();
     let text;
     if (isStarMaskConnected) {
@@ -99,6 +100,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
       if (this.onboarding) {
         this.onboarding.stopOnboarding();
       }
+      getPollVotes({ selectedAccount: newAccounts[0] });
     } else {
       text = t('poll.connect');
       this.onClick = this.onClickConnect;

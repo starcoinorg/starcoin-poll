@@ -110,6 +110,7 @@ interface IndexProps {
   t: any;
   match: any;
   poll: any;
+  pollVotes: any;
   getPoll: (data: any, callback?: any) => any;
 }
 
@@ -122,6 +123,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     match: {},
+    poll: undefined,
+    pollVotes: undefined,
     getPoll: () => { }
   };
 
@@ -221,7 +224,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
   }
 
   render() {
-    const { poll, match, t } = this.props;
+    const { poll, pollVotes, match, t } = this.props;
     const list = JSON.parse(t('poll.polls'));
     const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
     const isInitialLoad = !filter.length && !poll;
@@ -238,6 +241,11 @@ class Index extends PureComponent<IndexProps, IndexState> {
       [t('poll.endTime'), new Date(parseInt(config.end_time, 10)).toLocaleString()],
       [t('poll.discussion'), <CommonLink key={config.link} path={config.link} title={config.link} />],
     ];
+    if (pollVotes) {
+      columns.push([t('poll.selectedAccount'), <CommonLink key={pollVotes.selectedAccount} path={`https://explorer.starcoin.org/main/address/${pollVotes.selectedAccount}`} title={pollVotes.selectedAccount} />]);
+      const selectedVotesText = pollVotes.value ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} ${pollVotes.value}` : t('poll.selectedNoVotes');
+      columns.push([t('poll.selectedVotes'), selectedVotesText]);
+    }
 
     return (
       <PageView

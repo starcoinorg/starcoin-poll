@@ -58,3 +58,13 @@ export async function getPollData(hash: string) {
     return false;
   }
 }
+
+
+export async function getPollAccountVotes(hash: string) {
+  try {
+    const result = await provider.getResource(hash, '0x1::Dao::Vote<0x1::STC::STC>');
+    return result;
+  } catch (error: any) {
+    return false;
+  }
+}
