@@ -47,8 +47,9 @@
     "connect": "连接钱包",
     "connected": "已连接钱包",
     "selectedAccount": "已连接帐号",
-    "selectedVotes": "投票记录",
+    "selectedVoteLog": "投票记录",
     "selectedNoVotes": "暂无投票",
+    "vote": "投票",
     "": ""
   },
   "block": {

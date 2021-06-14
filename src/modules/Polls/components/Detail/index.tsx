@@ -17,6 +17,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Button from '@material-ui/core/Button';
 import { getPollData } from '@/utils/sdk';
 // import PageViewTable from '@/common/View/PageViewTable';
 // import EventViewTable from '@/common/View/EventViewTable';
@@ -92,11 +93,11 @@ const useStyles = (theme: Theme) => createStyles({
     marginRight: theme.spacing(1),
   },
   textFieldLabel: {},
-  button: {
-    height: theme.spacing(5),
-  },
   title: {
     fontWeight: 700
+  },
+  margin: {
+    marginRight: theme.spacing(2),
   },
   metric: {
     marginTop: theme.spacing(2),
@@ -224,7 +225,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
   }
 
   render() {
-    const { poll, pollVotes, match, t } = this.props;
+    const { poll, pollVotes, match, t, classes } = this.props;
     const list = JSON.parse(t('poll.polls'));
     const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
     const isInitialLoad = !filter.length && !poll;
@@ -243,8 +244,18 @@ class Index extends PureComponent<IndexProps, IndexState> {
     ];
     if (pollVotes) {
       columns.push([t('poll.selectedAccount'), <CommonLink key={pollVotes.selectedAccount} path={`https://explorer.starcoin.org/main/address/${pollVotes.selectedAccount}`} title={pollVotes.selectedAccount} />]);
-      const selectedVotesText = pollVotes.value ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} ${pollVotes.value}` : t('poll.selectedNoVotes');
-      columns.push([t('poll.selectedVotes'), selectedVotesText]);
+      const selectedVoteLog = pollVotes.value ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(pollVotes.value)} NanoSTC) ` : t('poll.selectedNoVotes');
+      const selectedVote = (
+        <Button
+          className={classes.button}
+          color="primary"
+          variant="contained"
+        >
+          <Typography variant="body1" className={classes.buttonLabel}>{t('poll.vote')}</Typography>
+        </Button>
+      );
+      columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
+      columns.push(['', selectedVote]);
     }
 
     return (

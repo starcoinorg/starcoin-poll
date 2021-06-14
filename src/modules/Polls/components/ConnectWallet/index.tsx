@@ -139,8 +139,6 @@ class Index extends PureComponent<IndexProps, IndexState> {
 
   render() {
     const { classes } = this.props;
-    console.log('isStarMaskConnected', this.state.isStarMaskConnected);
-    console.log('accounts', this.state.accounts);
     return (
       <Fab
         variant="extended"

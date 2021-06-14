@@ -47,8 +47,9 @@
     "connect": "Connect Wallet",
     "connected": "Wallet Connected",
     "selectedAccount": "Selected Account",
-    "selectedVotes": "Selected Votes",
+    "selectedVoteLog": "Selected Vote Log",
     "selectedNoVotes": "Not vote yet",
+    "vote": "Vote",
     "": ""
   },
   "block": {
