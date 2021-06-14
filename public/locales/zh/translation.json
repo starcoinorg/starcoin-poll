@@ -50,6 +50,8 @@
     "selectedVoteLog": "投票记录",
     "selectedNoVotes": "暂无投票",
     "vote": "投票",
+    "connecting": "正在连接钱包...",
+    "installing": "正在安装钱包...",
     "": ""
   },
   "block": {

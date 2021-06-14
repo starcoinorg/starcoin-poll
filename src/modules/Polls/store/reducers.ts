@@ -4,6 +4,7 @@ const initState = {
   poll: null,
   pollList: null,
   pollVotes: null,
+  accounts: null,
   isLoadingMore: false,
 };
 
@@ -17,6 +18,9 @@ export default function reducers(state: any = initState, action: any) {
     }
     case types.SET_POLL_VOTES: {
       return { ...state, pollVotes: action.payload };
+    }
+    case types.SET_WALLECT_ACCOUNTS: {
+      return { ...state, accounts: action.payload };
     }
     case types.GET_POLL_LIST_REQUEST: {
       return { ...state, isLoadingMore: true };

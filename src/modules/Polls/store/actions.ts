@@ -14,6 +14,20 @@ export function setPoll(payload: any) {
   };
 }
 
+export function connectWallet(callback: any) {
+  return {
+    type: types.GET_WALLECT_ACCOUNTS,
+    callback
+  };
+}
+
+export function setWalletAccounts(payload: any) {
+  return {
+    type: types.SET_WALLECT_ACCOUNTS,
+    payload
+  };
+}
+
 export function getPollVotes(payload: any) {
   return {
     type: types.GET_POLL_VOTES,

@@ -14,13 +14,15 @@ interface IndexProps {
   classes: any;
   t: any;
   match: any;
+  accounts: string[];
   getPoll: (data: any, callback?: any) => any;
   getPollVotes: (data: any, callback?: any) => any;
+  setWalletAccounts: (data: any, callback?: any) => any;
+  connectWallet: (callback: any) => any;
 }
 
 interface IndexState {
   pollData: any,
-  accounts: string[];
   connectText: string,
   isStarMaskInstalled: boolean;
   isStarMaskConnected: boolean;
@@ -35,8 +37,11 @@ class Index extends PureComponent<IndexProps, IndexState> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     match: {},
+    accounts: [],
     getPoll: () => { },
     getPollVotes: () => { },
+    setWalletAccounts: () => { },
+    connectWallet: () => { },
   };
 
   constructor(props: IndexProps) {
@@ -71,7 +76,6 @@ class Index extends PureComponent<IndexProps, IndexState> {
     }
     this.state = {
       pollData: undefined,
-      accounts: [],
       isStarMaskInstalled,
       isStarMaskConnected,
       connectText: text,
@@ -85,56 +89,43 @@ class Index extends PureComponent<IndexProps, IndexState> {
     }
   }
 
-  componentDidMount() {
-
-  }
-
   handleNewAccounts(newAccounts: string[]) {
-    console.log('handleNewAccounts', newAccounts);
-    this.setState({ accounts: newAccounts });
     const { t, getPollVotes } = this.props;
-    const isStarMaskConnected = this.isStarMaskConnected();
-    let text;
+    const isStarMaskConnected = newAccounts.length > 0;
     if (isStarMaskConnected) {
-      text = t('poll.connected');
-      if (this.onboarding) {
-        this.onboarding.stopOnboarding();
+      let text;
+      if (isStarMaskConnected) {
+        text = t('poll.connected');
+        if (this.onboarding) {
+          this.onboarding.stopOnboarding();
+        }
+        getPollVotes({ selectedAccount: newAccounts[0] });
+      } else {
+        text = t('poll.connect');
+        this.onClick = this.onClickConnect;
       }
-      getPollVotes({ selectedAccount: newAccounts[0] });
-    } else {
-      text = t('poll.connect');
-      this.onClick = this.onClickConnect;
+      this.setState({
+        isStarMaskConnected,
+        connectText: text,
+        connectDisabled: isStarMaskConnected,
+      });
     }
-    this.setState({
-      isStarMaskConnected,
-      connectText: text,
-      connectDisabled: isStarMaskConnected,
-    });
-    // accountsDiv.innerHTML = accounts
-    // if (isStarMaskConnected()) {
-    //   initializeAccountButtons()
-    // }
-    // updateButtons()
+    this.props.setWalletAccounts(newAccounts);
   }
 
   onClickInstall() {
-    this.setState({ connectText: 'Onboarding in progress', connectDisabled: true });
+    this.setState({ connectText: this.props.t('poll.installing'), connectDisabled: true });
     this.onboarding.startOnboarding();
   }
 
   async onClickConnect() {
-    try {
-      const newAccounts = await window.starcoin.request({
-        method: 'stc_requestAccounts',
-      });
-      this.handleNewAccounts(newAccounts);
-    } catch (error) {
-      console.error(error);
-    }
+    const self = this;
+    this.setState({ connectDisabled: true, connectText: this.props.t('poll.connecting') });
+    this.props.connectWallet((data: any) => self.handleNewAccounts(data));
   }
 
   isStarMaskConnected() {
-    return this.state.accounts.length > 0;
+    return this.props.accounts && this.props.accounts.length > 0;
   }
 
   render() {

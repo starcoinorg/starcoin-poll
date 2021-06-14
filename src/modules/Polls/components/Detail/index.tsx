@@ -1,10 +1,15 @@
 import React, { PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
+import classNames from 'classnames';
+import BigNumber from 'bignumber.js';
+import { providers } from '@starcoin/starcoin';
 // import get from 'lodash/get';
 // import { onchain_events } from '@starcoin/starcoin';
 import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Switch from '@material-ui/core/Switch';
 import Loading from '@/common/Loading';
 // import TransactionTable from '@/Transactions/components/Table';
 import PageView from '@/common/View/PageView';
@@ -21,6 +26,40 @@ import Button from '@material-ui/core/Button';
 import { getPollData } from '@/utils/sdk';
 // import PageViewTable from '@/common/View/PageViewTable';
 // import EventViewTable from '@/common/View/EventViewTable';
+
+const AntSwitch = withStyles((theme: Theme) => createStyles({
+  root: {
+    width: 28,
+    height: 16,
+    padding: 0,
+    display: 'flex',
+  },
+  switchBase: {
+    padding: 2,
+    color: theme.palette.grey[500],
+    '&$checked': {
+      transform: 'translateX(12px)',
+      color: theme.palette.common.white,
+      '& + $track': {
+        opacity: 1,
+        backgroundColor: theme.palette.primary.main,
+        borderColor: theme.palette.primary.main,
+      },
+    },
+  },
+  thumb: {
+    width: 12,
+    height: 12,
+    boxShadow: 'none',
+  },
+  track: {
+    border: `1px solid ${theme.palette.grey[500]}`,
+    borderRadius: 16 / 2,
+    opacity: 1,
+    backgroundColor: theme.palette.common.white,
+  },
+  checked: {},
+}))(Switch);
 
 const useStyles = (theme: Theme) => createStyles({
   table: {
@@ -96,6 +135,12 @@ const useStyles = (theme: Theme) => createStyles({
   title: {
     fontWeight: 700
   },
+  button: {
+    marginLeft: theme.spacing(2),
+  },
+  marginTop: {
+    marginTop: theme.spacing(1),
+  },
   margin: {
     marginRight: theme.spacing(2),
   },
@@ -112,28 +157,42 @@ interface IndexProps {
   match: any;
   poll: any;
   pollVotes: any;
+  accounts: string[];
   getPoll: (data: any, callback?: any) => any;
 }
 
 interface IndexState {
   id?: number,
   pollData: any,
+  checked: boolean,
 }
 
 class Index extends PureComponent<IndexProps, IndexState> {
+  starcoinProvider: any
+
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     match: {},
     poll: undefined,
     pollVotes: undefined,
+    accounts: [],
     getPoll: () => { }
   };
 
   constructor(props: IndexProps) {
     super(props);
+
+    try {
+      // We must specify the network as 'any' for starcoin to allow network changes
+      this.starcoinProvider = new providers.Web3Provider(window.starcoin, 'any');
+    } catch (error) {
+      console.error(error);
+    }
+
     this.state = {
       id: parseInt(props.match.params.id, 10),
       pollData: undefined,
+      checked: true,
     };
   }
 
@@ -148,6 +207,47 @@ class Index extends PureComponent<IndexProps, IndexState> {
         this.setState({ pollData: data });
       }
     });
+  }
+
+  handleChange() {
+    const value = this.state.checked;
+    this.setState({ checked: !value });
+  }
+
+  async onClickVote() {
+    try {
+      console.log('onClickVote', this.state);
+      const toAccount = this.state.pollData && this.state.pollData.proposer;
+      console.log({ toAccount });
+      if (!toAccount) {
+        // eslint-disable-next-line no-alert
+        window.alert('Invalid To: can not be empty!');
+        return false;
+      }
+
+      const sendAmount = 0.001;
+      if (!(sendAmount > 0)) {
+        // eslint-disable-next-line no-alert
+        window.alert('Invalid sendAmount: should be a number!');
+        return false;
+      }
+      const BIG_NUMBER_NANO_STC_MULTIPLIER = new BigNumber('1000000000');
+      const sendAmountSTC = new BigNumber(sendAmount, 10);
+      const sendAmountNanoSTC = sendAmountSTC.times(BIG_NUMBER_NANO_STC_MULTIPLIER);
+      const sendAmountHex = `0x${sendAmountNanoSTC.toString(16)}`;
+      console.log({ sendAmountHex, sendAmountNanoSTC: sendAmountNanoSTC.toString(10) });
+
+      const transactionHash = await this.starcoinProvider.getSigner().sendUncheckedTransaction({
+        to: toAccount,
+        value: sendAmountHex,
+        gasLimit: 127845,
+        gasPrice: 1,
+      });
+      console.log(transactionHash);
+    } catch (error) {
+      console.error(error);
+    }
+    return false;
   }
 
   fetchData() {
@@ -225,7 +325,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
   }
 
   render() {
-    const { poll, pollVotes, match, t, classes } = this.props;
+    const { poll, pollVotes, accounts, match, t, classes } = this.props;
     const list = JSON.parse(t('poll.polls'));
     const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
     const isInitialLoad = !filter.length && !poll;
@@ -247,17 +347,40 @@ class Index extends PureComponent<IndexProps, IndexState> {
       const selectedVoteLog = pollVotes.value ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(pollVotes.value)} NanoSTC) ` : t('poll.selectedNoVotes');
 
       columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
-      if (config.status === 'in_progress') {
-        const selectedVote = (
-          <Button
-            className={classes.button}
-            color="primary"
-            variant="contained"
-          >
-            <Typography variant="body1" className={classes.buttonLabel}>{t('poll.vote')}</Typography>
-          </Button>
+      if (config.status === 'in_progress' && accounts.length > 0) {
+        const agree = (
+          <div className={classes.marginTop}>
+            <Grid component="label" container alignItems="center" spacing={1}>
+              <Grid item>{t('poll.no')}</Grid>
+              <Grid item>
+                <AntSwitch checked={this.state.checked} onChange={() => this.handleChange()} name="checked" />
+              </Grid>
+              <Grid item>{t('poll.yes')}</Grid>
+            </Grid>
+          </div>
         );
-        columns.push(['', selectedVote]);
+        const selectedVote = (
+          <>
+            <TextField
+              id="standard-number"
+              label="NanoSTC"
+              type="number"
+              defaultValue="10000"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <Button
+              className={classNames(classes.button, classes.marginTop)}
+              color="primary"
+              variant="contained"
+              onClick={() => this.onClickVote()}
+            >
+              <Typography variant="body1" className={classes.buttonLabel}>{t('poll.vote')}</Typography>
+            </Button>
+          </>
+        );
+        columns.push([agree, selectedVote]);
       }
     }
 

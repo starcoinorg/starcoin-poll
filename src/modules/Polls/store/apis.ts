@@ -21,3 +21,10 @@ export const getPollVotes = async (params: any) => {
     }
     return votes;
 }
+
+export const getWalletAccounts = async () => {
+    const newAccounts = await window.starcoin.request({
+        method: 'stc_requestAccounts',
+    });
+    return newAccounts;
+}

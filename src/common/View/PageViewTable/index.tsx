@@ -74,7 +74,7 @@ interface InternalProps {
   classes: any,
 }
 
-interface Props extends ExternalProps, InternalProps {}
+interface Props extends ExternalProps, InternalProps { }
 
 class Index extends React.PureComponent<Props> {
   render() {
@@ -106,6 +106,7 @@ class Index extends React.PureComponent<Props> {
         <div className={classNames(classes.col, classes.firstCol)}>
           {columns.map((column: any, idx: any) => wrapRow(
             <Typography
+              component="div"
               key={column[0]}
               className={classes.label}
               variant="body1"

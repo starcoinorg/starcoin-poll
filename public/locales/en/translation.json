@@ -50,6 +50,8 @@
     "selectedVoteLog": "Selected Vote Log",
     "selectedNoVotes": "Not vote yet",
     "vote": "Vote",
+    "connecting": "Connecting Wallet",
+    "installing": "Onboarding in progress",
     "": ""
   },
   "block": {

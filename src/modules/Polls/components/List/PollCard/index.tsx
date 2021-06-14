@@ -121,7 +121,7 @@ class Index extends PureComponent<Props, IndexState> {
   render() {
     const { title, id, url, for_votes, against_votes, status, end_time, classes } = this.props;
     const openLink = () => {
-      window.open(url, '_blank');
+      window.open(url, '_self');
     };
     return (
       <div
