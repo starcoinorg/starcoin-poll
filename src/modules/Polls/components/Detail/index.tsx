@@ -245,17 +245,20 @@ class Index extends PureComponent<IndexProps, IndexState> {
     if (pollVotes) {
       columns.push([t('poll.selectedAccount'), <CommonLink key={pollVotes.selectedAccount} path={`https://explorer.starcoin.org/main/address/${pollVotes.selectedAccount}`} title={pollVotes.selectedAccount} />]);
       const selectedVoteLog = pollVotes.value ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(pollVotes.value)} NanoSTC) ` : t('poll.selectedNoVotes');
-      const selectedVote = (
-        <Button
-          className={classes.button}
-          color="primary"
-          variant="contained"
-        >
-          <Typography variant="body1" className={classes.buttonLabel}>{t('poll.vote')}</Typography>
-        </Button>
-      );
+
       columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
-      columns.push(['', selectedVote]);
+      if (config.status === 'in_progress') {
+        const selectedVote = (
+          <Button
+            className={classes.button}
+            color="primary"
+            variant="contained"
+          >
+            <Typography variant="body1" className={classes.buttonLabel}>{t('poll.vote')}</Typography>
+          </Button>
+        );
+        columns.push(['', selectedVote]);
+      }
     }
 
     return (
