@@ -29,7 +29,7 @@ interface IndexState {
   connectDisabled: boolean;
 }
 
-class Index extends PureComponent<IndexProps, IndexState> {
+class ConnectWallet extends PureComponent<IndexProps, IndexState> {
   onboarding: any
 
   onClick: any
@@ -146,4 +146,4 @@ class Index extends PureComponent<IndexProps, IndexState> {
   }
 }
 
-export default withStyles(useStyles)(withTranslation()(Index));
+export default withStyles(useStyles)(withTranslation()(ConnectWallet));

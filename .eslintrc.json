@@ -115,7 +115,9 @@
     "no-return-assign": 0,
     "import/no-unresolved": 0,
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "indent": "off",
+    "operator-linebreak": "off"
   },
   "settings": {
     "import/resolver": {

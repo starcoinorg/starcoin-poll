@@ -76,7 +76,7 @@ interface InternalProps {
 
 interface Props extends ExternalProps, InternalProps { }
 
-class Index extends React.PureComponent<Props> {
+class PageViewTable extends React.PureComponent<Props> {
   render() {
     const { columns, className, classes } = this.props;
     const wrapRow = (element: any, idx: any, height: any, firstCol?: any) => (
@@ -130,4 +130,4 @@ class Index extends React.PureComponent<Props> {
   }
 }
 
-export default withStyles(useStyles)(Index);
+export default withStyles(useStyles)(PageViewTable);

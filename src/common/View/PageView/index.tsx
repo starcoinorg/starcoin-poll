@@ -23,7 +23,7 @@ interface InternalProps {}
 
 interface Props extends ExternalProps, InternalProps {}
 
-class Index extends React.PureComponent<Props> {
+class PageView extends React.PureComponent<Props> {
   render() {
     const { id, title, name, pluralName, searchRoute, headerIcon, headerBackgroundColorClassName, bodyColumns, extraCard, extra, className } = this.props;
     return (
@@ -47,4 +47,4 @@ class Index extends React.PureComponent<Props> {
   }
 }
 
-export default Index;
+export default PageView;
