@@ -3,10 +3,10 @@ import { withTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import BigNumber from 'bignumber.js';
 import { providers } from '@starcoin/starcoin';
-// import get from 'lodash/get';
+import get from 'lodash/get';
 // import { onchain_events } from '@starcoin/starcoin';
 import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
+// import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Switch from '@material-ui/core/Switch';
@@ -22,11 +22,30 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Button from '@material-ui/core/Button';
 import { getPollData } from '@/utils/sdk';
 // import PageViewTable from '@/common/View/PageViewTable';
 // import EventViewTable from '@/common/View/EventViewTable';
 
+const BorderLinearProgress = withStyles((theme: Theme) => createStyles({
+  root: {
+    height: 10,
+    borderRadius: 5,
+  },
+  dashedColorPrimary: {
+    backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
+    backgroundImage: 'none',
+    animation: 'none',
+  },
+  bar: {
+    borderRadius: 5,
+    backgroundColor: '#3f51b5',
+  },
+  bar2Buffer: {
+    backgroundColor: 'red',
+  },
+}))(LinearProgress);
 const AntSwitch = withStyles((theme: Theme) => createStyles({
   root: {
     width: 28,
@@ -72,6 +91,21 @@ const useStyles = (theme: Theme) => createStyles({
   },
   shrinkCol: {
     flex: '1 10 auto',
+  },
+  voteTextBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    borderRight: `1px solid ${theme.palette.grey[300]}`,
+    width: '50%',
+    padding: theme.spacing(1),
+    '&:first-child': {
+      color: theme.palette.primary.main,
+    },
+    '&:last-child': {
+      border: 'none',
+      color: theme.palette.secondary.light,
+    },
   },
   [theme.breakpoints.down('sm')]: {
     cardContainer: {
@@ -263,29 +297,32 @@ class Index extends PureComponent<IndexProps, IndexState> {
     const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
     const config = filter[0];
     const isPollDataLoading = !this.state.pollData;
-    const metrics: any[] = [];
-    if (this.state.pollData) {
-      metrics.push([t('poll.yes'), formatNumber(this.state.pollData.for_votes)]);
-      metrics.push([t('poll.no'), formatNumber(this.state.pollData.against_votes)]);
-    }
+    const total = 6.8 * 1e15;
+    const yesPercent = this.state.pollData && (this.state.pollData.for_votes / total * 100).toFixed(2);
+    const noPercent = this.state.pollData && (this.state.pollData.against_votes / total * 100).toFixed(2);
+    const absYes = (get(this.state, 'pollData.for_votes', 0) / 1e9).toFixed(2);
+    const absNo = (get(this.state, 'pollData.against_votes', 0) / 1e9).toFixed(2);
     const votes = (
-      <div className={classes.cardContainer}>
-        <Card className={this.props.classes.card}>
-          <Grid container className={classes.root} spacing={2}>
-            {metrics.map((metric) => (
-              <Grid key={metric[0]} item xs={6}>
-                <div className={classes.metric}>
-                  <Typography className={classes.metricTitle} variant="body2">
-                    {metric[0]}
-                  </Typography>
-                  <Typography className={classes.title}>
-                    {metric[1]}
-                  </Typography>
-                </div>
-              </Grid>
-            ))}
+      <div>
+        <BorderLinearProgress
+          variant="buffer"
+          value={Math.min(Number(yesPercent), 100)}
+          valueBuffer={
+            Math.min(Number(noPercent) + Number(yesPercent), 100)
+          }
+        />
+        <Grid container justify="center" spacing={0}>
+          <Grid item className={classes.voteTextBox}>
+            <Typography variant="h6">{t('poll.yes')}</Typography>
+            <Typography variant="h6">{yesPercent}%</Typography>
+            <Typography variant="subtitle2">{absYes} STC</Typography>
           </Grid>
-        </Card>
+          <Grid item className={classes.voteTextBox}>
+            <Typography variant="h6">{t('poll.no')}</Typography>
+            <Typography variant="h6">{noPercent}%</Typography>
+            <Typography variant="subtitle2">{absNo} STC</Typography>
+          </Grid>
+        </Grid>
       </div>
     );
     return (
