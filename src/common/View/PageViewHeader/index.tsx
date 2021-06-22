@@ -116,7 +116,7 @@ interface InternalProps {
 
 interface Props extends ExternalProps, InternalProps { }
 
-class Index extends React.PureComponent<Props> {
+class PageViewHeader extends React.PureComponent<Props> {
   render() {
     const { title, icon, backgroundColorClassName, className, classes } = this.props;
     const iconElement = (icon != null) ? <Icon className={classNames(classes.margin, classes.text)}>{icon}</Icon> : null;
@@ -148,4 +148,4 @@ class Index extends React.PureComponent<Props> {
   }
 }
 
-export default withStyles(useStyles)(withTranslation()(Index));
+export default withStyles(useStyles)(withTranslation()(PageViewHeader));

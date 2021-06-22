@@ -1,6 +1,8 @@
+/* eslint-disable function-paren-newline */
+/* eslint-disable implicit-arrow-linebreak */
 import React, { PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
-import classNames from 'classnames';
+// import classNames from 'classnames';
 import BigNumber from 'bignumber.js';
 import { providers } from '@starcoin/starcoin';
 import get from 'lodash/get';
@@ -8,8 +10,8 @@ import get from 'lodash/get';
 import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
 // import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Switch from '@material-ui/core/Switch';
+// import TextField from '@material-ui/core/TextField';
+// import Switch from '@material-ui/core/Switch';
 import Loading from '@/common/Loading';
 // import TransactionTable from '@/Transactions/components/Table';
 import PageView from '@/common/View/PageView';
@@ -24,29 +26,36 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Button from '@material-ui/core/Button';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Dialog from '@material-ui/core/Dialog';
 import { getPollData } from '@/utils/sdk';
 // import PageViewTable from '@/common/View/PageViewTable';
 // import EventViewTable from '@/common/View/EventViewTable';
 
-const BorderLinearProgress = withStyles((theme: Theme) => createStyles({
-  root: {
-    height: 10,
-    borderRadius: 5,
-  },
-  dashedColorPrimary: {
-    backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
-    backgroundImage: 'none',
-    animation: 'none',
-  },
-  bar: {
-    borderRadius: 5,
-    backgroundColor: '#3f51b5',
-  },
-  bar2Buffer: {
-    backgroundColor: 'red',
-  },
-}))(LinearProgress);
-const AntSwitch = withStyles((theme: Theme) => createStyles({
+const BorderLinearProgress = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      height: 10,
+      borderRadius: 5,
+    },
+    dashedColorPrimary: {
+      backgroundColor:
+        theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
+      backgroundImage: 'none',
+      animation: 'none',
+    },
+    bar: {
+      borderRadius: 5,
+      backgroundColor: '#3f51b5',
+    },
+    bar2Buffer: {
+      backgroundColor: 'red',
+    },
+  }),
+)(LinearProgress);
+/* const AntSwitch = withStyles((theme: Theme) => createStyles({
   root: {
     width: 28,
     height: 16,
@@ -78,112 +87,112 @@ const AntSwitch = withStyles((theme: Theme) => createStyles({
     backgroundColor: theme.palette.common.white,
   },
   checked: {},
-}))(Switch);
+}))(Switch); */
 
-const useStyles = (theme: Theme) => createStyles({
-  table: {
-    width: '100%',
-    display: 'block',
-  },
-  shrinkMaxCol: {
-    flex: '1 100 auto',
-    minWidth: 60,
-  },
-  shrinkCol: {
-    flex: '1 10 auto',
-  },
-  voteTextBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    borderRight: `1px solid ${theme.palette.grey[300]}`,
-    width: '50%',
-    padding: theme.spacing(1),
-    '&:first-child': {
-      color: theme.palette.primary.main,
+const useStyles = (theme: Theme) =>
+  createStyles({
+    table: {
+      width: '100%',
+      display: 'block',
     },
-    '&:last-child': {
-      border: 'none',
-      color: theme.palette.secondary.light,
+    shrinkMaxCol: {
+      flex: '1 100 auto',
+      minWidth: 60,
     },
-  },
-  [theme.breakpoints.down('sm')]: {
-    cardContainer: {
-      marginBottom: theme.spacing(1),
+    shrinkCol: {
+      flex: '1 10 auto',
+    },
+    voteTextBox: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      borderRight: `1px solid ${theme.palette.grey[300]}`,
+      width: '50%',
+      padding: theme.spacing(1),
+      '&:first-child': {
+        color: theme.palette.primary.main,
+      },
+      '&:last-child': {
+        border: 'none',
+        color: theme.palette.secondary.light,
+      },
+    },
+    [theme.breakpoints.down('sm')]: {
+      cardContainer: {
+        marginBottom: theme.spacing(1),
+      },
+      cardHeader: {
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
+      },
+      metric: {
+        paddingLeft: theme.spacing(2),
+      },
+    },
+    [theme.breakpoints.up('sm')]: {
+      cardContainer: {
+        marginBottom: theme.spacing(2),
+      },
+      cardHeader: {
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+      },
+      metric: {
+        paddingLeft: theme.spacing(4),
+      },
+    },
+    [theme.breakpoints.down('md')]: {
+      textFieldLabel: {
+        fontSize: '0.75em',
+      },
+    },
+    [theme.breakpoints.up('md')]: {
+      textFieldLabel: {
+        fontSize: '1em',
+      },
+    },
+    root: {
+      alignItems: 'center',
+      display: 'flex',
+      flex: '1 1 auto',
+    },
+    cardContainer: {},
+    card: {
+      display: 'flex',
+      flexDirection: 'column',
     },
     cardHeader: {
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1),
+      alignItems: 'center',
+      borderBottom: '1px solid rgba(0, 0, 0, 0.075)',
+      display: 'flex',
+      justifyContent: 'space-between',
+      paddingBottom: theme.spacing(2),
+      paddingTop: theme.spacing(2),
+    },
+    textField: {
+      display: 'flex',
+      flex: '1 1 auto',
+      marginRight: theme.spacing(1),
+    },
+    textFieldLabel: {},
+    title: {
+      fontWeight: 700,
+    },
+    button: {
+      marginLeft: theme.spacing(2),
+    },
+    marginTop: {
+      marginTop: theme.spacing(1),
+    },
+    margin: {
+      marginRight: theme.spacing(2),
     },
     metric: {
-      paddingLeft: theme.spacing(2),
-    }
-  },
-  [theme.breakpoints.up('sm')]: {
-    cardContainer: {
+      marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
+      borderLeft: '1px solid rgba(0, 0, 0, 0.075)',
     },
-    cardHeader: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-    },
-    metric: {
-      paddingLeft: theme.spacing(4),
-    }
-  },
-  [theme.breakpoints.down('md')]: {
-    textFieldLabel: {
-      fontSize: '0.75em'
-    }
-  },
-  [theme.breakpoints.up('md')]: {
-    textFieldLabel: {
-      fontSize: '1em'
-    }
-  },
-  root: {
-    alignItems: 'center',
-    display: 'flex',
-    flex: '1 1 auto',
-  },
-  cardContainer: {
-  },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  cardHeader: {
-    alignItems: 'center',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.075)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingBottom: theme.spacing(2),
-    paddingTop: theme.spacing(2),
-  },
-  textField: {
-    display: 'flex',
-    flex: '1 1 auto',
-    marginRight: theme.spacing(1),
-  },
-  textFieldLabel: {},
-  title: {
-    fontWeight: 700
-  },
-  button: {
-    marginLeft: theme.spacing(2),
-  },
-  marginTop: {
-    marginTop: theme.spacing(1),
-  },
-  margin: {
-    marginRight: theme.spacing(2),
-  },
-  metric: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    borderLeft: '1px solid rgba(0, 0, 0, 0.075)',
-  }
-});
+  });
 
 interface IndexProps {
   classes: any;
@@ -196,13 +205,14 @@ interface IndexProps {
 }
 
 interface IndexState {
-  id?: number,
-  pollData: any,
-  checked: boolean,
+  id?: number;
+  pollData: any;
+  checked: boolean;
+  open: boolean;
 }
 
 class Index extends PureComponent<IndexProps, IndexState> {
-  starcoinProvider: any
+  starcoinProvider: any;
 
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
@@ -210,7 +220,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
     poll: undefined,
     pollVotes: undefined,
     accounts: [],
-    getPoll: () => { }
+    getPoll: () => {},
   };
 
   constructor(props: IndexProps) {
@@ -218,7 +228,10 @@ class Index extends PureComponent<IndexProps, IndexState> {
 
     try {
       // We must specify the network as 'any' for starcoin to allow network changes
-      this.starcoinProvider = new providers.Web3Provider(window.starcoin, 'any');
+      this.starcoinProvider = new providers.Web3Provider(
+        window.starcoin,
+        'any',
+      );
     } catch (error) {
       console.error(error);
     }
@@ -227,6 +240,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
       id: parseInt(props.match.params.id, 10),
       pollData: undefined,
       checked: true,
+      open: false,
     };
   }
 
@@ -234,9 +248,11 @@ class Index extends PureComponent<IndexProps, IndexState> {
     // this.fetchData();
     const { t, match } = this.props;
     const list = JSON.parse(t('poll.polls'));
-    const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
+    const filter = list.filter(
+      (poll: any) => poll.id === parseInt(match.params.id, 10),
+    );
     const config = filter[0];
-    getPollData(config.creator).then(data => {
+    getPollData(config.creator).then((data) => {
       if (data && data.id === config.id) {
         this.setState({ pollData: data });
       }
@@ -267,16 +283,23 @@ class Index extends PureComponent<IndexProps, IndexState> {
       }
       const BIG_NUMBER_NANO_STC_MULTIPLIER = new BigNumber('1000000000');
       const sendAmountSTC = new BigNumber(sendAmount, 10);
-      const sendAmountNanoSTC = sendAmountSTC.times(BIG_NUMBER_NANO_STC_MULTIPLIER);
+      const sendAmountNanoSTC = sendAmountSTC.times(
+        BIG_NUMBER_NANO_STC_MULTIPLIER,
+      );
       const sendAmountHex = `0x${sendAmountNanoSTC.toString(16)}`;
-      console.log({ sendAmountHex, sendAmountNanoSTC: sendAmountNanoSTC.toString(10) });
-
-      const transactionHash = await this.starcoinProvider.getSigner().sendUncheckedTransaction({
-        to: toAccount,
-        value: sendAmountHex,
-        gasLimit: 127845,
-        gasPrice: 1,
+      console.log({
+        sendAmountHex,
+        sendAmountNanoSTC: sendAmountNanoSTC.toString(10),
       });
+
+      const transactionHash = await this.starcoinProvider
+        .getSigner()
+        .sendUncheckedTransaction({
+          to: toAccount,
+          value: sendAmountHex,
+          gasLimit: 127845,
+          gasPrice: 1,
+        });
       console.log(transactionHash);
     } catch (error) {
       console.error(error);
@@ -294,22 +317,28 @@ class Index extends PureComponent<IndexProps, IndexState> {
   generateExtra() {
     const { t, classes, match } = this.props;
     const list = JSON.parse(t('poll.polls'));
-    const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
+    const filter = list.filter(
+      (poll: any) => poll.id === parseInt(match.params.id, 10),
+    );
     const config = filter[0];
     const isPollDataLoading = !this.state.pollData;
     const total = 6.8 * 1e15;
-    const yesPercent = this.state.pollData && (this.state.pollData.for_votes / total * 100).toFixed(2);
-    const noPercent = this.state.pollData && (this.state.pollData.against_votes / total * 100).toFixed(2);
+    const yesPercent =
+      this.state.pollData &&
+      ((this.state.pollData.for_votes / total) * 100).toFixed(2);
+    const noPercent =
+      this.state.pollData &&
+      ((this.state.pollData.against_votes / total) * 100).toFixed(2);
     const absYes = (get(this.state, 'pollData.for_votes', 0) / 1e9).toFixed(2);
-    const absNo = (get(this.state, 'pollData.against_votes', 0) / 1e9).toFixed(2);
+    const absNo = (get(this.state, 'pollData.against_votes', 0) / 1e9).toFixed(
+      2,
+    );
     const votes = (
       <div>
         <BorderLinearProgress
           variant="buffer"
           value={Math.min(Number(yesPercent), 100)}
-          valueBuffer={
-            Math.min(Number(noPercent) + Number(yesPercent), 100)
-          }
+          valueBuffer={Math.min(Number(noPercent) + Number(yesPercent), 100)}
         />
         <Grid container justify="center" spacing={0}>
           <Grid item className={classes.voteTextBox}>
@@ -334,7 +363,9 @@ class Index extends PureComponent<IndexProps, IndexState> {
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            <Typography variant="h5" gutterBottom>{t('poll.description')}</Typography>
+            <Typography variant="h5" gutterBottom>
+              {t('poll.description')}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.table}>
@@ -349,7 +380,9 @@ class Index extends PureComponent<IndexProps, IndexState> {
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            <Typography variant="h5" gutterBottom>{t('poll.votes')}</Typography>
+            <Typography variant="h5" gutterBottom>
+              {t('poll.votes')}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.table}>
@@ -363,8 +396,11 @@ class Index extends PureComponent<IndexProps, IndexState> {
 
   render() {
     const { poll, pollVotes, accounts, match, t, classes } = this.props;
+    const { open } = this.state;
     const list = JSON.parse(t('poll.polls'));
-    const filter = list.filter((poll: any) => poll.id === parseInt(match.params.id, 10));
+    const filter = list.filter(
+      (poll: any) => poll.id === parseInt(match.params.id, 10),
+    );
     const isInitialLoad = !filter.length && !poll;
     if (isInitialLoad) {
       return <Loading />;
@@ -375,17 +411,41 @@ class Index extends PureComponent<IndexProps, IndexState> {
       [t('poll.id'), config.id],
       [t('poll.title'), config.title],
       [t('poll.status'), config.status.replace('_', ' ')],
-      [t('poll.creator'), <CommonLink key={config.creator} path={`https://explorer.starcoin.org/main/address/${config.creator}`} title={config.creator} />],
-      [t('poll.endTime'), new Date(parseInt(config.end_time, 10)).toLocaleString()],
-      [t('poll.discussion'), <CommonLink key={config.link} path={config.link} title={config.link} />],
+      [
+        t('poll.creator'),
+        <CommonLink
+          key={config.creator}
+          path={`https://explorer.starcoin.org/main/address/${config.creator}`}
+          title={config.creator}
+        />,
+      ],
+      [
+        t('poll.endTime'),
+        new Date(parseInt(config.end_time, 10)).toLocaleString(),
+      ],
+      [
+        t('poll.discussion'),
+        <CommonLink key={config.link} path={config.link} title={config.link} />,
+      ],
     ];
     if (pollVotes) {
-      columns.push([t('poll.selectedAccount'), <CommonLink key={pollVotes.selectedAccount} path={`https://explorer.starcoin.org/main/address/${pollVotes.selectedAccount}`} title={pollVotes.selectedAccount} />]);
-      const selectedVoteLog = pollVotes.value ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(pollVotes.value)} NanoSTC) ` : t('poll.selectedNoVotes');
+      columns.push([
+        t('poll.selectedAccount'),
+        <CommonLink
+          key={pollVotes.selectedAccount}
+          path={`https://explorer.starcoin.org/main/address/${pollVotes.selectedAccount}`}
+          title={pollVotes.selectedAccount}
+        />,
+      ]);
+      const selectedVoteLog = pollVotes.value
+        ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
+            pollVotes.value,
+          )} NanoSTC) `
+        : t('poll.selectedNoVotes');
 
       columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
       if (config.status === 'in_progress' && accounts.length > 0) {
-        const agree = (
+        /* const agree = (
           <div className={classes.marginTop}>
             <Grid component="label" container alignItems="center" spacing={1}>
               <Grid item>{t('poll.no')}</Grid>
@@ -395,8 +455,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
               <Grid item>{t('poll.yes')}</Grid>
             </Grid>
           </div>
-        );
-        const selectedVote = (
+        ); */
+        /* const selectedVote = (
           <>
             <TextField
               id="standard-number"
@@ -416,20 +476,90 @@ class Index extends PureComponent<IndexProps, IndexState> {
               <Typography variant="body1" className={classes.buttonLabel}>{t('poll.vote')}</Typography>
             </Button>
           </>
+        ); */
+        /* const selectedVote = (
+          <Button
+            className={classes.button}
+            color="primary"
+            variant="contained"
+            onClick={() => this.onClickVote()}
+          >
+            <Typography variant="body1" className={classes.buttonLabel}>{t('poll.vote')}</Typography>
+          </Button>
+        ); */
+        // columns.push([agree, selectedVote]);
+        columns[columns.length - 1][1] = (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body1">{selectedVoteLog}</Typography>
+            <Button
+              className={classes.button}
+              color="primary"
+              variant="contained"
+              onClick={() => {
+                this.setState({
+                  open: true,
+                });
+              }}
+            >
+              <Typography variant="body1" className={classes.buttonLabel}>
+                {t('poll.vote')}
+              </Typography>
+            </Button>
+          </div>
         );
-        columns.push([agree, selectedVote]);
       }
     }
 
     return (
-      <PageView
-        id={config.id}
-        title={t('poll.detail')}
-        name={t('poll.detail')}
-        pluralName={t('header.polls')}
-        bodyColumns={columns}
-        extra={this.generateExtra()}
-      />
+      <>
+        <PageView
+          id={config.id}
+          title={t('poll.detail')}
+          name={t('poll.detail')}
+          pluralName={t('header.polls')}
+          bodyColumns={columns}
+          extra={this.generateExtra()}
+        />
+        <Dialog
+          disableBackdropClick
+          disableEscapeKeyDown
+          maxWidth="xs"
+          // onEntering={handleEntering}
+          aria-labelledby="confirmation-dialog-title"
+          open={open}
+          // {...other}
+        >
+          <DialogTitle id="confirmation-dialog-title">
+            <Typography variant="h5">{t('poll.vote')}</Typography>
+          </DialogTitle>
+          <DialogContent dividers>
+            <Typography variant="h1">Header</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              autoFocus
+              color="primary"
+              onClick={() => {
+                this.setState({
+                  open: false,
+                });
+              }}
+            >
+              {t('poll.cancel')}
+            </Button>
+            <Button
+              color="primary"
+              onClick={() => {
+                this.setState({
+                  open: false,
+                });
+              }}
+            >
+              {t('poll.ok')}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
     );
   }
 }

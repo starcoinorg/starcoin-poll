@@ -49,9 +49,12 @@
     "selectedAccount": "Selected Account",
     "selectedVoteLog": "Selected Vote Log",
     "selectedNoVotes": "Not vote yet",
+    "gotoVote": "Go To Vote",
     "vote": "Vote",
     "connecting": "Connecting Wallet",
     "installing": "Onboarding in progress",
+    "cancel": "Cancel",
+    "ok": "Ok",
     "": ""
   },
   "block": {
