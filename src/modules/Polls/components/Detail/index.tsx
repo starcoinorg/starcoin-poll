@@ -18,7 +18,7 @@ import PageView from '@/common/View/PageView';
 import CommonLink from '@/common/Link';
 import Markdown from '@/common/Markdown';
 import formatNumber from '@/utils/formatNumber';
-// import { toObject } from '@/utils/helper';
+import { formatBalance } from '@/utils/helper';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -35,6 +35,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Paper from '@material-ui/core/Paper';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Popover from '@material-ui/core/Popover';
+import WarningIcon from '@material-ui/icons/Warning';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { getPollData } from '@/utils/sdk';
 // import PageViewTable from '@/common/View/PageViewTable';
@@ -61,39 +62,6 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
     },
   }),
 )(LinearProgress);
-/* const AntSwitch = withStyles((theme: Theme) => createStyles({
-  root: {
-    width: 28,
-    height: 16,
-    padding: 0,
-    display: 'flex',
-  },
-  switchBase: {
-    padding: 2,
-    color: theme.palette.grey[500],
-    '&$checked': {
-      transform: 'translateX(12px)',
-      color: theme.palette.common.white,
-      '& + $track': {
-        opacity: 1,
-        backgroundColor: theme.palette.primary.main,
-        borderColor: theme.palette.primary.main,
-      },
-    },
-  },
-  thumb: {
-    width: 12,
-    height: 12,
-    boxShadow: 'none',
-  },
-  track: {
-    border: `1px solid ${theme.palette.grey[500]}`,
-    borderRadius: 16 / 2,
-    opacity: 1,
-    backgroundColor: theme.palette.common.white,
-  },
-  checked: {},
-}))(Switch); */
 
 const useStyles = (theme: Theme) =>
   createStyles({
@@ -175,85 +143,153 @@ const useStyles = (theme: Theme) =>
       cardContainer: {
         marginBottom: theme.spacing(1),
       },
-      cardHeader: {
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
+      shrinkMaxCol: {
+        flex: '1 100 auto',
+        minWidth: 60,
       },
-      metric: {
-        paddingLeft: theme.spacing(2),
+      shrinkCol: {
+        flex: '1 10 auto',
       },
-      voteActionsContent: {
-        width: 200,
+      voteTextBox: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        borderRight: `1px solid ${theme.palette.grey[300]}`,
+        width: '50%',
+        padding: theme.spacing(1),
+        '&:first-child': {
+          color: theme.palette.primary.main,
+        },
+        '&:last-child': {
+          border: 'none',
+          color: theme.palette.secondary.light,
+        },
       },
-    },
-    [theme.breakpoints.up('sm')]: {
-      cardContainer: {
-        marginBottom: theme.spacing(2),
-      },
-      cardHeader: {
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
-      },
-      metric: {
-        paddingLeft: theme.spacing(4),
-      },
-      voteActionsContent: {
-        width: 400,
-      },
-    },
-    [theme.breakpoints.down('md')]: {
-      textFieldLabel: {
-        fontSize: '0.75em',
-      },
-    },
-    [theme.breakpoints.up('md')]: {
-      textFieldLabel: {
-        fontSize: '1em',
+      flexZoomBox: {
+        flex: '1',
       },
       voteActionsContent: {
         width: 600,
       },
-    },
-    root: {
-      alignItems: 'center',
-      display: 'flex',
-      flex: '1 1 auto',
-    },
-    cardContainer: {},
-    card: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    cardHeader: {
-      alignItems: 'center',
-      borderBottom: '1px solid rgba(0, 0, 0, 0.075)',
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingBottom: theme.spacing(2),
-      paddingTop: theme.spacing(2),
-    },
-    textField: {
-      display: 'flex',
-      flex: '1 1 auto',
-      marginRight: theme.spacing(1),
-    },
-    textFieldLabel: {},
-    title: {
-      fontWeight: 700,
-    },
-    button: {
-      marginLeft: theme.spacing(2),
-    },
-    marginTop: {
-      marginTop: theme.spacing(1),
-    },
-    margin: {
-      marginRight: theme.spacing(2),
-    },
-    metric: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-      borderLeft: '1px solid rgba(0, 0, 0, 0.075)',
+      voteActions: {
+        border: '2px solid red',
+        height: 80,
+        textTransform: 'uppercase',
+        cursor: 'pointer',
+        lineHeight: '80px',
+        width: '100%',
+        textAlign: 'center',
+        opacity: '0.25',
+        borderRadius: '4px',
+        transition: 'opacity .3s ease-out',
+        userSelect: 'none',
+        '&:hover': {
+          opacity: 1,
+        },
+      },
+      voteActionsActive: {
+        opacity: '1',
+      },
+      voteActionsYes: {
+        borderColor: theme.palette.primary.main,
+        color: theme.palette.primary.main,
+      },
+      voteActionsNo: {
+        borderColor: theme.palette.secondary.light,
+        color: theme.palette.secondary.light,
+      },
+      voteFeeBox: {
+        padding: theme.spacing(2),
+        height: theme.spacing(4),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      },
+      voteFeeIcon: {
+        paddingTop: 4,
+        marginLeft: 2,
+        fontSize: '1em',
+      },
+      voteFeePop: {
+        padding: theme.spacing(1),
+      },
+      [theme.breakpoints.down('sm')]: {
+        cardContainer: {
+          marginBottom: theme.spacing(1),
+        },
+        cardHeader: {
+          paddingLeft: theme.spacing(1),
+          paddingRight: theme.spacing(1),
+        },
+        metric: {
+          paddingLeft: theme.spacing(2),
+        },
+        voteActionsContent: {
+          width: 200,
+        },
+      },
+      [theme.breakpoints.up('sm')]: {
+        cardContainer: {
+          marginBottom: theme.spacing(2),
+        },
+        cardHeader: {
+          paddingLeft: theme.spacing(2),
+          paddingRight: theme.spacing(2),
+        },
+        metric: {
+          paddingLeft: theme.spacing(4),
+        },
+        voteActionsContent: {
+          width: 400,
+        },
+      },
+      [theme.breakpoints.down('md')]: {
+        textFieldLabel: {
+          fontSize: '0.75em',
+        },
+      },
+      [theme.breakpoints.up('md')]: {
+        textFieldLabel: {
+          fontSize: '1em',
+        },
+        voteActionsContent: {
+          width: 600,
+        },
+      },
+      root: {
+        alignItems: 'center',
+        display: 'flex',
+        flex: '1 1 auto',
+      },
+      card: {
+        display: 'flex',
+        flexDirection: 'column',
+      },
+      cardHeader: {
+        alignItems: 'center',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.075)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        paddingBottom: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+      },
+      textField: {
+        display: 'flex',
+        flex: '1 1 auto',
+        marginRight: theme.spacing(1),
+      },
+      textFieldLabel: {},
+      title: {
+        fontWeight: 700,
+      },
+      button: {
+        marginLeft: theme.spacing(2),
+      },
+      metric: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+        borderLeft: '1px solid rgba(0, 0, 0, 0.075)',
+      },
     },
   });
 
@@ -395,10 +431,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
     const noPercent =
       this.state.pollData &&
       ((this.state.pollData.against_votes / total) * 100).toFixed(2);
-    const absYes = (get(this.state, 'pollData.for_votes', 0) / 1e9).toFixed(2);
-    const absNo = (get(this.state, 'pollData.against_votes', 0) / 1e9).toFixed(
-      2,
-    );
+    const absYes = formatBalance(get(this.state, 'pollData.for_votes', 0));
+    const absNo = formatBalance(get(this.state, 'pollData.against_votes', 0));
     const votes = (
       <div>
         <BorderLinearProgress
@@ -406,7 +440,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
           value={Math.min(Number(yesPercent), 100)}
           valueBuffer={Math.min(Number(noPercent) + Number(yesPercent), 100)}
         />
-        <Grid container justify="center" alignItems="stretch" spacing={0}>
+        <Grid container justify="center" spacing={0}>
           <Grid item className={classes.voteTextBox}>
             <Typography variant="h6">{t('poll.yes')}</Typography>
             <Typography variant="h6">{yesPercent}%</Typography>
@@ -511,49 +545,6 @@ class Index extends PureComponent<IndexProps, IndexState> {
 
       columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
       if (config.status === 'in_progress' && accounts.length > 0) {
-        /* const agree = (
-          <div className={classes.marginTop}>
-            <Grid component="label" container alignItems="center" spacing={1}>
-              <Grid item>{t('poll.no')}</Grid>
-              <Grid item>
-                <AntSwitch checked={this.state.checked} onChange={() => this.handleChange()} name="checked" />
-              </Grid>
-              <Grid item>{t('poll.yes')}</Grid>
-            </Grid>
-          </div>
-        ); */
-        /* const selectedVote = (
-          <>
-            <TextField
-              id="standard-number"
-              label="NanoSTC"
-              type="number"
-              defaultValue="10000"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <Button
-              className={classNames(classes.button, classes.marginTop)}
-              color="primary"
-              variant="contained"
-              onClick={() => this.onClickVote()}
-            >
-              <Typography variant="body1" className={classes.buttonLabel}>{t('poll.vote')}</Typography>
-            </Button>
-          </>
-        ); */
-        /* const selectedVote = (
-          <Button
-            className={classes.button}
-            color="primary"
-            variant="contained"
-            onClick={() => this.onClickVote()}
-          >
-            <Typography variant="body1" className={classes.buttonLabel}>{t('poll.vote')}</Typography>
-          </Button>
-        ); */
-        // columns.push([agree, selectedVote]);
         columns[columns.length - 1][1] = (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Typography variant="body1">{selectedVoteLog}</Typography>
@@ -712,6 +703,22 @@ class Index extends PureComponent<IndexProps, IndexState> {
                     </Typography>
                   </Grid>
                 </Paper>
+              </Grid>
+              <Grid item style={{ width: '100%' }}>
+                <div>
+                  <Grid container alignItems="flex-start" wrap="nowrap" spacing={1}>
+                    <Grid item>
+                      <WarningIcon color="error" fontSize="small" />
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="subtitle2" color="textSecondary">
+                        Vote cannot be changed after submission. Staked MIR used
+                        to vote in polls are locked and cannot be withdrawn
+                        until the poll finishes.
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </div>
               </Grid>
             </Grid>
           </DialogContent>

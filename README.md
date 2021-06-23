@@ -16,11 +16,10 @@ Version 4.1.3
 6.4.1
 
 
-`$npx create-react-app  starcoin-explorer  --template typescript`
+`$npx create-react-app  starcoin-poll  --template typescript`
 
 ## Set Environment Variables
 ```
-export REACT_APP_STARCOIN_API_URL=<starcoin-explorer-api-url>
 export REACT_APP_STARCOIN_NETWORKS=<available-networks>
 ```
 
@@ -28,8 +27,8 @@ export REACT_APP_STARCOIN_NETWORKS=<available-networks>
 
 > check for updates first if needed
 >
->`$git clone git@github.com:starcoinorg/starcoin-explorer.git`\
->`$cd starcoin-explorer`\
+>`$git clone git@github.com:starcoinorg/starcoin-poll.git`\
+>`$cd starcoin-poll`\
 >`$npm install`
 
 `$yarn start`
