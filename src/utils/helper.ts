@@ -28,7 +28,7 @@ export function isHex(num: string) {
 
 export function formatBalance(num: string | number) {
   const value = new BigNumber(num);
-  const convertedValue = value.div(1000000000).toFixed(2);
+  const convertedValue = value.div(1000000000).toFixed(4);
   return convertedValue;
 }
 
