@@ -16,7 +16,7 @@ import PageView from '@/common/View/PageView';
 import CommonLink from '@/common/Link';
 import Markdown from '@/common/Markdown';
 import formatNumber from '@/utils/formatNumber';
-// import { toObject } from '@/utils/helper';
+import { formatBalance } from '@/utils/helper';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -300,8 +300,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
     const total = 6.8 * 1e15;
     const yesPercent = this.state.pollData && (this.state.pollData.for_votes / total * 100).toFixed(2);
     const noPercent = this.state.pollData && (this.state.pollData.against_votes / total * 100).toFixed(2);
-    const absYes = (get(this.state, 'pollData.for_votes', 0) / 1e9).toFixed(2);
-    const absNo = (get(this.state, 'pollData.against_votes', 0) / 1e9).toFixed(2);
+    const absYes = formatBalance(get(this.state, 'pollData.for_votes', 0));
+    const absNo = formatBalance(get(this.state, 'pollData.against_votes', 0));
     const votes = (
       <div>
         <BorderLinearProgress
