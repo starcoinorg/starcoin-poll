@@ -55,6 +55,9 @@
     "installing": "正在安装钱包...",
     "cancel": "取消",
     "ok": "确认",
+    "number": "数字",
+    "txFee": "感谢费",
+    "feeTips": "本次交易产生的费用",
     "": ""
   },
   "block": {

@@ -55,6 +55,9 @@
     "installing": "Onboarding in progress",
     "cancel": "Cancel",
     "ok": "Ok",
+    "number": "Number",
+    "txFee": "Tx Fee",
+    "feeTips": "Fee paid to execute this transaction",
     "": ""
   },
   "block": {

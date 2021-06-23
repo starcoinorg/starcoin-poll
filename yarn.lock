@@ -1459,6 +1459,12 @@
     csstype "^2.5.2"
     prop-types "^15.7.2"
 
+"@material-ui/types@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.nlark.com/@material-ui/types/download/@material-ui/types-4.1.1.tgz#b65e002d926089970a3271213a3ad7a21b17f02b"
+  dependencies:
+    "@types/react" "*"
+
 "@material-ui/types@^5.1.0":
   version "5.1.0"
   resolved "https://registry.npm.taobao.org/@material-ui/types/download/@material-ui/types-5.1.0.tgz?cache=0&sync_timestamp=1608571210219&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40material-ui%2Ftypes%2Fdownload%2F%40material-ui%2Ftypes-5.1.0.tgz"
@@ -6994,6 +7000,15 @@ markdown-it@^12.0.4:
     linkify-it "^3.0.1"
     mdurl "^1.0.1"
     uc.micro "^1.0.5"
+
+material-ui-popup-state@^1.8.3:
+  version "1.8.3"
+  resolved "https://registry.nlark.com/material-ui-popup-state/download/material-ui-popup-state-1.8.3.tgz#1e263682659c6b39af38c68c21ce4f316f2bb56e"
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@material-ui/types" "^4.1.1"
+    classnames "^2.2.6"
+    prop-types "^15.7.2"
 
 md5.js@^1.3.4:
   version "1.3.5"

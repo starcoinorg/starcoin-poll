@@ -2,7 +2,7 @@
 /* eslint-disable implicit-arrow-linebreak */
 import React, { PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
-// import classNames from 'classnames';
+import classnames from 'classnames';
 import BigNumber from 'bignumber.js';
 import { providers } from '@starcoin/starcoin';
 import get from 'lodash/get';
@@ -30,6 +30,12 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Paper from '@material-ui/core/Paper';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import Popover from '@material-ui/core/Popover';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { getPollData } from '@/utils/sdk';
 // import PageViewTable from '@/common/View/PageViewTable';
 // import EventViewTable from '@/common/View/EventViewTable';
@@ -117,6 +123,54 @@ const useStyles = (theme: Theme) =>
         color: theme.palette.secondary.light,
       },
     },
+    flexZoomBox: {
+      flex: '1',
+    },
+    voteActionsContent: {
+      width: 600,
+    },
+    voteActions: {
+      border: '2px solid red',
+      height: 80,
+      textTransform: 'uppercase',
+      cursor: 'pointer',
+      lineHeight: '80px',
+      width: '100%',
+      textAlign: 'center',
+      opacity: '0.25',
+      borderRadius: '4px',
+      transition: 'opacity .3s ease-out',
+      userSelect: 'none',
+      '&:hover': {
+        opacity: 1,
+      },
+    },
+    voteActionsActive: {
+      opacity: '1',
+    },
+    voteActionsYes: {
+      borderColor: theme.palette.primary.main,
+      color: theme.palette.primary.main,
+    },
+    voteActionsNo: {
+      borderColor: theme.palette.secondary.light,
+      color: theme.palette.secondary.light,
+    },
+    voteFeeBox: {
+      padding: theme.spacing(2),
+      height: theme.spacing(4),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    voteFeeIcon: {
+      paddingTop: 4,
+      marginLeft: 2,
+      fontSize: '1em',
+    },
+    voteFeePop: {
+      padding: theme.spacing(1),
+    },
     [theme.breakpoints.down('sm')]: {
       cardContainer: {
         marginBottom: theme.spacing(1),
@@ -127,6 +181,9 @@ const useStyles = (theme: Theme) =>
       },
       metric: {
         paddingLeft: theme.spacing(2),
+      },
+      voteActionsContent: {
+        width: 200,
       },
     },
     [theme.breakpoints.up('sm')]: {
@@ -140,6 +197,9 @@ const useStyles = (theme: Theme) =>
       metric: {
         paddingLeft: theme.spacing(4),
       },
+      voteActionsContent: {
+        width: 400,
+      },
     },
     [theme.breakpoints.down('md')]: {
       textFieldLabel: {
@@ -149,6 +209,9 @@ const useStyles = (theme: Theme) =>
     [theme.breakpoints.up('md')]: {
       textFieldLabel: {
         fontSize: '1em',
+      },
+      voteActionsContent: {
+        width: 600,
       },
     },
     root: {
@@ -209,7 +272,10 @@ interface IndexState {
   pollData: any;
   checked: boolean;
   open: boolean;
+  sendAmount: string | number;
 }
+
+let startToVerify: boolean = false;
 
 class Index extends PureComponent<IndexProps, IndexState> {
   starcoinProvider: any;
@@ -241,6 +307,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
       pollData: undefined,
       checked: true,
       open: false,
+      sendAmount: '',
     };
   }
 
@@ -259,13 +326,13 @@ class Index extends PureComponent<IndexProps, IndexState> {
     });
   }
 
-  handleChange() {
-    const value = this.state.checked;
-    this.setState({ checked: !value });
-  }
+  handleCheck = (value: boolean) => {
+    this.setState({ checked: value });
+  };
 
   async onClickVote() {
     try {
+      const { sendAmount } = this.state;
       console.log('onClickVote', this.state);
       const toAccount = this.state.pollData && this.state.pollData.proposer;
       console.log({ toAccount });
@@ -275,8 +342,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
         return false;
       }
 
-      const sendAmount = 0.001;
-      if (!(sendAmount > 0)) {
+      if (!((sendAmount as number) > 0)) {
         // eslint-disable-next-line no-alert
         window.alert('Invalid sendAmount: should be a number!');
         return false;
@@ -340,7 +406,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
           value={Math.min(Number(yesPercent), 100)}
           valueBuffer={Math.min(Number(noPercent) + Number(yesPercent), 100)}
         />
-        <Grid container justify="center" spacing={0}>
+        <Grid container justify="center" alignItems="stretch" spacing={0}>
           <Grid item className={classes.voteTextBox}>
             <Typography variant="h6">{t('poll.yes')}</Typography>
             <Typography variant="h6">{yesPercent}%</Typography>
@@ -396,7 +462,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
 
   render() {
     const { poll, pollVotes, accounts, match, t, classes } = this.props;
-    const { open } = this.state;
+    const { open, checked, sendAmount } = this.state;
     const list = JSON.parse(t('poll.polls'));
     const filter = list.filter(
       (poll: any) => poll.id === parseInt(match.params.id, 10),
@@ -496,6 +562,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
               color="primary"
               variant="contained"
               onClick={() => {
+                startToVerify = false;
                 this.setState({
                   open: true,
                 });
@@ -523,17 +590,130 @@ class Index extends PureComponent<IndexProps, IndexState> {
         <Dialog
           disableBackdropClick
           disableEscapeKeyDown
-          maxWidth="xs"
+          maxWidth="lg"
           // onEntering={handleEntering}
           aria-labelledby="confirmation-dialog-title"
-          open={open}
+          // open={open}
+          open
           // {...other}
         >
           <DialogTitle id="confirmation-dialog-title">
             <Typography variant="h5">{t('poll.vote')}</Typography>
           </DialogTitle>
-          <DialogContent dividers>
-            <Typography variant="h1">Header</Typography>
+          <DialogContent dividers className={classes.voteActionsContent}>
+            <Grid container direction="column" alignItems="center" spacing={3}>
+              <Grid item container justify="center" spacing={3}>
+                <Grid item className={classes.flexZoomBox}>
+                  <Typography
+                    className={classnames(
+                      classes.voteActions,
+                      classes.voteActionsYes,
+                      {
+                        [classes.voteActionsActive]: checked,
+                      },
+                    )}
+                    onClick={() => {
+                      this.handleCheck(true);
+                    }}
+                  >
+                    {t('poll.yes')}
+                  </Typography>
+                </Grid>
+                <Grid item className={classes.flexZoomBox}>
+                  <div
+                    className={classnames(
+                      classes.voteActions,
+                      classes.voteActionsNo,
+                      {
+                        [classes.voteActionsActive]: !checked,
+                      },
+                    )}
+                    onClick={this.handleCheck.bind(this, false)}
+                  >
+                    {t('poll.no')}
+                  </div>
+                </Grid>
+              </Grid>
+              <Grid item style={{ width: '100%' }}>
+                <TextField
+                  id="outlined-number"
+                  label={t('poll.number')}
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  required
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="start">STC</InputAdornment>
+                    ),
+                  }}
+                  fullWidth
+                  variant="outlined"
+                  placeholder="0.0000"
+                  value={sendAmount}
+                  onChange={(e) => {
+                    startToVerify = true;
+                    this.setState({
+                      sendAmount: e.target.value,
+                    });
+                  }}
+                  error={!sendAmount && startToVerify}
+                  helperText={
+                    !sendAmount && startToVerify ? '请输入' : undefined
+                  }
+                />
+              </Grid>
+              <Grid item style={{ width: '100%' }}>
+                <Paper elevation={3} className={classes.voteFeeBox}>
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <Typography variant="subtitle2" color="textSecondary">
+                        {t('poll.txFee')}
+                      </Typography>
+                    </Grid>
+                    <Grid item alignItems="center">
+                      <PopupState
+                        variant="popover"
+                        popupId="demo-popup-popover"
+                      >
+                        {(popupState) => (
+                          <div>
+                            <HelpOutlineIcon
+                              color="action"
+                              fontSize="small"
+                              className={classes.voteFeeIcon}
+                              {...bindTrigger(popupState)}
+                            />
+                            <Popover
+                              {...bindPopover(popupState)}
+                              classes={{
+                                paper: classes.voteFeePop,
+                              }}
+                              anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                              }}
+                              transformOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                              }}
+                            >
+                              <Typography>{t('poll.feeTips')}</Typography>
+                            </Popover>
+                          </div>
+                        )}
+                      </PopupState>
+                    </Grid>
+                  </Grid>
+                  <Grid item>
+                    <Typography noWrap variant="subtitle2">
+                      0.1 UST
+                    </Typography>
+                  </Grid>
+                </Paper>
+              </Grid>
+            </Grid>
           </DialogContent>
           <DialogActions>
             <Button
