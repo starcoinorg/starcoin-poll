@@ -142,12 +142,12 @@ class Index extends PureComponent<Props, IndexState> {
           <Typography className={classes.text} variant="body2">
             id: {id}
           </Typography>
-          <Typography className={classes.text} variant="body2">
+          {/* <Typography className={classes.text} variant="body2">
             yes: {for_votes}
           </Typography>
           <Typography className={classes.text} variant="body2">
             no: {against_votes}
-          </Typography>
+          </Typography> */}
           <Typography className={classes.text} variant="body2">
             status: {status}
           </Typography>
