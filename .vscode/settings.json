@@ -1,0 +1,8 @@
+{
+    // Defines space handling after opening and before closing non empty braces. Requires TypeScript >= 2.3.0.
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+    // Defines space handling after opening and before closing template string braces. Requires TypeScript >= 2.0.6.
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
+    // Defines space handling after opening and before closing JSX expression braces. Requires TypeScript >= 2.0.6.
+    // "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": false,
+}
