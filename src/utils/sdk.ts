@@ -68,3 +68,16 @@ export async function getPollAccountVotes(hash: string) {
     return false;
   }
 }
+
+export async function getTreasuryBalance(hash: string) {
+  try {
+    const result = await provider.call({
+      function_id: '0x1::Treasury::balance',
+      type_args: ['0x1::STC::STC'],
+      args: [],
+    });
+    return result;
+  } catch (error: any) {
+    return false;
+  }
+}
