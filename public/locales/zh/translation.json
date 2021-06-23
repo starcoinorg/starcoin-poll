@@ -49,9 +49,16 @@
     "selectedAccount": "当前帐号",
     "selectedVoteLog": "投票记录",
     "selectedNoVotes": "暂无投票",
+    "gotoVote": "点击投票",
     "vote": "投票",
     "connecting": "正在连接钱包...",
     "installing": "正在安装钱包...",
+    "cancel": "取消",
+    "ok": "确认",
+    "number": "数字",
+    "txFee": "感谢费",
+    "feeTips": "本次交易产生的费用",
+    "warning": "提交投票之后不能修改，用于投票的 STC 必须等到投票结束之后才能取出。",
     "": ""
   },
   "block": {

@@ -42,7 +42,7 @@ interface InternalProps {
 
 interface Props extends ExternalProps, InternalProps {}
 
-class Index extends React.PureComponent<Props> {
+class CenteredView extends React.PureComponent<Props> {
   render() {
     const { children, className, classes } = this.props;
     return (
@@ -60,4 +60,4 @@ class Index extends React.PureComponent<Props> {
   }
 }
 
-export default withStyles(useStyles)(Index);
+export default withStyles(useStyles)(CenteredView);

@@ -49,9 +49,16 @@
     "selectedAccount": "Selected Account",
     "selectedVoteLog": "Selected Vote Log",
     "selectedNoVotes": "Not vote yet",
+    "gotoVote": "Go To Vote",
     "vote": "Vote",
     "connecting": "Connecting Wallet",
     "installing": "Onboarding in progress",
+    "cancel": "Cancel",
+    "ok": "Ok",
+    "number": "Number",
+    "txFee": "Tx Fee",
+    "feeTips": "Fee paid to execute this transaction",
+    "warning": "Vote cannot be changed after submission. Staked STC used to vote in polls are locked and cannot be withdrawn until the poll finishes.",
     "": ""
   },
   "block": {
