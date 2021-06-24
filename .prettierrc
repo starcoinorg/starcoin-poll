@@ -9,5 +9,6 @@
     }
   ],
   "semi": true,
-  "tabWidth": 2
+  "tabWidth": 2,
+  "bracketSpacing": true
 }

@@ -51,6 +51,7 @@
     "selectedNoVotes": "Not vote yet",
     "gotoVote": "Go To Vote",
     "vote": "Vote",
+    "voted": "Voted",
     "connecting": "Connecting Wallet",
     "installing": "Onboarding in progress",
     "cancel": "Cancel",
