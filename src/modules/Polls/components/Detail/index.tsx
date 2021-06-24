@@ -7,14 +7,9 @@ import { withTranslation } from 'react-i18next';
 import classnames from 'classnames';
 import BigNumber from 'bignumber.js';
 import get from 'lodash/get';
-// import { onchain_events } from '@starcoin/starcoin';
 import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
-// import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
-// import TextField from '@material-ui/core/TextField';
-// import Switch from '@material-ui/core/Switch';
 import Loading from '@/common/Loading';
-// import TransactionTable from '@/Transactions/components/Table';
 import PageView from '@/common/View/PageView';
 import CommonLink from '@/common/Link';
 import Markdown from '@/common/Markdown';
@@ -25,7 +20,6 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -33,38 +27,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
-// import Paper from '@material-ui/core/Paper';
-// import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-// import Popover from '@material-ui/core/Popover';
-// import WarningIcon from '@material-ui/icons/Warning';
-// import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { getPollData } from '@/utils/sdk';
 import { arrayify, hexlify } from '@ethersproject/bytes';
 import { providers, utils, bcs } from '@starcoin/starcoin';
-// import PageViewTable from '@/common/View/PageViewTable';
-// import EventViewTable from '@/common/View/EventViewTable';
-
-const BorderLinearProgress = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      height: 10,
-      borderRadius: 5,
-    },
-    dashedColorPrimary: {
-      backgroundColor:
-        theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
-      backgroundImage: 'none',
-      animation: 'none',
-    },
-    bar: {
-      borderRadius: 5,
-      backgroundColor: '#3f51b5',
-    },
-    bar2Buffer: {
-      backgroundColor: 'red',
-    },
-  }),
-)(LinearProgress);
+import BorderLinearProgress from '../BorderLinearProgress';
 
 const useStyles = (theme: Theme) =>
   createStyles({
@@ -413,10 +379,16 @@ class Index extends PureComponent<IndexProps, IndexState> {
     const total = 3016964389717900000;
     const yesPercent =
       this.state.pollData &&
-      ((this.state.pollData.for_votes / total) * 100).toFixed(2);
+      new BigNumber(this.state.pollData.for_votes)
+        .div(total)
+        .times(100)
+        .toFixed(2);
     const noPercent =
       this.state.pollData &&
-      ((this.state.pollData.against_votes / total) * 100).toFixed(2);
+      new BigNumber(this.state.pollData.against_votes)
+        .div(total)
+        .times(100)
+        .toFixed(2);
     const absYes = formatBalance(get(this.state, 'pollData.for_votes', 0));
     const absNo = formatBalance(get(this.state, 'pollData.against_votes', 0));
     const votes = (
@@ -526,8 +498,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
       ]);
       const selectedVoteLog = pollVotes.value
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
-          pollVotes.value,
-        )} NanoSTC) `
+            pollVotes.value,
+          )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
       columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
@@ -639,76 +611,6 @@ class Index extends PureComponent<IndexProps, IndexState> {
                   }
                 />
               </Grid>
-              {/* <Grid item style={{ width: '100%' }}>
-                <Paper elevation={3} className={classes.voteFeeBox}>
-                  <Grid container alignItems="center">
-                    <Grid item>
-                      <Typography variant="subtitle2" color="textSecondary">
-                        {t('poll.txFee')}
-                      </Typography>
-                    </Grid>
-                    <Grid item alignItems="center">
-                      <PopupState
-                        variant="popover"
-                        popupId="demo-popup-popover"
-                      >
-                        {(popupState) => (
-                          <div>
-                            <HelpOutlineIcon
-                              color="action"
-                              fontSize="small"
-                              className={classes.voteFeeIcon}
-                              {...bindTrigger(popupState)}
-                            />
-                            <Popover
-                              {...bindPopover(popupState)}
-                              classes={{
-                                paper: classes.voteFeePop,
-                              }}
-                              anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                              }}
-                              transformOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                              }}
-                            >
-                              <Typography>{t('poll.feeTips')}</Typography>
-                            </Popover>
-                          </div>
-                        )}
-                      </PopupState>
-                    </Grid>
-                  </Grid>
-                  <Grid item>
-                    <Typography noWrap variant="subtitle2">
-                      0.1 UST
-                    </Typography>
-                  </Grid>
-                </Paper>
-              </Grid>
-              <Grid item style={{ width: '100%' }}>
-                <div>
-                  <Grid
-                    container
-                    alignItems="flex-start"
-                    wrap="nowrap"
-                    spacing={1}
-                  >
-                    <Grid item>
-                      <WarningIcon color="error" fontSize="small" />
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="subtitle2" color="textSecondary">
-                        Vote cannot be changed after submission. Staked MIR used
-                        to vote in polls are locked and cannot be withdrawn
-                        until the poll finishes.
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </div>
-              </Grid> */}
             </Grid>
           </DialogContent>
           <DialogActions>
@@ -742,19 +644,3 @@ class Index extends PureComponent<IndexProps, IndexState> {
 }
 
 export default withStyles(useStyles)(withTranslation()(Index));
-
-/**
- * {
-                "code": "0x1::DaoVoteScripts::cast_vote",
-                "type_args": [
-                    "0x1::STC::STC",
-                    "0x1::UpgradeModuleDaoProposal::UpgradeModuleV2"
-                ],
-                "args": [
-                    "0xb2aa52f94db4516c5beecef363af850a",
-                    "0u64",
-                    "true",
-                    "10000000u128"
-                ]
-            }
- */
