@@ -33,22 +33,14 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import Paper from '@material-ui/core/Paper';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import Popover from '@material-ui/core/Popover';
-import WarningIcon from '@material-ui/icons/Warning';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+// import Paper from '@material-ui/core/Paper';
+// import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+// import Popover from '@material-ui/core/Popover';
+// import WarningIcon from '@material-ui/icons/Warning';
+// import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { getPollData } from '@/utils/sdk';
 import { arrayify, hexlify } from '@ethersproject/bytes';
-import {
-  providers,
-  utils,
-  bcs,
-  encoding,
-  types,
-  starcoin_types,
-} from '@starcoin/starcoin';
-
+import { providers, utils, bcs } from '@starcoin/starcoin';
 // import PageViewTable from '@/common/View/PageViewTable';
 // import EventViewTable from '@/common/View/EventViewTable';
 
@@ -270,7 +262,6 @@ class Index extends PureComponent<IndexProps, IndexState> {
     poll: undefined,
     pollVotes: undefined,
     accounts: [],
-    getPoll: () => {},
   };
 
   constructor(props: IndexProps) {
@@ -296,14 +287,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
   }
 
   componentDidMount() {
-    // this.fetchData();
-    const { t, match } = this.props;
-    const list = JSON.parse(t('poll.polls'));
-    const filter = list.filter(
-      (poll: any) => poll.id === parseInt(match.params.id, 10),
-    );
-    const config = filter[0];
-    getPollData(config.creator).then((data) => {
+    const config = this.getConfig();
+    getPollData(config.creator, config.type_args_1).then((data) => {
       if (data && data.id === config.id) {
         this.setState({ pollData: data });
       }
@@ -316,8 +301,27 @@ class Index extends PureComponent<IndexProps, IndexState> {
 
   async onClickVote() {
     try {
+      const config = this.getConfig();
       const { checked, sendAmount } = this.state;
       const functionId = '0x1::DaoVoteScripts::cast_vote';
+      const arr = config.type_args_1.split('<');
+      const arr1 = arr[0].split('::');
+      const arr2 = arr[1] ? arr[1].replace('>', '').split(',') : [];
+      const type_params: any[] = [];
+      if (arr2.length) {
+        arr2.forEach((obj: string) => {
+          const arr4 = obj.split('::');
+          type_params.push({
+            Struct: {
+              address: arr4[0],
+              module: arr4[1],
+              name: arr4[2],
+              type_params: [],
+            },
+          });
+        });
+      }
+
       const tyArgs = [
         {
           Struct: {
@@ -329,19 +333,17 @@ class Index extends PureComponent<IndexProps, IndexState> {
         },
         {
           Struct: {
-            address: '0x1',
-            module: 'UpgradeModuleDaoProposal',
-            name: 'UpgradeModuleV2',
-            type_params: [],
+            address: arr1[0],
+            module: arr1[1],
+            name: arr1[2],
+            type_params,
           },
         },
       ];
-
-      const proposerAdressHex = '0xb2aa52f94db4516c5beecef363af850a';
-      const proposalId = 0;
+      const proposerAdressHex = config.creator;
+      const proposalId = config.id;
       const agree = checked; // yes: true; no: false
       const votes = new BigNumber(sendAmount).times('1000000000'); // sendAmount * 1e9
-      console.log('vote: ', votes.toString());
 
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
       const proposalIdSCSHex = (function () {
@@ -349,21 +351,18 @@ class Index extends PureComponent<IndexProps, IndexState> {
         se.serializeU64(proposalId);
         return hexlify(se.getBytes());
       })();
-
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
       const agreeSCSHex = (function () {
         const se = new bcs.BcsSerializer();
         se.serializeBool(agree);
         return hexlify(se.getBytes());
       })();
-
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
       const votesSCSHex = (function () {
         const se = new bcs.BcsSerializer();
         se.serializeU128(new BigNumber(votes).toNumber());
         return hexlify(se.getBytes());
       })();
-
       const args = [
         arrayify(proposerAdressHex),
         arrayify(proposalIdSCSHex),
@@ -371,33 +370,16 @@ class Index extends PureComponent<IndexProps, IndexState> {
         arrayify(votesSCSHex),
       ];
 
-      console.log('onClickVote', this.state);
-      const toAccount = this.state.pollData && this.state.pollData.proposer;
-      console.log({ toAccount });
-      if (!toAccount) {
-        // eslint-disable-next-line no-alert
-        window.alert('Invalid To: can not be empty!');
-        return false;
-      }
-
-      if (!((sendAmount as number) > 0)) {
-        // eslint-disable-next-line no-alert
-        window.alert('Invalid sendAmount: should be a number!');
-        return false;
-      }
-
       const scriptFunction = utils.tx.encodeScriptFunction(
         functionId,
         tyArgs,
         args,
       );
-      console.log('scriptFunction: ', scriptFunction);
       const payloadInHex = (function () {
         const se = new bcs.BcsSerializer();
         scriptFunction.serialize(se);
         return hexlify(se.getBytes());
       })();
-      console.log({ payloadInHex });
 
       const transactionHash = await this.starcoinProvider
         .getSigner()
@@ -413,22 +395,22 @@ class Index extends PureComponent<IndexProps, IndexState> {
     return false;
   }
 
-  fetchData() {
-    const id = this.state.id;
-    if (id) {
-      this.props.getPoll({ id });
-    }
-  }
-
-  generateExtra() {
-    const { t, classes, match } = this.props;
+  getConfig() {
+    const { t, match } = this.props;
     const list = JSON.parse(t('poll.polls'));
     const filter = list.filter(
       (poll: any) => poll.id === parseInt(match.params.id, 10),
     );
     const config = filter[0];
+    return config;
+  }
+
+  generateExtra() {
+    const { t, classes } = this.props;
+    const config = this.getConfig();
+
     const isPollDataLoading = !this.state.pollData;
-    const total = 6.8 * 1e15;
+    const total = 3016964389717900000;
     const yesPercent =
       this.state.pollData &&
       ((this.state.pollData.for_votes / total) * 100).toFixed(2);
@@ -511,6 +493,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
     }
 
     const config = filter[0];
+
     const columns = [
       [t('poll.id'), config.id],
       [t('poll.title'), config.title],
@@ -543,8 +526,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
       ]);
       const selectedVoteLog = pollVotes.value
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
-            pollVotes.value,
-          )} NanoSTC) `
+          pollVotes.value,
+        )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
       columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
@@ -589,7 +572,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
           aria-labelledby="confirmation-dialog-title"
           open={open}
         >
-          <DialogTitle id="confirmation-dialog-title">
+          <DialogTitle id="confirmation-dialog-title" disableTypography>
             <Typography variant="h5">{t('poll.vote')}</Typography>
           </DialogTitle>
           <DialogContent dividers className={classes.voteActionsContent}>
@@ -646,7 +629,6 @@ class Index extends PureComponent<IndexProps, IndexState> {
                   value={sendAmount}
                   onChange={(e) => {
                     startToVerify = true;
-                    console.log('value: ', e.target.value);
                     this.setState({
                       sendAmount: e.target.value,
                     });

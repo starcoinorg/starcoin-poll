@@ -50,9 +50,9 @@ export async function getEpochData() {
   }
 }
 
-export async function getPollData(hash: string) {
+export async function getPollData(hash: string, type_args_1: string) {
   try {
-    const result = await provider.getResource(hash, '0x1::Dao::Proposal<0x1::STC::STC,0x1::UpgradeModuleDaoProposal::UpgradeModuleV2>');
+    const result = await provider.getResource(hash, `0x1::Dao::Proposal<0x1::STC::STC,${type_args_1}>`);
     return result;
   } catch (error: any) {
     return false;
@@ -63,6 +63,19 @@ export async function getPollData(hash: string) {
 export async function getPollAccountVotes(hash: string) {
   try {
     const result = await provider.getResource(hash, '0x1::Dao::Vote<0x1::STC::STC>');
+    return result;
+  } catch (error: any) {
+    return false;
+  }
+}
+
+export async function getTreasuryBalance(hash: string) {
+  try {
+    const result = await provider.call({
+      function_id: '0x1::Treasury::balance',
+      type_args: ['0x1::STC::STC'],
+      args: [],
+    });
     return result;
   } catch (error: any) {
     return false;
