@@ -132,7 +132,6 @@ class Index extends PureComponent<Props, IndexState> {
     // const { pollList, classes, t, className, isLoadingMore } = this.props;
     const { t, classes } = this.props;
     const list = JSON.parse(t('poll.polls'));
-    console.log(list);
 
     return (
       <div>
@@ -156,6 +155,8 @@ class Index extends PureComponent<Props, IndexState> {
                     against_votes={poll.against_votes}
                     status={poll.status}
                     end_time={poll.end_time}
+                    creator={poll.creator}
+                    type_args_1={poll.type_args_1}
                   />
                 ))
               ) : t('poll.NoPoll')}
