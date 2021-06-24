@@ -376,7 +376,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
     const config = this.getConfig();
 
     const isPollDataLoading = !this.state.pollData;
-    const total = 3016964389717900000;
+    const total = 168171610282100220;
     const yesPercent =
       this.state.pollData &&
       new BigNumber(this.state.pollData.for_votes)
@@ -393,6 +393,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
     const absNo = formatBalance(get(this.state, 'pollData.against_votes', 0));
     const votes = (
       <div>
+        <Typography variant="body1">{t('poll.quorum')} 4%</Typography>
+        <br />
         <BorderLinearProgress
           variant="buffer"
           value={Math.min(Number(yesPercent), 100)}
