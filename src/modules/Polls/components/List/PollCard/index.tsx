@@ -152,7 +152,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
     const openLink = () => {
       window.open(url, '_self');
     };
-    const total = 3016964389717900000;
+    const total = 168171610282100220;
     const yesPercent = new BigNumber(for_votes)
       .div(total)
       .times(100)
