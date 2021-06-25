@@ -27,6 +27,13 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TablePagination from '@material-ui/core/TablePagination';
 import { getPollData } from '@/utils/sdk';
 import { arrayify, hexlify } from '@ethersproject/bytes';
 import { providers, utils, bcs } from '@starcoin/starcoin';
@@ -215,6 +222,8 @@ interface IndexState {
   checked: boolean;
   open: boolean;
   sendAmount: string | number;
+  page: number;
+  rowsPerPage: number;
 }
 
 let startToVerify: boolean = false;
@@ -249,6 +258,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
       checked: true,
       open: false,
       sendAmount: '1',
+      page: 0,
+      rowsPerPage: 5,
     };
   }
 
@@ -373,6 +384,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
 
   generateExtra() {
     const { t, classes } = this.props;
+    const { page, rowsPerPage } = this.state;
     const config = this.getConfig();
 
     const isPollDataLoading = !this.state.pollData;
@@ -391,6 +403,16 @@ class Index extends PureComponent<IndexProps, IndexState> {
         .toFixed(2);
     const absYes = formatBalance(get(this.state, 'pollData.for_votes', 0));
     const absNo = formatBalance(get(this.state, 'pollData.against_votes', 0));
+    const rows = [];
+    for (let i = 0; i < 20; i++) {
+      rows.push({
+        agree: true,
+        vote: '11000000',
+        voter: '0xb2aa52f94db4516c5beecef363af850a',
+        proposal_id: i,
+        proposer: '0x3f19d5422824f47e6c021978cee98f35',
+      });
+    }
     const votes = (
       <div>
         <Typography variant="body1">{t('poll.quorum')} 4%</Typography>
@@ -412,6 +434,53 @@ class Index extends PureComponent<IndexProps, IndexState> {
             <Typography variant="subtitle2">{absNo} STC</Typography>
           </Grid>
         </Grid>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="h6">proposer</Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="h6">agree</Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="h6">vote</Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow key={row.proposal_id}>
+                  <TableCell component="th" scope="row">
+                    {row.proposer}
+                  </TableCell>
+                  <TableCell align="right">
+                    {row.agree ? t('poll.yes') : t('poll.no')}
+                  </TableCell>
+                  <TableCell align="right">{row.vote}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={(event: unknown, newPage) => {
+            this.setState({
+              page: newPage,
+            });
+          }}
+          onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) => {
+            this.setState({
+              rowsPerPage: Number(event.target.value),
+            });
+          }}
+        />
       </div>
     );
     return (

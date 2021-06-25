@@ -61,8 +61,6 @@
     "feeTips": "Fee paid to execute this transaction",
     "warning": "Vote cannot be changed after submission. Staked STC used to vote in polls are locked and cannot be withdrawn until the poll finishes.",
     "quorum": "Quorum",
-    "status": "Status",
-    "endTime": "End Time",
     "": ""
   },
   "block": {
