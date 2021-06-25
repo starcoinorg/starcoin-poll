@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react';
+import { withTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import BigNumber from 'bignumber.js';
-import { withTranslation } from 'react-i18next';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import { getPollData } from '@/utils/sdk';
 import BorderLinearProgress from '../../BorderLinearProgress';
 
 const useStyles = (theme: Theme) =>
@@ -42,15 +43,12 @@ const useStyles = (theme: Theme) =>
     },
     cardHover: {
       boxShadow: `
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
-        theme.spacing(1) * 3
-      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
-        theme.spacing(1) * 1
-      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${
-        theme.spacing(1) * 1
-      }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 3
+        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 1
+        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${theme.spacing(1) * 1
+        }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
     `,
       cursor: 'pointer',
     },
@@ -88,20 +86,23 @@ const useStyles = (theme: Theme) =>
   });
 
 interface ExternalProps {
-  key?: string;
-  title: string;
-  url: string;
-  link: string;
-  className?: string;
-  id: number;
-  for_votes: number;
-  against_votes: number;
-  status: string;
-  end_time: number;
+  key?: string,
+  title: string,
+  url: string,
+  link: string,
+  className?: string,
+  id: number,
+  for_votes: number,
+  against_votes: number,
+  status: string,
+  end_time: string,
+  creator: string,
+  type_args_1: string,
 }
 
 interface InternalProps {
-  classes: any;
+  t: any,
+  classes: any,
 }
 
 interface Props extends ExternalProps, InternalProps {
@@ -109,7 +110,8 @@ interface Props extends ExternalProps, InternalProps {
 }
 
 interface PollCardState {
-  displayHover: boolean;
+  displayHover: boolean,
+  pollData: any,
 }
 
 class PollCard extends PureComponent<Props, PollCardState> {
@@ -124,13 +126,27 @@ class PollCard extends PureComponent<Props, PollCardState> {
     against_votes: undefined,
     status: undefined,
     end_time: undefined,
+    creator: undefined,
+    type_args_1: undefined,
   };
 
   constructor(props: Props) {
     super(props);
     this.state = {
       displayHover: false,
+      pollData: undefined,
     };
+  }
+
+  componentDidMount() {
+    const { id, status, creator, type_args_1 } = this.props;
+    if (status === 'in_progress') {
+      getPollData(creator, type_args_1).then((data) => {
+        if (data && data.id === id) {
+          this.setState({ pollData: data });
+        }
+      });
+    }
   }
 
   onCardEnter = () => {
@@ -156,12 +172,19 @@ class PollCard extends PureComponent<Props, PollCardState> {
     const openLink = () => {
       window.open(url, '_self');
     };
-    const total = 3016964389717900000;
-    const yesPercent = new BigNumber(for_votes)
+    const yes = (status === 'in_progress' && this.state.pollData) ? this.state.pollData.for_votes : for_votes;
+    const no = (status === 'in_progress' && this.state.pollData) ? this.state.pollData.against_votes : against_votes;
+    const total = 168171610282100220;
+    const yesPercent = new BigNumber(yes)
       .div(total)
       .times(100)
       .toFixed(2);
-    const noPercent = new BigNumber(against_votes)
+    const noPercent = new BigNumber(no)
+      .div(total)
+      .times(100)
+      .toFixed(2);
+    const voted = new BigNumber(yes).plus(new BigNumber(no));
+    const votedPercent = voted
       .div(total)
       .times(100)
       .toFixed(2);
@@ -184,13 +207,13 @@ class PollCard extends PureComponent<Props, PollCardState> {
           </div>
           <div className={classes.content}>
             <Typography variant="body2" gutterBottom>
-              id: {id}
+              Id: {id}
             </Typography>
             <Typography variant="body2" gutterBottom>
-              status: {status}
+              {t('poll.status')}: {status}
             </Typography>
             <Typography variant="body2" gutterBottom>
-              end_time: {end_time}
+              {t('poll.endTime')}: {new Date(parseInt(end_time, 10)).toLocaleString()}
             </Typography>
             <BorderLinearProgress
               variant="buffer"
@@ -209,13 +232,17 @@ class PollCard extends PureComponent<Props, PollCardState> {
             >
               <div>
                 <Grid container alignItems="center">
-                  <ErrorOutlineIcon
-                    fontSize="small"
-                    color="secondary"
-                    style={{ marginRight: 4 }}
-                  />
-                  <Typography variant="body2" color="secondary">
-                    {`${t('poll.voted')} ${yesPercent + noPercent}%`}
+                  {
+                    yes < no ? (
+                      <ErrorOutlineIcon
+                        fontSize="small"
+                        color="secondary"
+                        style={{ marginRight: 4 }}
+                      />
+                    ) : null
+                  }
+                  <Typography variant="body2" color={yes >= no ? 'primary' : 'secondary'}>
+                    {`${t('poll.voted')} ${votedPercent}%`}
                   </Typography>
                 </Grid>
               </div>
