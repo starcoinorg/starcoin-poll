@@ -45,7 +45,7 @@ const BorderLinearProgress = (props: BorderLinearProgressProps) => {
   return (
     <div>
       <div className={classes.threshold}>
-        <Typography variant="caption">{text}</Typography>
+        <Typography variant="caption" className={classes.text}>{text}</Typography>
       </div>
       <div className={classes.diving} />
       <Progress value={value} valueBuffer={valueBuffer} {...rest} />
