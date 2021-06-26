@@ -16,7 +16,6 @@ const Progress = withStyles((theme: Theme) =>
   createStyles({
     root: {
       height: 10,
-      borderRadius: 5,
     },
     dashedColorPrimary: {
       backgroundColor:
@@ -25,7 +24,6 @@ const Progress = withStyles((theme: Theme) =>
       animation: 'none',
     },
     bar: {
-      borderRadius: 5,
       backgroundColor: '#3f51b5',
     },
     bar2Buffer: {
