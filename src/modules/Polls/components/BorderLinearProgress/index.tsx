@@ -1,12 +1,21 @@
 import React from 'react';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
+import LinearProgress, {
+  LinearProgressProps,
+} from '@material-ui/core/LinearProgress';
+import { withTranslation, TransProps } from 'react-i18next';
+import {
+  createStyles,
+  withStyles,
+  Theme,
+  makeStyles,
+} from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import style from './style';
 
-const BorderLinearProgress = withStyles((theme: Theme) =>
+const Progress = withStyles((theme: Theme) =>
   createStyles({
     root: {
       height: 10,
-      borderRadius: 5,
     },
     dashedColorPrimary: {
       backgroundColor:
@@ -15,7 +24,6 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
       animation: 'none',
     },
     bar: {
-      borderRadius: 5,
       backgroundColor: '#3f51b5',
     },
     bar2Buffer: {
@@ -24,4 +32,25 @@ const BorderLinearProgress = withStyles((theme: Theme) =>
   }),
 )(LinearProgress);
 
-export default BorderLinearProgress;
+interface BorderLinearProgressProps extends LinearProgressProps {
+  t: any;
+}
+
+const useStyles = makeStyles(style);
+const BorderLinearProgress = (props: BorderLinearProgressProps) => {
+  const classes = useStyles();
+  const { value, valueBuffer, t, ...rest } = props;
+  const total = Number(value) + Number(valueBuffer);
+  const text = total < 4 ? `${t('poll.quorum')} 4%` : `${t('poll.threshold')}`;
+  return (
+    <div>
+      <div className={classes.threshold}>
+        <Typography variant="caption" className={classes.text}>{text}</Typography>
+      </div>
+      <div className={classes.diving} />
+      <Progress value={value} valueBuffer={valueBuffer} {...rest} />
+    </div>
+  );
+};
+
+export default withTranslation()(BorderLinearProgress);
