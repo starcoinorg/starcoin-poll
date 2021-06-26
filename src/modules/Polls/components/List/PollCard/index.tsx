@@ -43,12 +43,15 @@ const useStyles = (theme: Theme) =>
     },
     cardHover: {
       boxShadow: `
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 3
-        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 1
-        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${theme.spacing(1) * 1
-        }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
+        theme.spacing(1) * 3
+      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
+        theme.spacing(1) * 1
+      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${
+        theme.spacing(1) * 1
+      }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
     `,
       cursor: 'pointer',
     },
@@ -86,23 +89,23 @@ const useStyles = (theme: Theme) =>
   });
 
 interface ExternalProps {
-  key?: string,
-  title: string,
-  url: string,
-  link: string,
-  className?: string,
-  id: number,
-  for_votes: number,
-  against_votes: number,
-  status: string,
-  end_time: string,
-  creator: string,
-  type_args_1: string,
+  key?: string;
+  title: string;
+  url: string;
+  link: string;
+  className?: string;
+  id: number;
+  for_votes: number;
+  against_votes: number;
+  status: string;
+  end_time: string;
+  creator: string;
+  type_args_1: string;
 }
 
 interface InternalProps {
-  t: any,
-  classes: any,
+  t: any;
+  classes: any;
 }
 
 interface Props extends ExternalProps, InternalProps {
@@ -110,8 +113,8 @@ interface Props extends ExternalProps, InternalProps {
 }
 
 interface PollCardState {
-  displayHover: boolean,
-  pollData: any,
+  displayHover: boolean;
+  pollData: any;
 }
 
 class PollCard extends PureComponent<Props, PollCardState> {
@@ -172,22 +175,19 @@ class PollCard extends PureComponent<Props, PollCardState> {
     const openLink = () => {
       window.open(url, '_self');
     };
-    const yes = (status === 'in_progress' && this.state.pollData) ? this.state.pollData.for_votes : for_votes;
-    const no = (status === 'in_progress' && this.state.pollData) ? this.state.pollData.against_votes : against_votes;
+    const yes =
+      status === 'in_progress' && this.state.pollData
+        ? this.state.pollData.for_votes
+        : for_votes;
+    const no =
+      status === 'in_progress' && this.state.pollData
+        ? this.state.pollData.against_votes
+        : against_votes;
     const total = 168171610282100220;
-    const yesPercent = new BigNumber(yes)
-      .div(total)
-      .times(100)
-      .toFixed(2);
-    const noPercent = new BigNumber(no)
-      .div(total)
-      .times(100)
-      .toFixed(2);
+    const yesPercent = new BigNumber(yes).div(total).times(100).toFixed(2);
+    const noPercent = new BigNumber(no).div(total).times(100).toFixed(2);
     const voted = new BigNumber(yes).plus(new BigNumber(no));
-    const votedPercent = voted
-      .div(total)
-      .times(100)
-      .toFixed(2);
+    const votedPercent = voted.div(total).times(100).toFixed(2);
     return (
       <div
         className={classNames(classes.cardCommon, {
@@ -213,7 +213,8 @@ class PollCard extends PureComponent<Props, PollCardState> {
               {t('poll.status')}: {status}
             </Typography>
             <Typography variant="body2" gutterBottom>
-              {t('poll.endTime')}: {new Date(parseInt(end_time, 10)).toLocaleString()}
+              {t('poll.endTime')}:{' '}
+              {new Date(parseInt(end_time, 10)).toLocaleString()}
             </Typography>
             <BorderLinearProgress
               variant="buffer"
@@ -232,16 +233,14 @@ class PollCard extends PureComponent<Props, PollCardState> {
             >
               <div>
                 <Grid container alignItems="center">
-                  {
-                    yes < no ? (
-                      <ErrorOutlineIcon
-                        fontSize="small"
-                        color="secondary"
-                        style={{ marginRight: 4 }}
-                      />
-                    ) : null
-                  }
-                  <Typography variant="body2" color={yes >= no ? 'primary' : 'secondary'}>
+                  {yes < no ? (
+                    <ErrorOutlineIcon
+                      fontSize="small"
+                      color="secondary"
+                      style={{ marginRight: 4 }}
+                    />
+                  ) : null}
+                  <Typography variant="body2" color="textPrimary">
                     {`${t('poll.voted')} ${votedPercent}%`}
                   </Typography>
                 </Grid>

@@ -1,7 +1,4 @@
 /* eslint-disable func-names */
-/* eslint-disable wrap-iife */
-/* eslint-disable function-paren-newline */
-/* eslint-disable implicit-arrow-linebreak */
 import React, { PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
 import classnames from 'classnames';
@@ -358,7 +355,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
         return hexlify(se.getBytes());
       })();
 
-      const transactionHash = await this.starcoinProvider
+      await this.starcoinProvider
         .getSigner()
         .sendUncheckedTransaction({
           data: payloadInHex,

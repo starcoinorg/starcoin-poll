@@ -21,7 +21,7 @@
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
     "react/jsx-props-no-spreading": 0,
-    "no-unused-vars": 0,
+    "no-unused-vars": "warn",
     "@typescript-eslint/no-unused-vars": [
       "off"
     ],
