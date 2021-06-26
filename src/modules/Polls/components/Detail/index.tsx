@@ -431,6 +431,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
             <Typography variant="subtitle2">{absNo} STC</Typography>
           </Grid>
         </Grid>
+        {/*
         <TableContainer>
           <Table>
             <TableHead>
@@ -478,6 +479,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
             });
           }}
         />
+         */}
       </div>
     );
     return (
