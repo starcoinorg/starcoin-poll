@@ -505,7 +505,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
     const columns = [
       [t('poll.id'), config.id],
       [t('poll.title'), config.title],
-      [t('poll.status'), config.status.replace('_', ' ')],
+      [t('poll.status'), t(`poll.statusText.${config.status}`)],
       [
         t('poll.creator'),
         <CommonLink

@@ -91,7 +91,7 @@ interface InternalProps {
   match: any;
 }
 
-interface Props extends ExternalProps, InternalProps {}
+interface Props extends ExternalProps, InternalProps { }
 
 interface IndexState {
   currentPage: number;
@@ -103,7 +103,7 @@ class Index extends PureComponent<Props, IndexState> {
   static defaultProps = {
     pollList: null,
     isLoadingMore: undefined,
-    getPollList: () => {},
+    getPollList: () => { },
   };
 
   constructor(props: Props) {
@@ -146,43 +146,24 @@ class Index extends PureComponent<Props, IndexState> {
             <div className={classes.gridCards}>
               {list.length
                 ? list.map((poll: any, index: number) => (
-                    <PollCard
-                      key={`key_${index}`}
-                      id={poll.id}
-                      url={`/polls/detail/${poll.id}`}
-                      link={poll.link}
-                      title={poll.title}
-                      for_votes={poll.for_votes}
-                      against_votes={poll.against_votes}
-                      status={poll.status}
-                      end_time={poll.end_time}
-                      creator={poll.creator}
-                      type_args_1={poll.type_args_1}
-                    />
-                  ))
+                  <PollCard
+                    key={`key_${index}`}
+                    id={poll.id}
+                    url={`/polls/detail/${poll.id}`}
+                    link={poll.link}
+                    title={poll.title}
+                    for_votes={poll.for_votes}
+                    against_votes={poll.against_votes}
+                    status={parseInt(poll.status, 10)}
+                    end_time={poll.end_time}
+                    creator={poll.creator}
+                    type_args_1={poll.type_args_1}
+                  />
+                ))
                 : t('poll.NoPoll')}
             </div>
           </Card>
         </CenteredView>
-        {/* {!list.length ? (
-            <Card>
-              <p className="empty">{t('poll.NoPoll')}</p>
-            </Card>
-          ) : (
-            <Grid wrap={2}>
-              {list
-                .filter((item) => !this.state.filter || item.status === this.state.filter)
-                .map((item) => {
-                  const dim = !this.state.filter && !isEmphasizedPoll(polls.data[id])
-
-                  return (
-                    <Card to={`${url}/poll/${id}`} className={cx({ dim })} key={id}>
-                      <PollItem id={id} />
-                    </Card>
-                  )
-                })}
-            </Grid>
-          )} */}
       </div>
     );
   }
