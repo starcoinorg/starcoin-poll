@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import { PollStatus } from './constants';
 
 export function withBaseRoute(route: any = '') {
   // TODO: add logging/tracing code here
@@ -40,10 +39,3 @@ export function toObject(data: {}): string {
     return value;
   });
 }
-
-/* status */
-export const isWaitingExecution = (poll: any) =>
-  poll.status === PollStatus.Passed && poll.type !== "TEXT"
-
-export const isEmphasizedPoll = (poll: any) =>
-  poll.status === PollStatus.InProgress || isWaitingExecution(poll)
