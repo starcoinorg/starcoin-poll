@@ -12,6 +12,9 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
 import CenteredView from '@/common/View/CenteredView';
 import PollCard from './PollCard';
 
@@ -106,6 +109,7 @@ interface IndexState {
   filter: string;
   status: number;
   hideVoted: boolean;
+  open: boolean;
 }
 
 class List extends PureComponent<Props, IndexState> {
@@ -123,6 +127,7 @@ class List extends PureComponent<Props, IndexState> {
       filter: '',
       status: 0,
       hideVoted: false,
+      open: false,
     };
   }
 
@@ -140,7 +145,7 @@ class List extends PureComponent<Props, IndexState> {
 
   render() {
     const { t, classes } = this.props;
-    const { hideVoted, status } = this.state;
+    const { hideVoted, status, open } = this.state;
     const list = JSON.parse(t('poll.polls'));
 
     return (
@@ -148,6 +153,25 @@ class List extends PureComponent<Props, IndexState> {
         <Helmet>
           <title>{t('header.polls')}</title>
         </Helmet>
+
+        <Dialog open={open} aria-labelledby="simple-dialog-title">
+          <DialogTitle id="simple-dialog-title">
+            {t('poll.createAPoll')}
+          </DialogTitle>
+          <DialogActions>
+            <Button
+              color="primary"
+              onClick={() => {
+                this.setState({ open: false });
+              }}
+            >
+              {t('poll.cancel')}
+            </Button>
+            <Button color="primary" autoFocus>
+              {t('poll.ok')}
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <CenteredView>
           <Card>
@@ -199,8 +223,17 @@ class List extends PureComponent<Props, IndexState> {
                     <Typography>{t('header.polls')}</Typography>
                   </Grid>
                   <Grid item>
-                    <Button variant="outlined" color="primary" size="small">
-                      Create
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                      onClick={() => {
+                        this.setState({
+                          open: true,
+                        });
+                      }}
+                    >
+                      {t('poll.create')}
                     </Button>
                   </Grid>
                 </Grid>

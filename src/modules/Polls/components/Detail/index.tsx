@@ -278,42 +278,9 @@ class Index extends PureComponent<IndexProps, IndexState> {
       const config = this.getConfig();
       const { checked, sendAmount } = this.state;
       const functionId = '0x1::DaoVoteScripts::cast_vote';
-      const arr = config.type_args_1.split('<');
-      const arr1 = arr[0].split('::');
-      const arr2 = arr[1] ? arr[1].replace('>', '').split(',') : [];
-      const type_params: any[] = [];
-      if (arr2.length) {
-        arr2.forEach((obj: string) => {
-          const arr4 = obj.split('::');
-          type_params.push({
-            Struct: {
-              address: arr4[0],
-              module: arr4[1],
-              name: arr4[2],
-              type_params: [],
-            },
-          });
-        });
-      }
+      const strTypeArgs = ['0x1::STC::STC', config.type_args_1]
+      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs)
 
-      const tyArgs = [
-        {
-          Struct: {
-            address: '0x1',
-            module: 'STC',
-            name: 'STC',
-            type_params: [],
-          },
-        },
-        {
-          Struct: {
-            address: arr1[0],
-            module: arr1[1],
-            name: arr1[2],
-            type_params,
-          },
-        },
-      ];
       const proposerAdressHex = config.creator;
       const proposalId = config.id;
       const agree = checked; // yes: true; no: false
@@ -346,7 +313,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
 
       const scriptFunction = utils.tx.encodeScriptFunction(
         functionId,
-        tyArgs,
+        structTypeTags,
         args,
       );
       const payloadInHex = (function () {
@@ -538,7 +505,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
     const columns = [
       [t('poll.id'), config.id],
       [t('poll.title'), config.title],
-      [t('poll.status'), config.status.replace('_', ' ')],
+      [t('poll.status'), t(`poll.statusText.${config.status}`)],
       [
         t('poll.creator'),
         <CommonLink

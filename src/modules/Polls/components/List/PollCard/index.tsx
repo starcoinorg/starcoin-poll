@@ -8,6 +8,7 @@ import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import { getPollData } from '@/utils/sdk';
+import { POLL_STATUS } from '@/utils/constants';
 import BorderLinearProgress from '../../BorderLinearProgress';
 
 const useStyles = (theme: Theme) =>
@@ -97,7 +98,7 @@ interface ExternalProps {
   id: number;
   for_votes: number;
   against_votes: number;
-  status: string;
+  status: number;
   end_time: string;
   creator: string;
   type_args_1: string;
@@ -143,7 +144,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
 
   componentDidMount() {
     const { id, status, creator, type_args_1 } = this.props;
-    if (status === 'in_progress') {
+    if (status < POLL_STATUS.EXTRACTED) {
       getPollData(creator, type_args_1).then((data) => {
         if (data && data.id === id) {
           this.setState({ pollData: data });
@@ -176,11 +177,11 @@ class PollCard extends PureComponent<Props, PollCardState> {
       window.open(url, '_self');
     };
     const yes =
-      status === 'in_progress' && this.state.pollData
+      status === POLL_STATUS.ACTIVE && this.state.pollData
         ? this.state.pollData.for_votes
         : for_votes;
     const no =
-      status === 'in_progress' && this.state.pollData
+      status === POLL_STATUS.ACTIVE && this.state.pollData
         ? this.state.pollData.against_votes
         : against_votes;
     const total = 168171610282100220;
@@ -193,7 +194,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
         className={classNames(classes.cardCommon, {
           [classes.cardHover]: this.state.displayHover,
           [classes.cardNoHover]: !this.state.displayHover,
-          [classes.cardInProgress]: status === 'in_progress',
+          [classes.cardInProgress]: status === POLL_STATUS.ACTIVE,
         })}
         onClick={openLink}
         onMouseEnter={this.onCardEnter}
