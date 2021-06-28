@@ -34,6 +34,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { getPollData } from '@/utils/sdk';
 import { arrayify, hexlify } from '@ethersproject/bytes';
 import { providers, utils, bcs } from '@starcoin/starcoin';
+import { POLL_STATUS } from '@/utils/constants';
 import BorderLinearProgress from '../BorderLinearProgress';
 
 const useStyles = (theme: Theme) =>
@@ -539,7 +540,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
         : t('poll.selectedNoVotes');
 
       columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
-      if (config.status === 'in_progress' && accounts.length > 0) {
+      if (config.status === POLL_STATUS.ACTIVE && accounts.length > 0) {
         columns[columns.length - 1][1] = (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Typography variant="body1">{selectedVoteLog}</Typography>
