@@ -39,7 +39,7 @@ interface BorderLinearProgressProps extends LinearProgressProps {
 const useStyles = makeStyles(style);
 const BorderLinearProgress = (props: BorderLinearProgressProps) => {
   const classes = useStyles();
-  const { value, valueBuffer, variant, t, ...rest } = props;
+  const { value, valueBuffer, variant, t } = props;
   const total = Number(value) + Number(valueBuffer);
   const text = total < 4 ? `${t('poll.quorum')} 4%` : `${t('poll.threshold')}`;
   return (
