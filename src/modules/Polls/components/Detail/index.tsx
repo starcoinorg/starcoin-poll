@@ -211,6 +211,8 @@ interface IndexProps {
   poll: any;
   pollVotes: any;
   accounts: string[];
+  isUnstaked: boolean;
+  isRevokeable: boolean;
   getPoll: (data: any, callback?: any) => any;
 }
 
@@ -235,6 +237,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
     poll: undefined,
     pollVotes: undefined,
     accounts: [],
+    isUnstaked: false,
+    isRevokeable: false,
   };
 
   constructor(props: IndexProps) {
@@ -274,7 +278,19 @@ class Index extends PureComponent<IndexProps, IndexState> {
     this.setState({ checked: value });
   };
 
-  async onClickVote() {
+  // onClickQueue() {
+  //   console.log('onClickAgree', this.props);
+  // }
+
+  // onClickUnstake() {
+  //   console.log('onClickUnstake', this.props);
+  // }
+
+  // onClickExecute() {
+  //   console.log('onClickExecute', this.props);
+  // }
+
+  async onClickVoteConfirm() {
     try {
       const config = this.getConfig();
       const { checked, sendAmount } = this.state;
@@ -489,6 +505,96 @@ class Index extends PureComponent<IndexProps, IndexState> {
     );
   }
 
+  // buttons for different status:
+  // | 1 | PENDING    |                   |                  |
+  // | 2 | ACTIVE     |  vote             | revoke (if voted)|
+  // | 3 | DEFEATED   |                   |                  |
+  // | 4 | AGREED     |  unstake (if not) |  queue           |
+  // | 5 | QUEUED     |  unstake (if not) |                  |
+  // | 6 | EXECUTABLE |  unstake (if not) | execute          |
+  // | 7 | EXTRACTED  |  unstake (if not) |                  |
+  allowedButtons(status: number) {
+    const { t, classes } = this.props;
+    const buttons = [];
+    if (status === POLL_STATUS.ACTIVE) {
+      buttons.push(
+        <Button
+          key="vote"
+          className={classes.button}
+          color="primary"
+          variant="contained"
+          onClick={() => {
+            startToVerify = false;
+            this.setState({
+              checked: true,
+              sendAmount: '1',
+              open: true,
+            });
+          }}
+        >
+          <Typography variant="body1">{t('poll.buttonText.vote')}</Typography>
+        </Button>)
+      // TODO: enable this while starcoin bug fixed
+      // if (!this.props.isRevokeable) {
+      //   buttons.push(
+      //     <Button
+      //       key="revoke"
+      //       className={classes.button}
+      //       color="primary"
+      //       variant="contained"
+      //       onClick={() => {
+      //         this.onClickRevoke()
+      //       }}
+      //     >
+      //       <Typography variant="body1">{t('poll.buttonText.revoke')}</Typography>
+      //     </Button>)
+      // }
+    }
+    // if (status > POLL_STATUS.ACTIVE && !this.props.isUnstaked) {
+    //   buttons.push(
+    //     <Button
+    //       key="unstake"
+    //       className={classes.button}
+    //       color="primary"
+    //       variant="contained"
+    //       onClick={() => {
+    //         this.onClickUnstake()
+    //       }}
+    //     >
+    //       <Typography variant="body1">{t('poll.buttonText.unstake')}</Typography>
+    //     </Button>)
+    // }
+    // if (status === POLL_STATUS.AGREED) {
+    //   buttons.push(
+    //     <Button
+    //       key="queue"
+    //       className={classes.button}
+    //       color="primary"
+    //       variant="contained"
+    //       onClick={() => {
+    //         this.onClickQueue()
+    //       }}
+    //     >
+    //       <Typography variant="body1">{t('poll.buttonText.queue')}</Typography>
+    //     </Button>)
+    // }
+    // if (status === POLL_STATUS.EXECUTABLE) {
+    //   buttons.push(
+    //     <Button
+    //       key="execute"
+    //       className={classes.button}
+    //       color="primary"
+    //       variant="contained"
+    //       onClick={() => {
+    //         this.onClickExecute()
+    //       }}
+    //     >
+    //       <Typography variant="body1">{t('poll.buttonText.execute')}</Typography>
+    //     </Button>)
+    // }
+    return buttons;
+  }
+
   render() {
     const { poll, pollVotes, accounts, match, t, classes } = this.props;
     const { open, checked, sendAmount } = this.state;
@@ -539,29 +645,14 @@ class Index extends PureComponent<IndexProps, IndexState> {
         )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
-      columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
-      if (config.status === POLL_STATUS.ACTIVE && accounts.length > 0) {
-        columns[columns.length - 1][1] = (
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="body1">{selectedVoteLog}</Typography>
-            <Button
-              className={classes.button}
-              color="primary"
-              variant="contained"
-              onClick={() => {
-                startToVerify = false;
-                this.setState({
-                  checked: true,
-                  sendAmount: '1',
-                  open: true,
-                });
-              }}
-            >
-              <Typography variant="body1">{t('poll.vote')}</Typography>
-            </Button>
-          </div>
-        );
-      }
+      const buttons = this.allowedButtons(config.status);
+      const accountDetail = (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="body1">{selectedVoteLog}</Typography>
+          {buttons}
+        </div>
+      );
+      columns.push([t('poll.selectedVoteLog'), accountDetail]);
     }
 
     return (
@@ -665,7 +756,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
             <Button
               color="primary"
               onClick={() => {
-                this.onClickVote();
+                this.onClickVoteConfirm();
                 this.setState({
                   open: false,
                 });
