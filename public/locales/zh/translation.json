@@ -46,6 +46,7 @@
     },
     "id": "ID",
     "status": "状态",
+    "startTime": "开始时间",
     "endTime": "结束时间",
     "creator": "创建者",
     "discussion": "留言板",
@@ -79,6 +80,12 @@
     "executed": "已生效",
     "create": "创建",
     "createAPoll": "创建一个提案",
+    "deposite": "保证金",
+    "externalUrl": "外部链接",
+    "locale": "zh-cn",
+    "minDateMsg": "结束时间必须至少比开始时间晚 7 天",
+    "urlHelperText": "请输入外部链接",
+    "depositeHelperText": "请输入保证金",
     "": ""
   },
   "block": {

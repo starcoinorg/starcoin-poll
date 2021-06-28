@@ -15,8 +15,14 @@ import Select from '@material-ui/core/Select';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
+import moment from 'moment';
+import MomentUtils from '@date-io/moment';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import PollCard from './PollCard';
+import 'moment/locale/zh-cn';
 
 const useStyles = (theme: Theme) =>
   createStyles({
@@ -110,6 +116,8 @@ interface IndexState {
   status: number;
   hideVoted: boolean;
   open: boolean;
+  form: Record<string, any>;
+  errors: Record<string, boolean>;
 }
 
 class List extends PureComponent<Props, IndexState> {
@@ -128,6 +136,17 @@ class List extends PureComponent<Props, IndexState> {
       status: 0,
       hideVoted: false,
       open: false,
+      form: {
+        startTime: moment(),
+        endTime: moment().add(7, 'days'),
+        enTitle: '',
+        cnTitle: '',
+        enDesc: '',
+        cnDesc: '',
+        url: '',
+        deposite: '',
+      },
+      errors: {},
     };
   }
 
@@ -143,10 +162,105 @@ class List extends PureComponent<Props, IndexState> {
     this.setState({ filter: value });
   };
 
+  handleFormChange = (
+    event: React.ChangeEvent<{ value: unknown; name: string }>,
+  ) => {
+    const { value, name } = event.target;
+    this.setState((prevState) => ({
+      form: {
+        ...prevState.form,
+        [name]: value,
+      },
+      errors: {
+        ...prevState.errors,
+        [name]: false,
+      },
+    }));
+  };
+
+  validateFields = async () => {
+    const { form, errors } = this.state;
+    const requiredFields = [
+      'enTitle',
+      'cnTitle',
+      'enDesc',
+      'cnDesc',
+      'url',
+      'deposite',
+    ];
+    let hasError = errors.endTime;
+    requiredFields.forEach((field) => {
+      if (!form[field]) {
+        hasError = true;
+        this.setState((prevState) => ({
+          errors: {
+            ...prevState.errors,
+            [field]: true,
+          },
+        }));
+      }
+    });
+    if (hasError) {
+      throw new Error('Error occured！');
+    } else {
+      return form;
+    }
+  };
+
+  closeFormDialog = () => {
+    this.setState({
+      form: {
+        startTime: moment(),
+        endTime: moment().add(7, 'days'),
+        enTitle: '',
+        cnTitle: '',
+        enDesc: '',
+        cnDesc: '',
+        url: '',
+        deposite: '',
+      },
+      errors: {},
+      open: false,
+    });
+  };
+
+  handleSubmit = async () => {
+    try {
+      const values = await this.validateFields();
+      console.log('values: ', values);
+      this.closeFormDialog()
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   render() {
     const { t, classes } = this.props;
-    const { hideVoted, status, open } = this.state;
+    const { hideVoted, status, open, form, errors } = this.state;
     const list = JSON.parse(t('poll.polls'));
+
+    const locale = t('poll.locale');
+    moment.locale(locale);
+
+    const helperTextMaps = {
+      enTitle: 'Please input title.',
+      cnTitle: '请输入中文标题.',
+      enDesc: 'Please input description.',
+      cnDesc: '请输入中文描述.',
+      url: t('poll.urlHelperText'),
+      deposite: t('poll.depositeHelperText'),
+    };
+
+    const {
+      enTitle,
+      cnTitle,
+      enDesc,
+      cnDesc,
+      url,
+      deposite,
+      startTime,
+      endTime,
+    } = form;
 
     return (
       <div>
@@ -154,20 +268,153 @@ class List extends PureComponent<Props, IndexState> {
           <title>{t('header.polls')}</title>
         </Helmet>
 
-        <Dialog open={open} aria-labelledby="simple-dialog-title">
+        <Dialog
+          open={open}
+          aria-labelledby="simple-dialog-title"
+          onClose={this.closeFormDialog}
+        >
           <DialogTitle id="simple-dialog-title">
             {t('poll.createAPoll')}
           </DialogTitle>
+          <MuiPickersUtilsProvider
+            libInstance={moment}
+            utils={MomentUtils}
+            locale={locale}
+          >
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="enTitle"
+                name="enTitle"
+                error={errors.enTitle}
+                helperText={errors.enTitle ? helperTextMaps.enTitle : undefined}
+                value={enTitle}
+                label="Title"
+                fullWidth
+                onChange={this.handleFormChange}
+              />
+              <TextField
+                margin="dense"
+                id="cnTitle"
+                name="cnTitle"
+                helperText={errors.cnTitle ? helperTextMaps.cnTitle : undefined}
+                error={errors.cnTitle}
+                value={cnTitle}
+                label="中文标题"
+                fullWidth
+                onChange={this.handleFormChange}
+              />
+              <TextField
+                margin="dense"
+                id="enDesc"
+                name="enDesc"
+                error={errors.enDesc}
+                helperText={errors.enDesc ? helperTextMaps.enDesc : undefined}
+                value={enDesc}
+                label="Description"
+                fullWidth
+                onChange={this.handleFormChange}
+              />
+              <TextField
+                margin="dense"
+                id="cnDesc"
+                name="cnDesc"
+                helperText={errors.cnDesc ? helperTextMaps.cnDesc : undefined}
+                error={errors.cnDesc}
+                value={cnDesc}
+                label="中文描述"
+                fullWidth
+                onChange={this.handleFormChange}
+              />
+              <TextField
+                autoFocus
+                margin="dense"
+                id="url"
+                name="url"
+                helperText={errors.url ? helperTextMaps.url : undefined}
+                error={errors.url}
+                value={url}
+                label={t('poll.externalUrl')}
+                fullWidth
+                onChange={this.handleFormChange}
+              />
+              <TextField
+                autoFocus
+                margin="dense"
+                id="deposite"
+                name="deposite"
+                error={errors.deposite}
+                helperText={
+                  errors.deposite ? helperTextMaps.deposite : undefined
+                }
+                value={deposite}
+                label={t('poll.deposite')}
+                fullWidth
+                onChange={this.handleFormChange}
+              />
+              <div style={{ margin: '8px 0' }}>
+                <DatePicker
+                  autoOk
+                  label={t('poll.startTime')}
+                  disablePast
+                  value={startTime}
+                  okLabel={t('poll.ok')}
+                  cancelLabel={t('poll.cancel')}
+                  format="YYYY-MM-DD"
+                  onChange={(value) => {
+                    this.setState((prevState) => ({
+                      form: {
+                        ...prevState.form,
+                        startTime: value,
+                      },
+                    }));
+                  }}
+                />
+              </div>
+              <div style={{ margin: '8px 0' }}>
+                <DatePicker
+                  autoOk
+                  label={t('poll.endTime')}
+                  value={endTime}
+                  okLabel={t('poll.ok')}
+                  format="YYYY-MM-DD"
+                  minDateMessage={t('poll.minDateMsg')}
+                  onError={(error) => {
+                    const { errors } = this.state;
+                    if (errors.endTime !== !!error) {
+                      this.setState((prevState) => ({
+                        errors: {
+                          ...prevState.errors,
+                          endTime: !!error,
+                        },
+                      }));
+                    }
+                  }}
+                  minDate={moment(startTime).add(7, 'days')}
+                  cancelLabel={t('poll.cancel')}
+                  onChange={(value) => {
+                    this.setState((prevState) => ({
+                      form: {
+                        ...prevState.form,
+                        endTime: value,
+                      },
+                      errors: {
+                        ...prevState.errors,
+                        endTime: false,
+                      },
+                    }));
+                  }}
+                  error={errors.endTime}
+                />
+              </div>
+            </DialogContent>
+          </MuiPickersUtilsProvider>
           <DialogActions>
-            <Button
-              color="primary"
-              onClick={() => {
-                this.setState({ open: false });
-              }}
-            >
+            <Button color="primary" onClick={this.closeFormDialog}>
               {t('poll.cancel')}
             </Button>
-            <Button color="primary" autoFocus>
+            <Button color="primary" autoFocus onClick={this.handleSubmit}>
               {t('poll.ok')}
             </Button>
           </DialogActions>

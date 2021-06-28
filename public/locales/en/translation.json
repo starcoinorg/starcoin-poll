@@ -46,6 +46,7 @@
     },
     "id": "ID",
     "status": "Status",
+    "startTime": "Start Time",
     "endTime": "End Time",
     "creator": "Creator",
     "discussion": "Discussion",
@@ -79,6 +80,12 @@
     "executed": "Executed",
     "create": "Create",
     "createAPoll": "Create A Poll",
+    "deposite": "Deposite",
+    "externalUrl": "External URL",
+    "locale": "en",
+    "minDateMsg": "The end time must be at least 7 days later than the start time.",
+    "urlHelperText": "Please input external url.",
+    "depositeHelperText": "Please input deposite.",
     "": ""
   },
   "block": {
