@@ -2,7 +2,7 @@ import React from 'react';
 import LinearProgress, {
   LinearProgressProps,
 } from '@material-ui/core/LinearProgress';
-import { withTranslation, TransProps } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import {
   createStyles,
   withStyles,
@@ -39,7 +39,7 @@ interface BorderLinearProgressProps extends LinearProgressProps {
 const useStyles = makeStyles(style);
 const BorderLinearProgress = (props: BorderLinearProgressProps) => {
   const classes = useStyles();
-  const { value, valueBuffer, t, ...rest } = props;
+  const { value, valueBuffer, variant, t, ...rest } = props;
   const total = Number(value) + Number(valueBuffer);
   const text = total < 4 ? `${t('poll.quorum')} 4%` : `${t('poll.threshold')}`;
   return (
@@ -48,7 +48,7 @@ const BorderLinearProgress = (props: BorderLinearProgressProps) => {
         <Typography variant="caption">{text}</Typography>
       </div>
       <div className={classes.diving} />
-      <Progress value={value} valueBuffer={valueBuffer} {...rest} />
+      <Progress value={value} valueBuffer={valueBuffer} variant={variant} />
     </div>
   );
 };

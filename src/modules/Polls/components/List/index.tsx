@@ -2,8 +2,16 @@ import React, { PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
 import Helmet from 'react-helmet';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
-import CommonHeader from '@/common/View/CommonHeader';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import CenteredView from '@/common/View/CenteredView';
 import PollCard from './PollCard';
 
@@ -96,9 +104,11 @@ interface Props extends ExternalProps, InternalProps {}
 interface IndexState {
   currentPage: number;
   filter: string;
+  status: number;
+  hideVoted: boolean;
 }
 
-class Index extends PureComponent<Props, IndexState> {
+class List extends PureComponent<Props, IndexState> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     pollList: null,
@@ -111,6 +121,8 @@ class Index extends PureComponent<Props, IndexState> {
     this.state = {
       currentPage: parseInt(props.match.params.page, 10) || 1,
       filter: '',
+      status: 0,
+      hideVoted: false,
     };
   }
 
@@ -127,8 +139,8 @@ class Index extends PureComponent<Props, IndexState> {
   };
 
   render() {
-    // const { pollList, classes, t, className, isLoadingMore } = this.props;
     const { t, classes } = this.props;
+    const { hideVoted, status } = this.state;
     const list = JSON.parse(t('poll.polls'));
 
     return (
@@ -139,10 +151,62 @@ class Index extends PureComponent<Props, IndexState> {
 
         <CenteredView>
           <Card>
-            <CommonHeader
-              name={t('header.polls')}
-              pluralName={t('header.polls')}
+            <CardHeader
+              action={
+                <Grid container alignItems="center" spacing={1}>
+                  <Grid item>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={hideVoted}
+                          color="primary"
+                          onChange={() => {
+                            this.setState((prevState) => ({
+                              hideVoted: !prevState.hideVoted,
+                            }));
+                          }}
+                        />
+                      }
+                      label={t('poll.hideVoted')}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Select
+                      labelId="demo-simple-select-outlined-label"
+                      id="demo-simple-select-outlined"
+                      style={{ width: 120 }}
+                      value={status}
+                      onChange={(
+                        event: React.ChangeEvent<{ value: unknown }>,
+                      ) => {
+                        this.setState({
+                          status: event.target.value as number,
+                        });
+                      }}
+                    >
+                      <MenuItem value={0}>{t('poll.all')}</MenuItem>
+                      <MenuItem value={2}>{t('poll.inProgress')}</MenuItem>
+                      <MenuItem value={4}>{t('poll.passed')}</MenuItem>
+                      <MenuItem value={3}>{t('poll.rejected')}</MenuItem>
+                      <MenuItem value={7}>{t('poll.executed')}</MenuItem>
+                    </Select>
+                  </Grid>
+                </Grid>
+              }
+              title={
+                <Grid container alignItems="center" spacing={1}>
+                  <Grid item>
+                    <Typography>{t('header.polls')}</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Button variant="outlined" color="primary" size="small">
+                      Create
+                    </Button>
+                  </Grid>
+                </Grid>
+              }
             />
+            <Divider />
             <div className={classes.gridCards}>
               {list.length
                 ? list.map((poll: any, index: number) => (
@@ -164,28 +228,9 @@ class Index extends PureComponent<Props, IndexState> {
             </div>
           </Card>
         </CenteredView>
-        {/* {!list.length ? (
-            <Card>
-              <p className="empty">{t('poll.NoPoll')}</p>
-            </Card>
-          ) : (
-            <Grid wrap={2}>
-              {list
-                .filter((item) => !this.state.filter || item.status === this.state.filter)
-                .map((item) => {
-                  const dim = !this.state.filter && !isEmphasizedPoll(polls.data[id])
-
-                  return (
-                    <Card to={`${url}/poll/${id}`} className={cx({ dim })} key={id}>
-                      <PollItem id={id} />
-                    </Card>
-                  )
-                })}
-            </Grid>
-          )} */}
       </div>
     );
   }
 }
 
-export default withStyles(useStyles)(withTranslation()(Index));
+export default withStyles(useStyles)(withTranslation()(List));
