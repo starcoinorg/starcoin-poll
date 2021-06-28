@@ -13,5 +13,8 @@ const style = (theme: Theme) =>
       borderLeft: `1px solid ${theme.palette.text.primary}`,
       height: '8px',
     },
+    text: {
+      paddingLeft: '0.2rem',
+    }
   });
 export default style;

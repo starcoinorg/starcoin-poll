@@ -412,7 +412,6 @@ class Index extends PureComponent<IndexProps, IndexState> {
     }
     const votes = (
       <div>
-        <Typography variant="body1">{t('poll.quorum')} 4%</Typography>
         <br />
         <BorderLinearProgress
           variant="buffer"
@@ -568,8 +567,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
       ]);
       const selectedVoteLog = pollVotes.value
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
-            pollVotes.value,
-          )} NanoSTC) `
+          pollVotes.value,
+        )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
       columns.push([t('poll.selectedVoteLog'), selectedVoteLog]);
