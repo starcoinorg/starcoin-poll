@@ -323,6 +323,9 @@ class Index extends PureComponent<IndexProps, IndexState> {
   }
 
   async onClickUnstake() {
+    if (!this.props.pollVotes.isVoted) {
+      return false;
+    }
     try {
       const config = this.getConfig();
       const functionId = '0x1::DaoVoteScripts::unstake_vote';
@@ -629,7 +632,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
       //     </Button>)
       // }
     }
-    if (status > POLL_STATUS.ACTIVE && !this.props.isUnstaked) {
+    if (status > POLL_STATUS.ACTIVE && this.props.pollVotes.isVoted) {
       buttons.push(
         <Button
           key="unstake"
