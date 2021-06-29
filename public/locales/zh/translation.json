@@ -32,6 +32,7 @@
     },
     "id": "ID",
     "status": "状态",
+    "startTime": "开始时间",
     "endTime": "结束时间",
     "creator": "创建者",
     "discussion": "留言板",
@@ -57,6 +58,19 @@
     "warning": "提交投票之后不能修改，用于投票的 STC 必须等到投票结束之后才能取出。",
     "quorum": "法定阈值",
     "threshold": "法定门槛",
+    "hideVoted": "隐藏已结束的投票",
+    "all": "全部",
+    "create": "创建",
+    "createAPoll": "创建一个提案",
+    "deposite": "保证金",
+    "duration": "持续时间",
+    "externalUrl": "外部链接",
+    "locale": "zh-cn",
+    "minDateMsg": "结束时间必须至少比开始时间晚 7 天",
+    "urlHelperText": "请输入外部链接",
+    "depositeHelperText": "请输入保证金",
+    "durationHelperText": "请输入持续时间",
+    "code": "合约字节码",
     "": ""
   }
 }

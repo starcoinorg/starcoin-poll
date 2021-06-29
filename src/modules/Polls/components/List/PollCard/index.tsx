@@ -44,12 +44,15 @@ const useStyles = (theme: Theme) =>
     },
     cardHover: {
       boxShadow: `
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 3
-        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 1
-        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${theme.spacing(1) * 1
-        }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
+        theme.spacing(1) * 3
+      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
+        theme.spacing(1) * 1
+      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${
+        theme.spacing(1) * 1
+      }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
     `,
       cursor: 'pointer',
     },

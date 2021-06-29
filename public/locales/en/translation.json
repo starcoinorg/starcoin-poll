@@ -32,6 +32,7 @@
     },
     "id": "ID",
     "status": "Status",
+    "startTime": "Start Time",
     "endTime": "End Time",
     "creator": "Creator",
     "discussion": "Discussion",
@@ -57,6 +58,19 @@
     "warning": "Vote cannot be changed after submission. Staked STC used to vote in polls are locked and cannot be withdrawn until the poll finishes.",
     "quorum": "Quorum",
     "threshold": "Threshold",
+    "hideVoted": "Hide voted polls",
+    "all": "All",
+    "create": "Create",
+    "createAPoll": "Create A Poll",
+    "deposite": "Deposite",
+    "duration": "Duration",
+    "externalUrl": "External URL",
+    "locale": "en",
+    "minDateMsg": "The end time must be at least 7 days later than the start time.",
+    "urlHelperText": "Please input external url.",
+    "depositeHelperText": "Please input deposite.",
+    "durationHelperText": "Please input time of duration.",
+    "code": "Contract ByteCode",
     "": ""
   }
 }
