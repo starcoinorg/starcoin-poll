@@ -118,6 +118,8 @@ interface IndexState {
   errors: Record<string, boolean>;
 }
 
+const isLocal = window.location.host.includes('localhost');
+
 class List extends PureComponent<Props, IndexState> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
@@ -417,20 +419,22 @@ class List extends PureComponent<Props, IndexState> {
                   <Grid item>
                     <Typography>{t('header.polls')}</Typography>
                   </Grid>
-                  <Grid item>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      size="small"
-                      onClick={() => {
-                        this.setState({
-                          open: true,
-                        });
-                      }}
-                    >
-                      {t('poll.create')}
-                    </Button>
-                  </Grid>
+                  {isLocal && (
+                    <Grid item>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        onClick={() => {
+                          this.setState({
+                            open: true,
+                          });
+                        }}
+                      >
+                        {t('poll.create')}
+                      </Button>
+                    </Grid>
+                  )}
                 </Grid>
               }
             />
