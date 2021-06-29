@@ -60,10 +60,6 @@
     "threshold": "法定门槛",
     "hideVoted": "隐藏已结束的投票",
     "all": "全部",
-    "inProgress": "进行中",
-    "passed": "已通过",
-    "rejected": "未通过",
-    "executed": "已生效",
     "create": "创建",
     "createAPoll": "创建一个提案",
     "deposite": "保证金",
@@ -74,7 +70,7 @@
     "urlHelperText": "请输入外部链接",
     "depositeHelperText": "请输入保证金",
     "durationHelperText": "请输入持续时间",
-    "code": "代码",
+    "code": "合约字节码",
     "": ""
   }
 }

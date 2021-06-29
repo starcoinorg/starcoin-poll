@@ -18,6 +18,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
+import { POLL_STATUS } from '@/utils/constants';
 import PollCard from './PollCard';
 import DynamicForm from '../DynamicForm';
 
@@ -243,6 +244,14 @@ class List extends PureComponent<Props, IndexState> {
       duration: t('poll.durationHelperText'),
     };
 
+    const menus = [{ label: t('poll.all'), value: 0 }];
+    for (let i = 1; i < 8; i++) {
+      menus.push({
+        label: t(`poll.statusText.${i}`),
+        value: i,
+      });
+    }
+
     const { enTitle, cnTitle, enDesc, cnDesc, url, deposite, duration } = form;
     return (
       <div>
@@ -394,11 +403,11 @@ class List extends PureComponent<Props, IndexState> {
                         });
                       }}
                     >
-                      <MenuItem value={0}>{t('poll.all')}</MenuItem>
-                      <MenuItem value={2}>{t('poll.inProgress')}</MenuItem>
-                      <MenuItem value={4}>{t('poll.passed')}</MenuItem>
-                      <MenuItem value={3}>{t('poll.rejected')}</MenuItem>
-                      <MenuItem value={7}>{t('poll.executed')}</MenuItem>
+                      {menus.map(({ label, value }) => (
+                        <MenuItem value={value} key={value}>
+                          {label}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </Grid>
                 </Grid>

@@ -60,10 +60,6 @@
     "threshold": "Threshold",
     "hideVoted": "Hide voted polls",
     "all": "All",
-    "inProgress": "In Progress",
-    "passed": "Passed",
-    "rejected": "Rejected",
-    "executed": "Executed",
     "create": "Create",
     "createAPoll": "Create A Poll",
     "deposite": "Deposite",
@@ -74,7 +70,7 @@
     "urlHelperText": "Please input external url.",
     "depositeHelperText": "Please input deposite.",
     "durationHelperText": "Please input time of duration.",
-    "code": "Code",
+    "code": "Contract ByteCode",
     "": ""
   }
 }
