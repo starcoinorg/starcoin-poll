@@ -14,10 +14,12 @@ export const getPollVotes = async (params: any) => {
         selectedAccount: params.selectedAccount,
         agree: undefined,
         value: undefined,
+        isVoted: false,
     };
-    if (result) {
+    if (result && result.id === params.id) {
         votes.agree = result.agree;
         votes.value = result.stake.value;
+        votes.isVoted = true;
     }
     return votes;
 }

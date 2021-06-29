@@ -50,21 +50,6 @@ function* watchGetWalletAccounts() {
   yield takeLatest(types.GET_WALLECT_ACCOUNTS, getWalletAccounts)
 }
 
-export function* getPollByHeight(action: ReturnType<typeof actions.getPoll>) {
-  try {
-    const res = yield call(withLoading, api.getPollByHeight, action.type, action.payload);
-    yield put(actions.setPoll(res));
-  } catch (err) {
-    if (err.message) {
-      console.log(err.message);
-    }
-  }
-}
-
-function* watchGetPollByHeight() {
-  yield takeLatest(types.GET_POLL_BY_HEIGHT, getPollByHeight)
-}
-
 export function* getPollList(action: ReturnType<typeof actions.getPollList>) {
   try {
     const res = yield call(withLoading, api.getPollList, action.type, action.payload);
@@ -86,7 +71,6 @@ function* watchGetPollList() {
 const sagas = [
   watchGetPoll,
   watchGetPollVotes,
-  watchGetPollByHeight,
   watchGetPollList,
   watchGetWalletAccounts,
 ];
