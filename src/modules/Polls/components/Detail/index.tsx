@@ -278,17 +278,57 @@ class Index extends PureComponent<IndexProps, IndexState> {
     this.setState({ checked: value });
   };
 
-  // onClickQueue() {
-  //   console.log('onClickAgree', this.props);
-  // }
+  onClickQueue() {
+    console.log('onClickAgree', this.props);
+  }
 
-  // onClickUnstake() {
-  //   console.log('onClickUnstake', this.props);
-  // }
+  async onClickUnstake() {
+    try {
+      const config = this.getConfig();
+      const functionId = '0x1::DaoVoteScripts::unstake_vote';
+      const strTypeArgs = ['0x1::STC::STC', config.type_args_1]
+      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs)
+      const proposerAdressHex = config.creator;
+      const proposalId = config.id;
 
-  // onClickExecute() {
-  //   console.log('onClickExecute', this.props);
-  // }
+      // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
+      const proposalIdSCSHex = (function () {
+        const se = new bcs.BcsSerializer();
+        se.serializeU64(proposalId);
+        return hexlify(se.getBytes());
+      })();
+      const args = [
+        arrayify(proposerAdressHex),
+        arrayify(proposalIdSCSHex),
+      ];
+
+      const scriptFunction = utils.tx.encodeScriptFunction(
+        functionId,
+        structTypeTags,
+        args,
+      );
+      const payloadInHex = (function () {
+        const se = new bcs.BcsSerializer();
+        scriptFunction.serialize(se);
+        return hexlify(se.getBytes());
+      })();
+      await this.starcoinProvider
+        .getSigner()
+        .sendUncheckedTransaction({
+          data: payloadInHex,
+          // ScriptFunction and Package need to speific gasLimit here.
+          gasLimit: 10000000,
+          gasPrice: 1,
+        });
+    } catch (error) {
+      console.error(error);
+    }
+    return false;
+  }
+
+  onClickExecute() {
+    console.log('onClickExecute', this.props);
+  }
 
   async onClickVoteConfirm() {
     try {
@@ -550,48 +590,48 @@ class Index extends PureComponent<IndexProps, IndexState> {
       //     </Button>)
       // }
     }
-    // if (status > POLL_STATUS.ACTIVE && !this.props.isUnstaked) {
-    //   buttons.push(
-    //     <Button
-    //       key="unstake"
-    //       className={classes.button}
-    //       color="primary"
-    //       variant="contained"
-    //       onClick={() => {
-    //         this.onClickUnstake()
-    //       }}
-    //     >
-    //       <Typography variant="body1">{t('poll.buttonText.unstake')}</Typography>
-    //     </Button>)
-    // }
-    // if (status === POLL_STATUS.AGREED) {
-    //   buttons.push(
-    //     <Button
-    //       key="queue"
-    //       className={classes.button}
-    //       color="primary"
-    //       variant="contained"
-    //       onClick={() => {
-    //         this.onClickQueue()
-    //       }}
-    //     >
-    //       <Typography variant="body1">{t('poll.buttonText.queue')}</Typography>
-    //     </Button>)
-    // }
-    // if (status === POLL_STATUS.EXECUTABLE) {
-    //   buttons.push(
-    //     <Button
-    //       key="execute"
-    //       className={classes.button}
-    //       color="primary"
-    //       variant="contained"
-    //       onClick={() => {
-    //         this.onClickExecute()
-    //       }}
-    //     >
-    //       <Typography variant="body1">{t('poll.buttonText.execute')}</Typography>
-    //     </Button>)
-    // }
+    if (status > POLL_STATUS.ACTIVE && !this.props.isUnstaked) {
+      buttons.push(
+        <Button
+          key="unstake"
+          className={classes.button}
+          color="primary"
+          variant="contained"
+          onClick={() => {
+            this.onClickUnstake()
+          }}
+        >
+          <Typography variant="body1">{t('poll.buttonText.unstake')}</Typography>
+        </Button>)
+    }
+    if (status === POLL_STATUS.AGREED) {
+      buttons.push(
+        <Button
+          key="queue"
+          className={classes.button}
+          color="primary"
+          variant="contained"
+          onClick={() => {
+            this.onClickQueue()
+          }}
+        >
+          <Typography variant="body1">{t('poll.buttonText.queue')}</Typography>
+        </Button>)
+    }
+    if (status === POLL_STATUS.EXECUTABLE) {
+      buttons.push(
+        <Button
+          key="execute"
+          className={classes.button}
+          color="primary"
+          variant="contained"
+          onClick={() => {
+            this.onClickExecute()
+          }}
+        >
+          <Typography variant="body1">{t('poll.buttonText.execute')}</Typography>
+        </Button>)
+    }
     return buttons;
   }
 
