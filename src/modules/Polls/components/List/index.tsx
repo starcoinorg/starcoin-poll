@@ -22,6 +22,7 @@ import moment from 'moment';
 import MomentUtils from '@date-io/moment';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import PollCard from './PollCard';
+import DynamicForm from '../DynamicForm';
 import 'moment/locale/zh-cn';
 
 const useStyles = (theme: Theme) =>
@@ -186,7 +187,6 @@ class List extends PureComponent<Props, IndexState> {
       'enDesc',
       'cnDesc',
       'url',
-      'deposite',
     ];
     let hasError = errors.endTime;
     requiredFields.forEach((field) => {
@@ -282,8 +282,10 @@ class List extends PureComponent<Props, IndexState> {
             locale={locale}
           >
             <DialogContent>
+              <DynamicForm />
               <TextField
                 autoFocus
+                required
                 margin="dense"
                 id="enTitle"
                 name="enTitle"
@@ -296,6 +298,7 @@ class List extends PureComponent<Props, IndexState> {
               />
               <TextField
                 margin="dense"
+                required
                 id="cnTitle"
                 name="cnTitle"
                 helperText={errors.cnTitle ? helperTextMaps.cnTitle : undefined}
@@ -307,6 +310,7 @@ class List extends PureComponent<Props, IndexState> {
               />
               <TextField
                 margin="dense"
+                required
                 id="enDesc"
                 name="enDesc"
                 error={errors.enDesc}
@@ -319,6 +323,7 @@ class List extends PureComponent<Props, IndexState> {
               <TextField
                 margin="dense"
                 id="cnDesc"
+                required
                 name="cnDesc"
                 helperText={errors.cnDesc ? helperTextMaps.cnDesc : undefined}
                 error={errors.cnDesc}
@@ -330,6 +335,7 @@ class List extends PureComponent<Props, IndexState> {
               <TextField
                 autoFocus
                 margin="dense"
+                required
                 id="url"
                 name="url"
                 helperText={errors.url ? helperTextMaps.url : undefined}
@@ -443,8 +449,6 @@ class List extends PureComponent<Props, IndexState> {
                   </Grid>
                   <Grid item>
                     <Select
-                      labelId="demo-simple-select-outlined-label"
-                      id="demo-simple-select-outlined"
                       style={{ width: 120 }}
                       value={status}
                       onChange={(
