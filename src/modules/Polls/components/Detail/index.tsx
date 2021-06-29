@@ -278,8 +278,48 @@ class Index extends PureComponent<IndexProps, IndexState> {
     this.setState({ checked: value });
   };
 
-  onClickQueue() {
-    console.log('onClickAgree', this.props);
+  async onClickQueue() {
+    try {
+      const config = this.getConfig();
+      const functionId = '0x1::Dao::queue_proposal_action';
+      const strTypeArgs = ['0x1::STC::STC', '0x1::OnChainConfigDao::OnChainConfigUpdate<0x1::TransactionPublishOption::TransactionPublishOption>']
+      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs)
+      const proposerAdressHex = config.creator;
+      const proposalId = config.id;
+
+      // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
+      const proposalIdSCSHex = (function () {
+        const se = new bcs.BcsSerializer();
+        se.serializeU64(proposalId);
+        return hexlify(se.getBytes());
+      })();
+      const args = [
+        arrayify(proposerAdressHex),
+        arrayify(proposalIdSCSHex),
+      ];
+
+      const scriptFunction = utils.tx.encodeScriptFunction(
+        functionId,
+        structTypeTags,
+        args,
+      );
+      const payloadInHex = (function () {
+        const se = new bcs.BcsSerializer();
+        scriptFunction.serialize(se);
+        return hexlify(se.getBytes());
+      })();
+      await this.starcoinProvider
+        .getSigner()
+        .sendUncheckedTransaction({
+          data: payloadInHex,
+          // ScriptFunction and Package need to speific gasLimit here.
+          gasLimit: 10000000,
+          gasPrice: 1,
+        });
+    } catch (error) {
+      console.error(error);
+    }
+    return false;
   }
 
   async onClickUnstake() {
@@ -326,7 +366,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
     return false;
   }
 
-  onClickExecute() {
+  async onClickExecute() {
     console.log('onClickExecute', this.props);
   }
 
