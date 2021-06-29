@@ -211,7 +211,6 @@ interface IndexProps {
   poll: any;
   pollVotes: any;
   accounts: string[];
-  isUnstaked: boolean;
   isRevokeable: boolean;
   getPoll: (data: any, callback?: any) => any;
 }
@@ -237,7 +236,6 @@ class Index extends PureComponent<IndexProps, IndexState> {
     poll: undefined,
     pollVotes: undefined,
     accounts: [],
-    isUnstaked: false,
     isRevokeable: false,
   };
 
