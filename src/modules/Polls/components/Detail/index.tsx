@@ -366,9 +366,8 @@ class Index extends PureComponent<IndexProps, IndexState> {
     return false;
   }
 
-  async onClickExecute() {
-    console.log('onClickExecute', this.props);
-  }
+  // async onClickExecute() {
+  // }
 
   async onClickVoteConfirm() {
     try {
@@ -589,7 +588,7 @@ class Index extends PureComponent<IndexProps, IndexState> {
   // | 1 | PENDING    |                   |                  |
   // | 2 | ACTIVE     |  vote             | revoke (if voted)|
   // | 3 | DEFEATED   |                   |                  |
-  // | 4 | AGREED     |  unstake (if not) |  queue           |
+  // | 4 | AGREED     |  unstake (if not) | queue            |
   // | 5 | QUEUED     |  unstake (if not) |                  |
   // | 6 | EXECUTABLE |  unstake (if not) | execute          |
   // | 7 | EXTRACTED  |  unstake (if not) |                  |
@@ -658,20 +657,21 @@ class Index extends PureComponent<IndexProps, IndexState> {
           <Typography variant="body1">{t('poll.buttonText.queue')}</Typography>
         </Button>)
     }
-    if (status === POLL_STATUS.EXECUTABLE) {
-      buttons.push(
-        <Button
-          key="execute"
-          className={classes.button}
-          color="primary"
-          variant="contained"
-          onClick={() => {
-            this.onClickExecute()
-          }}
-        >
-          <Typography variant="body1">{t('poll.buttonText.execute')}</Typography>
-        </Button>)
-    }
+    // TODO: enable this while starcoin bug fixed
+    // if (status === POLL_STATUS.EXECUTABLE) {
+    //   buttons.push(
+    //     <Button
+    //       key="execute"
+    //       className={classes.button}
+    //       color="primary"
+    //       variant="contained"
+    //       onClick={() => {
+    //         this.onClickExecute()
+    //       }}
+    //     >
+    //       <Typography variant="body1">{t('poll.buttonText.execute')}</Typography>
+    //     </Button>)
+    // }
     return buttons;
   }
 
