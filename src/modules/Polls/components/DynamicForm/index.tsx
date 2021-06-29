@@ -8,6 +8,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import { withTranslation } from 'react-i18next';
 
 interface Child {
   name: string;
@@ -21,7 +22,7 @@ type Schema = {
   children?: Child[];
 }[];
 
-const schema: Schema = [
+const initSchema: Schema = [
   {
     name: 'func1',
     children: [
@@ -93,9 +94,17 @@ const selectStyle = {
   margin: '8px 0',
 };
 
-const DynamicForm = () => {
+interface i18nProps {
+  t: any;
+}
+
+interface DynamicFormProps extends i18nProps {}
+
+const DynamicForm = (props: DynamicFormProps) => {
+  const { t } = props;
   const [selections, setSelections] = useState<string[]>([]);
   const [form, setForm] = useState<Record<string, any>>({});
+  const [schema, setSchema] = useState<Schema>([]);
 
   const handleSelectionChanged = (value: string, index: number) => {
     const nextSelections: Array<string> = selections.slice(0, index + 1);
@@ -117,6 +126,14 @@ const DynamicForm = () => {
     } else if (Object.prototype.hasOwnProperty.call(target, 'value')) {
       setForm({ ...form, [name]: target.value });
     }
+  };
+
+  const handleCodeChange = (event: React.ChangeEvent<{ value: string }>) => {
+    const { value } = event.target;
+    console.log('value: ', value);
+    setTimeout(() => {
+      setSchema(initSchema);
+    }, 1000);
   };
 
   const renderFormItems = () => {
@@ -212,31 +229,50 @@ const DynamicForm = () => {
     return ret;
   };
 
+  useEffect(() => {
+    return () => {
+      setSelections([]);
+      setForm({});
+      setSchema([]);
+    };
+  }, []);
+
   return (
     <Card>
       <CardContent>
-        <FormControl style={selectStyle}>
-          <InputLabel id="funcId">FunctionId</InputLabel>
-          <Select
-            labelId="funcId"
-            value={selections[0] || ''}
-            onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-              const value = event.target.value as string;
-              handleSelectionChanged(value, 0);
-            }}
-            key={0}
-          >
-            {schema.map(({ name }) => (
-              <MenuItem value={name} key={name}>
-                {name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {renderFormItems()}
+        <TextField
+          multiline
+          margin="dense"
+          style={selectStyle}
+          label={t('poll.code')}
+          onChange={handleCodeChange}
+        />
+        {schema.length ? (
+          <>
+            <FormControl style={selectStyle}>
+              <InputLabel id="funcId">FunctionId</InputLabel>
+              <Select
+                labelId="funcId"
+                value={selections[0] || ''}
+                onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                  const value = event.target.value as string;
+                  handleSelectionChanged(value, 0);
+                }}
+                key={0}
+              >
+                {schema.map(({ name }) => (
+                  <MenuItem value={name} key={name}>
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {renderFormItems()}
+          </>
+        ) : null}
       </CardContent>
     </Card>
   );
 };
 
-export default DynamicForm;
+export default withTranslation()(DynamicForm);

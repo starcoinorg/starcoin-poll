@@ -67,11 +67,14 @@
     "create": "Create",
     "createAPoll": "Create A Poll",
     "deposite": "Deposite",
+    "duration": "Duration",
     "externalUrl": "External URL",
     "locale": "en",
     "minDateMsg": "The end time must be at least 7 days later than the start time.",
     "urlHelperText": "Please input external url.",
     "depositeHelperText": "Please input deposite.",
+    "durationHelperText": "Please input time of duration.",
+    "code": "Code",
     "": ""
   }
 }

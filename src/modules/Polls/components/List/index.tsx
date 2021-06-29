@@ -18,12 +18,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
-import moment from 'moment';
-import MomentUtils from '@date-io/moment';
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import PollCard from './PollCard';
 import DynamicForm from '../DynamicForm';
-import 'moment/locale/zh-cn';
 
 const useStyles = (theme: Theme) =>
   createStyles({
@@ -138,14 +134,13 @@ class List extends PureComponent<Props, IndexState> {
       hideVoted: false,
       open: false,
       form: {
-        startTime: moment(),
-        endTime: moment().add(7, 'days'),
         enTitle: '',
         cnTitle: '',
         enDesc: '',
         cnDesc: '',
         url: '',
         deposite: '',
+        duration: 7,
       },
       errors: {},
     };
@@ -187,6 +182,7 @@ class List extends PureComponent<Props, IndexState> {
       'enDesc',
       'cnDesc',
       'url',
+      'duration',
     ];
     let hasError = errors.endTime;
     requiredFields.forEach((field) => {
@@ -210,8 +206,6 @@ class List extends PureComponent<Props, IndexState> {
   closeFormDialog = () => {
     this.setState({
       form: {
-        startTime: moment(),
-        endTime: moment().add(7, 'days'),
         enTitle: '',
         cnTitle: '',
         enDesc: '',
@@ -228,7 +222,7 @@ class List extends PureComponent<Props, IndexState> {
     try {
       const values = await this.validateFields();
       console.log('values: ', values);
-      this.closeFormDialog()
+      this.closeFormDialog();
     } catch (e) {
       console.error(e);
     }
@@ -239,9 +233,6 @@ class List extends PureComponent<Props, IndexState> {
     const { hideVoted, status, open, form, errors } = this.state;
     const list = JSON.parse(t('poll.polls'));
 
-    const locale = t('poll.locale');
-    moment.locale(locale);
-
     const helperTextMaps = {
       enTitle: 'Please input title.',
       cnTitle: '请输入中文标题.',
@@ -249,19 +240,10 @@ class List extends PureComponent<Props, IndexState> {
       cnDesc: '请输入中文描述.',
       url: t('poll.urlHelperText'),
       deposite: t('poll.depositeHelperText'),
+      duration: t('poll.durationHelperText'),
     };
 
-    const {
-      enTitle,
-      cnTitle,
-      enDesc,
-      cnDesc,
-      url,
-      deposite,
-      startTime,
-      endTime,
-    } = form;
-
+    const { enTitle, cnTitle, enDesc, cnDesc, url, deposite, duration } = form;
     return (
       <div>
         <Helmet>
@@ -276,146 +258,99 @@ class List extends PureComponent<Props, IndexState> {
           <DialogTitle id="simple-dialog-title">
             {t('poll.createAPoll')}
           </DialogTitle>
-          <MuiPickersUtilsProvider
-            libInstance={moment}
-            utils={MomentUtils}
-            locale={locale}
-          >
-            <DialogContent>
-              <DynamicForm />
-              <TextField
-                autoFocus
-                required
-                margin="dense"
-                id="enTitle"
-                name="enTitle"
-                error={errors.enTitle}
-                helperText={errors.enTitle ? helperTextMaps.enTitle : undefined}
-                value={enTitle}
-                label="Title"
-                fullWidth
-                onChange={this.handleFormChange}
-              />
-              <TextField
-                margin="dense"
-                required
-                id="cnTitle"
-                name="cnTitle"
-                helperText={errors.cnTitle ? helperTextMaps.cnTitle : undefined}
-                error={errors.cnTitle}
-                value={cnTitle}
-                label="中文标题"
-                fullWidth
-                onChange={this.handleFormChange}
-              />
-              <TextField
-                margin="dense"
-                required
-                id="enDesc"
-                name="enDesc"
-                error={errors.enDesc}
-                helperText={errors.enDesc ? helperTextMaps.enDesc : undefined}
-                value={enDesc}
-                label="Description"
-                fullWidth
-                onChange={this.handleFormChange}
-              />
-              <TextField
-                margin="dense"
-                id="cnDesc"
-                required
-                name="cnDesc"
-                helperText={errors.cnDesc ? helperTextMaps.cnDesc : undefined}
-                error={errors.cnDesc}
-                value={cnDesc}
-                label="中文描述"
-                fullWidth
-                onChange={this.handleFormChange}
-              />
-              <TextField
-                autoFocus
-                margin="dense"
-                required
-                id="url"
-                name="url"
-                helperText={errors.url ? helperTextMaps.url : undefined}
-                error={errors.url}
-                value={url}
-                label={t('poll.externalUrl')}
-                fullWidth
-                onChange={this.handleFormChange}
-              />
-              <TextField
-                autoFocus
-                margin="dense"
-                id="deposite"
-                name="deposite"
-                error={errors.deposite}
-                helperText={
-                  errors.deposite ? helperTextMaps.deposite : undefined
-                }
-                value={deposite}
-                label={t('poll.deposite')}
-                fullWidth
-                onChange={this.handleFormChange}
-              />
-              <div style={{ margin: '8px 0' }}>
-                <DatePicker
-                  autoOk
-                  label={t('poll.startTime')}
-                  disablePast
-                  value={startTime}
-                  okLabel={t('poll.ok')}
-                  cancelLabel={t('poll.cancel')}
-                  format="YYYY-MM-DD"
-                  onChange={(value) => {
-                    this.setState((prevState) => ({
-                      form: {
-                        ...prevState.form,
-                        startTime: value,
-                      },
-                    }));
-                  }}
-                />
-              </div>
-              <div style={{ margin: '8px 0' }}>
-                <DatePicker
-                  autoOk
-                  label={t('poll.endTime')}
-                  value={endTime}
-                  okLabel={t('poll.ok')}
-                  format="YYYY-MM-DD"
-                  minDateMessage={t('poll.minDateMsg')}
-                  onError={(error) => {
-                    const { errors } = this.state;
-                    if (errors.endTime !== !!error) {
-                      this.setState((prevState) => ({
-                        errors: {
-                          ...prevState.errors,
-                          endTime: !!error,
-                        },
-                      }));
-                    }
-                  }}
-                  minDate={moment(startTime).add(7, 'days')}
-                  cancelLabel={t('poll.cancel')}
-                  onChange={(value) => {
-                    this.setState((prevState) => ({
-                      form: {
-                        ...prevState.form,
-                        endTime: value,
-                      },
-                      errors: {
-                        ...prevState.errors,
-                        endTime: false,
-                      },
-                    }));
-                  }}
-                  error={errors.endTime}
-                />
-              </div>
-            </DialogContent>
-          </MuiPickersUtilsProvider>
+          <DialogContent>
+            <DynamicForm />
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="enTitle"
+              name="enTitle"
+              error={errors.enTitle}
+              helperText={errors.enTitle ? helperTextMaps.enTitle : undefined}
+              value={enTitle}
+              label="Title"
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+            <TextField
+              margin="dense"
+              required
+              id="cnTitle"
+              name="cnTitle"
+              helperText={errors.cnTitle ? helperTextMaps.cnTitle : undefined}
+              error={errors.cnTitle}
+              value={cnTitle}
+              label="中文标题"
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+            <TextField
+              margin="dense"
+              required
+              id="enDesc"
+              name="enDesc"
+              error={errors.enDesc}
+              helperText={errors.enDesc ? helperTextMaps.enDesc : undefined}
+              value={enDesc}
+              label="Description"
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+            <TextField
+              margin="dense"
+              id="cnDesc"
+              required
+              name="cnDesc"
+              helperText={errors.cnDesc ? helperTextMaps.cnDesc : undefined}
+              error={errors.cnDesc}
+              value={cnDesc}
+              label="中文描述"
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+            <TextField
+              autoFocus
+              margin="dense"
+              required
+              id="url"
+              name="url"
+              helperText={errors.url ? helperTextMaps.url : undefined}
+              error={errors.url}
+              value={url}
+              label={t('poll.externalUrl')}
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+            <TextField
+              autoFocus
+              margin="dense"
+              id="duration"
+              name="duration"
+              type="number"
+              error={errors.duration}
+              helperText={errors.duration ? helperTextMaps.duration : undefined}
+              value={duration}
+              inputProps={{
+                min: 7,
+              }}
+              label={t('poll.duration')}
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+            <TextField
+              autoFocus
+              margin="dense"
+              id="deposite"
+              name="deposite"
+              error={errors.deposite}
+              helperText={errors.deposite ? helperTextMaps.deposite : undefined}
+              value={deposite}
+              label={t('poll.deposite')}
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+          </DialogContent>
           <DialogActions>
             <Button color="primary" onClick={this.closeFormDialog}>
               {t('poll.cancel')}
