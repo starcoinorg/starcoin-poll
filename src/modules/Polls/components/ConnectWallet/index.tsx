@@ -13,7 +13,7 @@ const useStyles = (theme: Theme) => createStyles({
 interface IndexProps {
   classes: any;
   t: any;
-  match: any;
+  id: any;
   accounts: string[];
   getPoll: (data: any, callback?: any) => any;
   getPollVotes: (data: any, callback?: any) => any;
@@ -36,7 +36,7 @@ class ConnectWallet extends PureComponent<IndexProps, IndexState> {
 
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
-    match: {},
+    id: undefined,
     accounts: [],
     getPoll: () => { },
     getPollVotes: () => { },
@@ -90,7 +90,7 @@ class ConnectWallet extends PureComponent<IndexProps, IndexState> {
   }
 
   handleNewAccounts(newAccounts: string[]) {
-    const { t, getPollVotes } = this.props;
+    const { t, getPollVotes, id } = this.props;
     const isStarMaskConnected = newAccounts.length > 0;
     if (isStarMaskConnected) {
       let text;
@@ -99,7 +99,7 @@ class ConnectWallet extends PureComponent<IndexProps, IndexState> {
         if (this.onboarding) {
           this.onboarding.stopOnboarding();
         }
-        getPollVotes({ selectedAccount: newAccounts[0] });
+        getPollVotes({ id, selectedAccount: newAccounts[0] });
       } else {
         text = t('poll.connect');
         this.onClick = this.onClickConnect;
