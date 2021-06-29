@@ -110,6 +110,7 @@ const DynamicForm = (props: DynamicFormProps) => {
     const nextSelections: Array<string> = selections.slice(0, index + 1);
     nextSelections[index] = value;
     setSelections(nextSelections);
+    setForm({})
   };
 
   const handleFormChange = (
