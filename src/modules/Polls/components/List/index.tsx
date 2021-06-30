@@ -376,43 +376,45 @@ class List extends PureComponent<Props, IndexState> {
           <Card>
             <CardHeader
               action={
-                <Grid container alignItems="center" spacing={1}>
-                  <Grid item>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={hideVoted}
-                          color="primary"
-                          onChange={() => {
-                            this.setState((prevState) => ({
-                              hideVoted: !prevState.hideVoted,
-                            }));
-                          }}
-                        />
-                      }
-                      label={t('poll.hideVoted')}
-                    />
+                isLocal && (
+                  <Grid container alignItems="center" spacing={1}>
+                    <Grid item>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={hideVoted}
+                            color="primary"
+                            onChange={() => {
+                              this.setState((prevState) => ({
+                                hideVoted: !prevState.hideVoted,
+                              }));
+                            }}
+                          />
+                        }
+                        label={t('poll.hideVoted')}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Select
+                        style={{ width: 120 }}
+                        value={status}
+                        onChange={(
+                          event: React.ChangeEvent<{ value: unknown }>,
+                        ) => {
+                          this.setState({
+                            status: event.target.value as number,
+                          });
+                        }}
+                      >
+                        {menus.map(({ label, value }) => (
+                          <MenuItem value={value} key={value}>
+                            {label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <Select
-                      style={{ width: 120 }}
-                      value={status}
-                      onChange={(
-                        event: React.ChangeEvent<{ value: unknown }>,
-                      ) => {
-                        this.setState({
-                          status: event.target.value as number,
-                        });
-                      }}
-                    >
-                      {menus.map(({ label, value }) => (
-                        <MenuItem value={value} key={value}>
-                          {label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </Grid>
-                </Grid>
+                )
               }
               title={
                 <Grid container alignItems="center" spacing={1}>
