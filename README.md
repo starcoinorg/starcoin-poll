@@ -45,7 +45,7 @@ You will also see any lint errors in the console.
 
 Launches the test runner in the interactive watch mode.
 
-## How to deploy
+## How to test deploy
 
 `$yarn build`
 
@@ -61,7 +61,14 @@ Your app is ready to be deployed!
 >then visit: [http://localhost:5000](http://localhost:5000)
 
 
-use aws cli to upload the files to AWS S3 Bucket:
+## How to publish
+
+1. use aws cli to upload the files to AWS S3 Bucket:
+
 `$aws s3 cp ./build s3://poll.starcoin.org/ --recursive`
+
+2. use shell to build and upload files to AWS S3 Bucket:
+
+`./publish.sh`
 
 > PS: use proxy to speed up
