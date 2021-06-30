@@ -255,6 +255,16 @@ class List extends PureComponent<Props, IndexState> {
     }
 
     const { enTitle, cnTitle, enDesc, cnDesc, url, deposite, duration } = form;
+
+    let renderList = list.concat() || [];
+    if (hideVoted) {
+      renderList = renderList.filter(
+        (l: any) => l.status !== POLL_STATUS.EXTRACTED,
+      );
+    }
+    if (status) {
+      renderList = renderList.filter((l: any) => l.status === status);
+    }
     return (
       <div>
         <Helmet>
@@ -440,8 +450,8 @@ class List extends PureComponent<Props, IndexState> {
             />
             <Divider />
             <div className={classes.gridCards}>
-              {list.length
-                ? list.map((poll: any, index: number) => (
+              {renderList.length
+                ? renderList.map((poll: any, index: number) => (
                     <PollCard
                       key={`key_${index}`}
                       id={poll.id}
