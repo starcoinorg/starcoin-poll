@@ -18,6 +18,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
+import { POLL_STATUS } from '@/utils/constants';
 import PollCard from './PollCard';
 import DynamicForm from '../DynamicForm';
 
@@ -254,6 +255,16 @@ class List extends PureComponent<Props, IndexState> {
     }
 
     const { enTitle, cnTitle, enDesc, cnDesc, url, deposite, duration } = form;
+
+    let renderList = list.concat() || [];
+    if (hideVoted) {
+      renderList = renderList.filter(
+        (l: any) => l.status === POLL_STATUS.ACTIVE,
+      );
+    }
+    if (status) {
+      renderList = renderList.filter((l: any) => l.status === status);
+    }
     return (
       <div>
         <Helmet>
@@ -375,45 +386,43 @@ class List extends PureComponent<Props, IndexState> {
           <Card>
             <CardHeader
               action={
-                isLocal && (
-                  <Grid container alignItems="center" spacing={1}>
-                    <Grid item>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={hideVoted}
-                            color="primary"
-                            onChange={() => {
-                              this.setState((prevState) => ({
-                                hideVoted: !prevState.hideVoted,
-                              }));
-                            }}
-                          />
-                        }
-                        label={t('poll.hideVoted')}
-                      />
-                    </Grid>
-                    <Grid item>
-                      <Select
-                        style={{ width: 120 }}
-                        value={status}
-                        onChange={(
-                          event: React.ChangeEvent<{ value: unknown }>,
-                        ) => {
-                          this.setState({
-                            status: event.target.value as number,
-                          });
-                        }}
-                      >
-                        {menus.map(({ label, value }) => (
-                          <MenuItem value={value} key={value}>
-                            {label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </Grid>
+                <Grid container alignItems="center" spacing={1}>
+                  <Grid item>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={hideVoted}
+                          color="primary"
+                          onChange={() => {
+                            this.setState((prevState) => ({
+                              hideVoted: !prevState.hideVoted,
+                            }));
+                          }}
+                        />
+                      }
+                      label={t('poll.hideVoted')}
+                    />
                   </Grid>
-                )
+                  <Grid item>
+                    <Select
+                      style={{ width: 120 }}
+                      value={status}
+                      onChange={(
+                        event: React.ChangeEvent<{ value: unknown }>,
+                      ) => {
+                        this.setState({
+                          status: event.target.value as number,
+                        });
+                      }}
+                    >
+                      {menus.map(({ label, value }) => (
+                        <MenuItem value={value} key={value}>
+                          {label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Grid>
+                </Grid>
               }
               title={
                 <Grid container alignItems="center" spacing={1}>
@@ -441,8 +450,8 @@ class List extends PureComponent<Props, IndexState> {
             />
             <Divider />
             <div className={classes.gridCards}>
-              {list.length
-                ? list.map((poll: any, index: number) => (
+              {renderList.length
+                ? renderList.map((poll: any, index: number) => (
                     <PollCard
                       key={`key_${index}`}
                       id={poll.id}
