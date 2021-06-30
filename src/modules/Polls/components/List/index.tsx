@@ -18,7 +18,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
-import { POLL_STATUS } from '@/utils/constants';
 import PollCard from './PollCard';
 import DynamicForm from '../DynamicForm';
 

@@ -211,7 +211,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
               Id: {id}
             </Typography>
             <Typography variant="body2" gutterBottom>
-              {t('poll.status')}: {status}
+              {t('poll.status')}: {t(`poll.statusText.${status}`)}
             </Typography>
             <Typography variant="body2" gutterBottom>
               {t('poll.endTime')}:{' '}
