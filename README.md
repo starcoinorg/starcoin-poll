@@ -59,3 +59,9 @@ Your app is ready to be deployed!
 >  `serve -s build`
 >
 >then visit: [http://localhost:5000](http://localhost:5000)
+
+
+use aws cli to upload the files to AWS S3 Bucket:
+`$aws s3 cp ./build s3://poll.starcoin.org/ --recursive`
+
+> PS: use proxy to speed up
