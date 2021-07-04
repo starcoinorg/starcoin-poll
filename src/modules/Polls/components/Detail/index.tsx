@@ -227,7 +227,7 @@ interface IndexState {
 
 let startToVerify: boolean = false;
 
-class Index extends PureComponent<IndexProps, IndexState> {
+class Detail extends PureComponent<IndexProps, IndexState> {
   starcoinProvider: any;
 
   // eslint-disable-next-line react/static-property-placement
@@ -852,4 +852,4 @@ class Index extends PureComponent<IndexProps, IndexState> {
   }
 }
 
-export default withStyles(useStyles)(withTranslation()(Index));
+export default withStyles(useStyles)(withTranslation()(Detail));
