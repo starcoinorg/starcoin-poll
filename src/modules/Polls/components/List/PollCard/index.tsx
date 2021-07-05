@@ -9,6 +9,8 @@ import Grid from '@material-ui/core/Grid';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import { getPollData } from '@/utils/sdk';
 import { POLL_STATUS } from '@/utils/constants';
+import Link from '@material-ui/core/Link';
+import { NavLink } from 'react-router-dom';
 import BorderLinearProgress from '../../BorderLinearProgress';
 
 const useStyles = (theme: Theme) =>
@@ -44,12 +46,15 @@ const useStyles = (theme: Theme) =>
     },
     cardHover: {
       boxShadow: `
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 3
-        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 1
-        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${theme.spacing(1) * 1
-        }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
+        theme.spacing(1) * 3
+      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
+        theme.spacing(1) * 1
+      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${
+        theme.spacing(1) * 1
+      }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
     `,
       cursor: 'pointer',
     },
@@ -170,9 +175,6 @@ class PollCard extends PureComponent<Props, PollCardState> {
       classes,
       t,
     } = this.props;
-    const openLink = () => {
-      window.open(url, '_self');
-    };
     const yes =
       status === POLL_STATUS.ACTIVE && this.state.pollData
         ? this.state.pollData.for_votes
@@ -187,80 +189,81 @@ class PollCard extends PureComponent<Props, PollCardState> {
     const voted = new BigNumber(yes).plus(new BigNumber(no));
     const votedPercent = voted.div(total).times(100).toFixed(2);
     return (
-      <div
-        className={classNames(classes.cardCommon, {
-          [classes.cardHover]: this.state.displayHover,
-          [classes.cardNoHover]: !this.state.displayHover,
-          [classes.cardInProgress]: status !== POLL_STATUS.EXTRACTED,
-        })}
-        onClick={openLink}
-        onMouseEnter={this.onCardEnter}
-        onMouseLeave={this.onCardLeave}
-      >
-        <Card className={classes.cardRoom}>
-          <div className={classes.header}>
-            <Typography variant="h5" gutterBottom className={classes.title}>
-              {title}
-            </Typography>
-          </div>
-          <div className={classes.content}>
-            <Typography variant="body2" gutterBottom>
-              Id: {id}
-            </Typography>
-            <Typography variant="body2" gutterBottom>
-              {t('poll.status')}: {t(`poll.statusText.${status}`)}
-            </Typography>
-            <Typography variant="body2" gutterBottom>
-              {t('poll.endTime')}:{' '}
-              {new Date(parseInt(end_time, 10)).toLocaleString()}
-            </Typography>
-            <BorderLinearProgress
-              variant="buffer"
-              value={Math.min(Number(yesPercent), 100)}
-              valueBuffer={Math.min(
-                Number(noPercent) + Number(yesPercent),
-                100,
-              )}
-              style={{ marginBottom: 8 }}
-            />
-            <Grid
-              container
-              alignItems="center"
-              justify="space-between"
-              wrap="nowrap"
-            >
-              <div>
-                <Grid container alignItems="center">
-                  {yes < no ? (
-                    <ErrorOutlineIcon
-                      fontSize="small"
-                      color="secondary"
-                      style={{ marginRight: 4 }}
-                    />
-                  ) : null}
-                  <Typography variant="body2" color="textPrimary">
-                    {`${t('poll.voted')} ${votedPercent}%`}
-                  </Typography>
-                </Grid>
-              </div>
-              <div>
-                <Grid container alignItems="center" spacing={1}>
-                  <Grid item>
-                    <Typography variant="body2" color="primary">
-                      {`${t('poll.yes')} ${yesPercent}%`}
+      <Link component={NavLink} to={url} underline="none">
+        <div
+          className={classNames(classes.cardCommon, {
+            [classes.cardHover]: this.state.displayHover,
+            [classes.cardNoHover]: !this.state.displayHover,
+            [classes.cardInProgress]: status !== POLL_STATUS.EXTRACTED,
+          })}
+          onMouseEnter={this.onCardEnter}
+          onMouseLeave={this.onCardLeave}
+        >
+          <Card className={classes.cardRoom}>
+            <div className={classes.header}>
+              <Typography variant="h5" gutterBottom className={classes.title}>
+                {title}
+              </Typography>
+            </div>
+            <div className={classes.content}>
+              <Typography variant="body2" gutterBottom>
+                Id: {id}
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                {t('poll.status')}: {t(`poll.statusText.${status}`)}
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                {t('poll.endTime')}:{' '}
+                {new Date(parseInt(end_time, 10)).toLocaleString()}
+              </Typography>
+              <BorderLinearProgress
+                variant="buffer"
+                value={Math.min(Number(yesPercent), 100)}
+                valueBuffer={Math.min(
+                  Number(noPercent) + Number(yesPercent),
+                  100,
+                )}
+                style={{ marginBottom: 8 }}
+              />
+              <Grid
+                container
+                alignItems="center"
+                justify="space-between"
+                wrap="nowrap"
+              >
+                <div>
+                  <Grid container alignItems="center">
+                    {yes < no ? (
+                      <ErrorOutlineIcon
+                        fontSize="small"
+                        color="secondary"
+                        style={{ marginRight: 4 }}
+                      />
+                    ) : null}
+                    <Typography variant="body2" color="textPrimary">
+                      {`${t('poll.voted')} ${votedPercent}%`}
                     </Typography>
                   </Grid>
-                  <Grid item>
-                    <Typography variant="body2" color="secondary">
-                      {`${t('poll.no')} ${noPercent}%`}
-                    </Typography>
+                </div>
+                <div>
+                  <Grid container alignItems="center" spacing={1}>
+                    <Grid item>
+                      <Typography variant="body2" color="primary">
+                        {`${t('poll.yes')} ${yesPercent}%`}
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="body2" color="secondary">
+                        {`${t('poll.no')} ${noPercent}%`}
+                      </Typography>
+                    </Grid>
                   </Grid>
-                </Grid>
-              </div>
-            </Grid>
-          </div>
-        </Card>
-      </div>
+                </div>
+              </Grid>
+            </div>
+          </Card>
+        </div>
+      </Link>
     );
   }
 }
