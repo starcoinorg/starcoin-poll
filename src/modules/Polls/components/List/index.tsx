@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import Helmet from 'react-helmet';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -19,6 +20,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
 import { POLL_STATUS } from '@/utils/constants';
+import client from '@/utils/client';
 import PollCard from './PollCard';
 import DynamicForm from '../DynamicForm';
 
@@ -116,6 +118,7 @@ interface IndexState {
   open: boolean;
   form: Record<string, any>;
   errors: Record<string, boolean>;
+  list: Record<string, any>[];
 }
 
 const isLocal = window.location.host.includes('localhost');
@@ -146,15 +149,25 @@ class List extends PureComponent<Props, IndexState> {
         duration: 7,
       },
       errors: {},
+      list: [],
     };
   }
 
   componentDidMount() {
     // this.fetchListPage(this.state.currentPage);
+    this.fetchList();
   }
 
   fetchListPage = (page: number) => {
     this.props.getPollList({ page });
+  };
+
+  fetchList = async (page = 1) => {
+    const resp = await client.get(`polls/page/main?page=${page}&count=20`);
+    const list = resp.list;
+    this.setState({
+      list,
+    });
   };
 
   setFilter = (value: string) => {
@@ -223,8 +236,7 @@ class List extends PureComponent<Props, IndexState> {
 
   handleSubmit = async () => {
     try {
-      const values = await this.validateFields();
-      console.log('values: ', values);
+      await this.validateFields();
       this.closeFormDialog();
     } catch (e) {
       console.error(e);
@@ -233,8 +245,8 @@ class List extends PureComponent<Props, IndexState> {
 
   render() {
     const { t, classes } = this.props;
-    const { hideVoted, status, open, form, errors } = this.state;
-    const list = JSON.parse(t('poll.polls'));
+    const suffix = i18n.language === 'en' ? 'En' : '';
+    const { hideVoted, status, open, form, errors, list } = this.state;
 
     const helperTextMaps = {
       enTitle: 'Please input title.',
@@ -457,13 +469,13 @@ class List extends PureComponent<Props, IndexState> {
                       id={poll.id}
                       url={`/polls/detail/${poll.id}`}
                       link={poll.link}
-                      title={poll.title}
-                      for_votes={poll.for_votes}
-                      against_votes={poll.against_votes}
+                      title={poll[`title${suffix}`]}
+                      for_votes={poll.forVotes}
+                      against_votes={poll.againstVotes}
                       status={poll.status}
-                      end_time={poll.end_time}
+                      end_time={poll.endTime}
                       creator={poll.creator}
-                      type_args_1={poll.type_args_1}
+                      type_args_1={poll.typeArgs1}
                     />
                   ))
                 : t('poll.NoPoll')}

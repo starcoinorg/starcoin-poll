@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = process.env.REACT_APP_STARCOIN_API_URL;
+const apiUrl = process.env.REACT_APP_STARCOIN_POLL_API_URL;
 const baseURL = `${apiUrl}/v1`;
 const clientConfig = {
   baseURL,
@@ -14,7 +14,7 @@ const clientConfig = {
 const successHandler = (result: any) => {
   const response = result.data;
   if (response.code !== undefined) {
-    if (response.code >= 200 && response.code < 300) {
+    if (response.code === 'SUCCESS') {
       return response.data;
     }
     const reject = {
