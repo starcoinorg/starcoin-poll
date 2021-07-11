@@ -21,6 +21,7 @@ import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
 import { POLL_STATUS } from '@/utils/constants';
 import client from '@/utils/client';
+import { LoadingOutlined } from '@ant-design/icons';
 import PollCard from './PollCard';
 import DynamicForm from '../DynamicForm';
 
@@ -119,6 +120,9 @@ interface IndexState {
   form: Record<string, any>;
   errors: Record<string, boolean>;
   list: Record<string, any>[];
+  page: number;
+  loading: boolean;
+  totalPage: number;
 }
 
 const isLocal = window.location.host.includes('localhost');
@@ -149,7 +153,10 @@ class List extends PureComponent<Props, IndexState> {
         duration: 7,
       },
       errors: {},
+      loading: true,
+      page: 1,
       list: [],
+      totalPage: 1,
     };
   }
 
@@ -163,11 +170,24 @@ class List extends PureComponent<Props, IndexState> {
   };
 
   fetchList = async (page = 1) => {
-    const resp = await client.get(`polls/page/main?page=${page}&count=20`);
-    const list = resp.list;
+    const { list } = this.state;
     this.setState({
-      list,
+      loading: true,
     });
+    try {
+      const resp = await client.get(`polls/page/main?page=${page}&count=20`);
+      const newlist = list.concat(resp.list);
+      const totalPage = resp.totalPage;
+      this.setState({
+        list: newlist,
+        totalPage,
+        page,
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      this.setState({ loading: false });
+    }
   };
 
   setFilter = (value: string) => {
@@ -246,7 +266,17 @@ class List extends PureComponent<Props, IndexState> {
   render() {
     const { t, classes } = this.props;
     const suffix = i18n.language === 'en' ? 'En' : '';
-    const { hideVoted, status, open, form, errors, list } = this.state;
+    const {
+      hideVoted,
+      status,
+      open,
+      form,
+      errors,
+      list,
+      loading,
+      page,
+      totalPage,
+    } = this.state;
 
     const helperTextMaps = {
       enTitle: 'Please input title.',
@@ -277,6 +307,14 @@ class List extends PureComponent<Props, IndexState> {
     if (status) {
       renderList = renderList.filter((l: any) => l.status === status);
     }
+    const loadingProps = loading
+      ? {
+          disabled: true,
+          startIcon: <LoadingOutlined />,
+        }
+      : {};
+
+    console.log('loadingProps: ', loadingProps);
     return (
       <div>
         <Helmet>
@@ -480,6 +518,19 @@ class List extends PureComponent<Props, IndexState> {
                   ))
                 : t('poll.NoPoll')}
             </div>
+            {page < totalPage ? (
+              <div style={{ padding: 16 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={() => this.fetchList(page + 1)}
+                  {...loadingProps}
+                >
+                  View More
+                </Button>
+              </div>
+            ) : null}
           </Card>
         </CenteredView>
       </div>
