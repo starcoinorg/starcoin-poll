@@ -54,7 +54,7 @@ const useStyles = (theme: Theme) =>
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      borderRight: `1px solid ${theme.palette.grey[300]}`,
+      borderRight: `1px solid ${ theme.palette.grey[300] }`,
       width: '50%',
       padding: theme.spacing(1),
       '&:first-child': {
@@ -280,7 +280,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     try {
       const config = this.getConfig();
       const functionId = '0x1::Dao::queue_proposal_action';
-      const strTypeArgs = ['0x1::STC::STC', '0x1::OnChainConfigDao::OnChainConfigUpdate<0x1::TransactionPublishOption::TransactionPublishOption>']
+      const strTypeArgs = ['0x1::STC::STC', config.type_args_1]
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs)
       const proposerAdressHex = config.creator;
       const proposalId = config.id;
@@ -693,12 +693,12 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const columns = [
       [t('poll.id'), config.id],
       [t('poll.title'), config.title],
-      [t('poll.status'), t(`poll.statusText.${config.status}`)],
+      [t('poll.status'), t(`poll.statusText.${ config.status }`)],
       [
         t('poll.creator'),
         <CommonLink
           key={config.creator}
-          path={`https://explorer.starcoin.org/main/address/${config.creator}`}
+          path={`https://explorer.starcoin.org/main/address/${ config.creator }`}
           title={config.creator}
         />,
       ],
@@ -716,14 +716,14 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         t('poll.selectedAccount'),
         <CommonLink
           key={pollVotes.selectedAccount}
-          path={`https://explorer.starcoin.org/main/address/${pollVotes.selectedAccount}`}
+          path={`https://explorer.starcoin.org/main/address/${ pollVotes.selectedAccount }`}
           title={pollVotes.selectedAccount}
         />,
       ]);
       const selectedVoteLog = pollVotes.value
-        ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
+        ? `${ pollVotes.agree ? t('poll.yes') : t('poll.no') } (${ formatNumber(
           pollVotes.value,
-        )} NanoSTC) `
+        ) } NanoSTC) `
         : t('poll.selectedNoVotes');
 
       const buttons = this.allowedButtons(config.status);
