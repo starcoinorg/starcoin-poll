@@ -20,7 +20,8 @@ Version 4.1.3
 
 ## Set Environment Variables
 ```
-export REACT_APP_STARCOIN_NETWORKS=<available-networks>
+export REACT_APP_STARCOIN_NETWORKS=main,barnard,halley,proxima
+export REACT_APP_STARCOIN_POLL_API_URL=https://poll-api.starcoin.org
 ```
 
 ## How to run

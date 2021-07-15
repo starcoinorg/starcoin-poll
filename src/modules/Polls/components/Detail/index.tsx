@@ -678,14 +678,6 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const suffix = i18n.language === 'en' ? 'En' : '';
     const { poll, pollVotes, match, t, classes } = this.props;
     const { open, checked, sendAmount, detail } = this.state;
-    const list = JSON.parse(t('poll.polls'));
-    const filter = list.filter(
-      (poll: any) => poll.id === parseInt(match.params.id, 10),
-    );
-    const isInitialLoad = !filter.length && !poll;
-    if (isInitialLoad) {
-      return <Loading />;
-    }
 
     const columns = [
       [t('poll.id'), detail.id],
