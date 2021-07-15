@@ -1,5 +1,6 @@
 /* eslint-disable func-names */
 import React, { PureComponent } from 'react';
+import i18n from 'i18next';
 import { withTranslation } from 'react-i18next';
 import classnames from 'classnames';
 import BigNumber from 'bignumber.js';
@@ -35,6 +36,7 @@ import { getPollData } from '@/utils/sdk';
 import { arrayify, hexlify } from '@ethersproject/bytes';
 import { providers, utils, bcs } from '@starcoin/starcoin';
 import { POLL_STATUS } from '@/utils/constants';
+import client from '@/utils/client';
 import BorderLinearProgress from '../BorderLinearProgress';
 
 const useStyles = (theme: Theme) =>
@@ -54,7 +56,7 @@ const useStyles = (theme: Theme) =>
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      borderRight: `1px solid ${ theme.palette.grey[300] }`,
+      borderRight: `1px solid ${theme.palette.grey[300]}`,
       width: '50%',
       padding: theme.spacing(1),
       '&:first-child': {
@@ -223,6 +225,7 @@ interface IndexState {
   sendAmount: string | number;
   page: number;
   rowsPerPage: number;
+  detail: Record<string, any>;
 }
 
 let startToVerify: boolean = false;
@@ -260,17 +263,26 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       sendAmount: '1',
       page: 0,
       rowsPerPage: 5,
+      detail: {},
     };
   }
 
-  componentDidMount() {
-    const config = this.getConfig();
-    getPollData(config.creator, config.type_args_1).then((data) => {
-      if (data && data.id === config.id) {
+  componentDidMount = async () => {
+    const { match } = this.props;
+    const id = match.params.id;
+    const detail = await client.get(`polls/detail/${id}`);
+    console.log('detail: ', detail);
+    getPollData(detail.creator, detail.typeArgs1).then((data) => {
+      console.log('getPollData: ', data);
+      if (data && data.id === detail.id) {
         this.setState({ pollData: data });
       }
     });
-  }
+
+    this.setState({
+      detail,
+    });
+  };
 
   handleCheck = (value: boolean) => {
     this.setState({ checked: value });
@@ -278,12 +290,15 @@ class Detail extends PureComponent<IndexProps, IndexState> {
 
   async onClickQueue() {
     try {
-      const config = this.getConfig();
+      const { detail } = this.state;
       const functionId = '0x1::Dao::queue_proposal_action';
-      const strTypeArgs = ['0x1::STC::STC', config.type_args_1]
-      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs)
-      const proposerAdressHex = config.creator;
-      const proposalId = config.id;
+      const strTypeArgs = [
+        '0x1::STC::STC',
+        detail.type_args_1,
+      ];
+      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
+      const proposerAdressHex = detail.creator;
+      const proposalId = detail.id;
 
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
       const proposalIdSCSHex = (function () {
@@ -291,10 +306,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         se.serializeU64(proposalId);
         return hexlify(se.getBytes());
       })();
-      const args = [
-        arrayify(proposerAdressHex),
-        arrayify(proposalIdSCSHex),
-      ];
+      const args = [arrayify(proposerAdressHex), arrayify(proposalIdSCSHex)];
 
       const scriptFunction = utils.tx.encodeScriptFunction(
         functionId,
@@ -306,14 +318,12 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         scriptFunction.serialize(se);
         return hexlify(se.getBytes());
       })();
-      await this.starcoinProvider
-        .getSigner()
-        .sendUncheckedTransaction({
-          data: payloadInHex,
-          // ScriptFunction and Package need to speific gasLimit here.
-          gasLimit: 10000000,
-          gasPrice: 1,
-        });
+      await this.starcoinProvider.getSigner().sendUncheckedTransaction({
+        data: payloadInHex,
+        // ScriptFunction and Package need to speific gasLimit here.
+        gasLimit: 10000000,
+        gasPrice: 1,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -325,12 +335,12 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       return false;
     }
     try {
-      const config = this.getConfig();
+      const { detail } = this.state;
       const functionId = '0x1::DaoVoteScripts::unstake_vote';
-      const strTypeArgs = ['0x1::STC::STC', config.type_args_1]
-      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs)
-      const proposerAdressHex = config.creator;
-      const proposalId = config.id;
+      const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
+      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
+      const proposerAdressHex = detail.creator;
+      const proposalId = detail.id;
 
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
       const proposalIdSCSHex = (function () {
@@ -338,10 +348,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         se.serializeU64(proposalId);
         return hexlify(se.getBytes());
       })();
-      const args = [
-        arrayify(proposerAdressHex),
-        arrayify(proposalIdSCSHex),
-      ];
+      const args = [arrayify(proposerAdressHex), arrayify(proposalIdSCSHex)];
 
       const scriptFunction = utils.tx.encodeScriptFunction(
         functionId,
@@ -353,14 +360,12 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         scriptFunction.serialize(se);
         return hexlify(se.getBytes());
       })();
-      await this.starcoinProvider
-        .getSigner()
-        .sendUncheckedTransaction({
-          data: payloadInHex,
-          // ScriptFunction and Package need to speific gasLimit here.
-          gasLimit: 10000000,
-          gasPrice: 1,
-        });
+      await this.starcoinProvider.getSigner().sendUncheckedTransaction({
+        data: payloadInHex,
+        // ScriptFunction and Package need to speific gasLimit here.
+        gasLimit: 10000000,
+        gasPrice: 1,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -372,14 +377,14 @@ class Detail extends PureComponent<IndexProps, IndexState> {
 
   async onClickVoteConfirm() {
     try {
-      const config = this.getConfig();
+      const { detail } = this.state;
       const { checked, sendAmount } = this.state;
       const functionId = '0x1::DaoVoteScripts::cast_vote';
-      const strTypeArgs = ['0x1::STC::STC', config.type_args_1]
-      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs)
+      const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
+      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
 
-      const proposerAdressHex = config.creator;
-      const proposalId = config.id;
+      const proposerAdressHex = detail.creator;
+      const proposalId = detail.id;
       const agree = checked; // yes: true; no: false
       const votes = new BigNumber(sendAmount).times('1000000000'); // sendAmount * 1e9
 
@@ -419,34 +424,22 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         return hexlify(se.getBytes());
       })();
 
-      await this.starcoinProvider
-        .getSigner()
-        .sendUncheckedTransaction({
-          data: payloadInHex,
-          // ScriptFunction and Package need to speific gasLimit here.
-          gasLimit: 10000000,
-          gasPrice: 1,
-        });
+      await this.starcoinProvider.getSigner().sendUncheckedTransaction({
+        data: payloadInHex,
+        // ScriptFunction and Package need to speific gasLimit here.
+        gasLimit: 10000000,
+        gasPrice: 1,
+      });
     } catch (error) {
       console.error(error);
     }
     return false;
   }
 
-  getConfig() {
-    const { t, match } = this.props;
-    const list = JSON.parse(t('poll.polls'));
-    const filter = list.filter(
-      (poll: any) => poll.id === parseInt(match.params.id, 10),
-    );
-    const config = filter[0];
-    return config;
-  }
-
   generateExtra() {
+    const suffix = i18n.language === 'en' ? 'En' : '';
     const { t, classes } = this.props;
-    const { page, rowsPerPage } = this.state;
-    const config = this.getConfig();
+    const { /* page, rowsPerPage,  */ detail } = this.state;
 
     const isPollDataLoading = !this.state.pollData;
     const total = 168171610282100220;
@@ -560,7 +553,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.table}>
-              <Markdown content={config.description} />
+              <Markdown content={detail[`description${suffix}`] || ''} />
             </div>
           </AccordionDetails>
         </Accordion>
@@ -613,7 +606,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           }}
         >
           <Typography variant="body1">{t('poll.buttonText.vote')}</Typography>
-        </Button>)
+        </Button>,
+      );
       // TODO: enable this while starcoin bug fixed
       // if (!this.props.isRevokeable) {
       //   buttons.push(
@@ -638,11 +632,14 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           color="primary"
           variant="contained"
           onClick={() => {
-            this.onClickUnstake()
+            this.onClickUnstake();
           }}
         >
-          <Typography variant="body1">{t('poll.buttonText.unstake')}</Typography>
-        </Button>)
+          <Typography variant="body1">
+            {t('poll.buttonText.unstake')}
+          </Typography>
+        </Button>,
+      );
     }
     if (status === POLL_STATUS.AGREED) {
       buttons.push(
@@ -652,11 +649,12 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           color="primary"
           variant="contained"
           onClick={() => {
-            this.onClickQueue()
+            this.onClickQueue();
           }}
         >
           <Typography variant="body1">{t('poll.buttonText.queue')}</Typography>
-        </Button>)
+        </Button>,
+      );
     }
     // TODO: enable this while starcoin bug fixed
     // if (status === POLL_STATUS.EXECUTABLE) {
@@ -677,38 +675,29 @@ class Detail extends PureComponent<IndexProps, IndexState> {
   }
 
   render() {
-    const { poll, pollVotes, accounts, match, t, classes } = this.props;
-    const { open, checked, sendAmount } = this.state;
-    const list = JSON.parse(t('poll.polls'));
-    const filter = list.filter(
-      (poll: any) => poll.id === parseInt(match.params.id, 10),
-    );
-    const isInitialLoad = !filter.length && !poll;
-    if (isInitialLoad) {
-      return <Loading />;
-    }
-
-    const config = filter[0];
+    const suffix = i18n.language === 'en' ? 'En' : '';
+    const { poll, pollVotes, match, t, classes } = this.props;
+    const { open, checked, sendAmount, detail } = this.state;
 
     const columns = [
-      [t('poll.id'), config.id],
-      [t('poll.title'), config.title],
-      [t('poll.status'), t(`poll.statusText.${ config.status }`)],
+      [t('poll.id'), detail.id],
+      [t('poll.title'), detail[`title${suffix}`]],
+      [t('poll.status'), t(`poll.statusText.${detail.status}`)],
       [
         t('poll.creator'),
         <CommonLink
-          key={config.creator}
-          path={`https://explorer.starcoin.org/main/address/${ config.creator }`}
-          title={config.creator}
+          key={detail.creator}
+          path={`https://explorer.starcoin.org/main/address/${detail.creator}`}
+          title={detail.creator}
         />,
       ],
       [
         t('poll.endTime'),
-        new Date(parseInt(config.end_time, 10)).toLocaleString(),
+        new Date(parseInt(detail.endTime, 10)).toLocaleString(),
       ],
       [
         t('poll.discussion'),
-        <CommonLink key={config.link} path={config.link} title={config.link} />,
+        <CommonLink key={detail.link} path={detail.link} title={detail.link} />,
       ],
     ];
     if (pollVotes) {
@@ -716,17 +705,17 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         t('poll.selectedAccount'),
         <CommonLink
           key={pollVotes.selectedAccount}
-          path={`https://explorer.starcoin.org/main/address/${ pollVotes.selectedAccount }`}
+          path={`https://explorer.starcoin.org/main/address/${pollVotes.selectedAccount}`}
           title={pollVotes.selectedAccount}
         />,
       ]);
       const selectedVoteLog = pollVotes.value
-        ? `${ pollVotes.agree ? t('poll.yes') : t('poll.no') } (${ formatNumber(
+        ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
           pollVotes.value,
-        ) } NanoSTC) `
+        )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
-      const buttons = this.allowedButtons(config.status);
+      const buttons = this.allowedButtons(detail.status);
       const accountDetail = (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Typography variant="body1">{selectedVoteLog}</Typography>
@@ -739,7 +728,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     return (
       <>
         <PageView
-          id={config.id}
+          id={detail.id}
           title={t('poll.detail')}
           name={t('poll.detail')}
           pluralName={t('header.polls')}

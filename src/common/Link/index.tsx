@@ -5,52 +5,63 @@ import { Variant } from '@material-ui/core/styles/createTypography';
 import Typography from '@material-ui/core/Typography';
 import { Link as RRLink } from 'react-router-dom';
 
-const useStyles = (theme: Theme) => createStyles({
-  commonLink: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  link: {
-    color: theme.palette.primary.main,
-    fontWeight: theme.typography.fontWeightRegular,
-    textDecoration: 'none',
-    '&:hover': {
-      color: theme.palette.primary.dark,
-      textDecoration: 'underline',
+const useStyles = (theme: Theme) =>
+  createStyles({
+    commonLink: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
     },
-  },
-  linkWhite: {
-    color: '#fff',
-    fontWeight: theme.typography.fontWeightRegular,
-    textDecoration: 'underline',
-    '&:hover': {
-      color: 'rgba(255, 255, 255, 0.87)',
-      textDecoration: 'underline',
+    link: {
+      color: theme.palette.primary.main,
+      fontWeight: theme.typography.fontWeightRegular,
+      textDecoration: 'none',
+      '&:hover': {
+        color: theme.palette.primary.dark,
+        textDecoration: 'underline',
+      },
     },
-  },
-});
+    linkWhite: {
+      color: '#fff',
+      fontWeight: theme.typography.fontWeightRegular,
+      textDecoration: 'underline',
+      '&:hover': {
+        color: 'rgba(255, 255, 255, 0.87)',
+        textDecoration: 'underline',
+      },
+    },
+  });
 
 interface ExternalProps {
-  path: string,
-  title: string | React.CElement<any, any>,
-  variant?: Variant,
-  white?: boolean,
-  absolute?: boolean,
-  newTab?: boolean,
-  onClick?: () => void,
-  className?: string,
+  path: string;
+  title: string | React.CElement<any, any>;
+  variant?: Variant;
+  white?: boolean;
+  absolute?: boolean;
+  newTab?: boolean;
+  onClick?: () => void;
+  className?: string;
 }
 
 interface InternalProps {
-  classes: any,
+  classes: any;
 }
 
 interface Props extends ExternalProps, InternalProps {}
 
 class Index extends React.PureComponent<Props> {
   render() {
-    const { path, title, variant: variantIn, white, absolute, newTab, onClick, className, classes } = this.props;
+    const {
+      path = '',
+      title = '',
+      variant: variantIn,
+      white,
+      absolute,
+      newTab,
+      onClick,
+      className,
+      classes,
+    } = this.props;
     const variant = variantIn || 'body1';
     const classNameLink = classNames(
       {
@@ -74,7 +85,11 @@ class Index extends React.PureComponent<Props> {
         title,
         {
           ...title.props,
-          className: classNames(classNameLink, className, title.props.className),
+          className: classNames(
+            classNameLink,
+            className,
+            title.props.className,
+          ),
         },
         title.props.children,
       );
