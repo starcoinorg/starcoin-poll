@@ -294,7 +294,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       const functionId = '0x1::Dao::queue_proposal_action';
       const strTypeArgs = [
         '0x1::STC::STC',
-        '0x1::OnChainConfigDao::OnChainConfigUpdate<0x1::TransactionPublishOption::TransactionPublishOption>',
+        detail.type_args_1,
       ];
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
       const proposerAdressHex = detail.creator;
@@ -719,8 +719,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ]);
       const selectedVoteLog = pollVotes.value
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
-            pollVotes.value,
-          )} NanoSTC) `
+          pollVotes.value,
+        )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
       const buttons = this.allowedButtons(detail.status);
