@@ -21,6 +21,7 @@ import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
 import { POLL_STATUS } from '@/utils/constants';
 import client from '@/utils/client';
+import { getNetwork } from '@/utils/helper';
 import { LoadingOutlined } from '@ant-design/icons';
 import PollCard from './PollCard';
 import DynamicForm from '../DynamicForm';
@@ -175,7 +176,9 @@ class List extends PureComponent<Props, IndexState> {
       loading: true,
     });
     try {
-      const resp = await client.get(`polls/page/main?page=${page}&count=20`);
+      const resp = await client.get(
+        `polls/page/${getNetwork()}?page=${page}&count=20`,
+      );
       const newlist = list.concat(resp.list);
       const totalPage = resp.totalPage;
       this.setState({

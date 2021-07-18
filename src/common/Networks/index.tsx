@@ -38,9 +38,10 @@ const Networks = () => {
 
   const handleNetworkMenuClose = (network?: string) => {
     if (network) {
-      asyncSearch({ network });
       localStorage.setItem('network', network);
-      window.location.href = '/';
+      asyncSearch({ network });
+      // window.location.href = '/';
+      window.location.reload();
     }
     setNetworkMenu(null);
   };
