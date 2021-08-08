@@ -12,91 +12,93 @@ import Tooltip from '@material-ui/core/Tooltip';
 import LanguageIcon from '@material-ui/icons/Translate';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { LANGUAGES_LABEL } from '@/utils/constants';
+import Networks from '../../Networks';
 import Tabs from './Tabs';
 
-const useStyles = (theme: Theme) => createStyles({
-  header: {
-    backgroundColor: theme.palette.background.paper,
-    color: theme.palette.getContrastText(theme.palette.background.paper),
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  headerNormal: {
-    height: theme.spacing(8),
-  },
-  headerWallet: {
-    height: theme.spacing(14),
-  },
-  mainHeader: {
-    alignItems: 'center',
-    display: 'flex',
-    height: theme.spacing(8),
-    flex: '0 0 auto',
-    flexDirection: 'row',
-  },
-  mainHeaderWallet: {
-    borderBottom: '1px solid rgba(0, 0, 0, 0.075)',
-  },
-  tabs: {
-    alignItems: 'flex-end',
-    display: 'flex',
-    height: '100%',
-  },
-  title: {
-    marginRight: theme.spacing(2),
-  },
-  pad: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-  },
-  noUpperCase: {
-    textTransform: 'none'
-  },
-  button: {
-    height: theme.spacing(6),
-    border: 'none',
-  },
-  search: {
-    alignItems: 'center',
-    borderTop: '1px solid rgba(0, 0, 0, 0.075)',
-    display: 'flex',
-    paddingBottom: theme.spacing(1),
-    paddingTop: theme.spacing(1),
-  },
-  logoLink: {
-    display: 'grid',
-    gridGap: '10px',
-    gridAutoFlow: 'column',
-    alignItems: 'center',
-    textDecoration: 'none',
-  },
-  logo: {
-    fontFamily: 'Bauhaus93',
-    fontSize: `${theme.spacing(6)}px`,
-    color: '#3d454d',
-    letterSpacing: `-${theme.spacing(2 / 4)}px`,
-    textAlign: 'left',
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-    lineHeight: 1,
-    textTransform: 'none'
-  },
-  i18n: {
-    height: theme.spacing(6),
-  },
-  language: {
-    margin: theme.spacing(0, 0.5, 0, 1),
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'block',
+const useStyles = (theme: Theme) =>
+  createStyles({
+    header: {
+      backgroundColor: theme.palette.background.paper,
+      color: theme.palette.getContrastText(theme.palette.background.paper),
+      display: 'flex',
+      flexDirection: 'column',
     },
-  },
-});
+    headerNormal: {
+      height: theme.spacing(8),
+    },
+    headerWallet: {
+      height: theme.spacing(14),
+    },
+    mainHeader: {
+      alignItems: 'center',
+      display: 'flex',
+      height: theme.spacing(8),
+      flex: '0 0 auto',
+      flexDirection: 'row',
+    },
+    mainHeaderWallet: {
+      borderBottom: '1px solid rgba(0, 0, 0, 0.075)',
+    },
+    tabs: {
+      alignItems: 'flex-end',
+      display: 'flex',
+      height: '100%',
+    },
+    title: {
+      marginRight: theme.spacing(2),
+    },
+    pad: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+    },
+    noUpperCase: {
+      textTransform: 'none',
+    },
+    button: {
+      height: theme.spacing(6),
+      border: 'none',
+    },
+    search: {
+      alignItems: 'center',
+      borderTop: '1px solid rgba(0, 0, 0, 0.075)',
+      display: 'flex',
+      paddingBottom: theme.spacing(1),
+      paddingTop: theme.spacing(1),
+    },
+    logoLink: {
+      display: 'grid',
+      gridGap: '10px',
+      gridAutoFlow: 'column',
+      alignItems: 'center',
+      textDecoration: 'none',
+    },
+    logo: {
+      fontFamily: 'Bauhaus93',
+      fontSize: `${theme.spacing(6)}px`,
+      color: '#3d454d',
+      letterSpacing: `-${theme.spacing(2 / 4)}px`,
+      textAlign: 'left',
+      marginLeft: theme.spacing(2),
+      marginRight: theme.spacing(2),
+      marginBottom: theme.spacing(1),
+      lineHeight: 1,
+      textTransform: 'none',
+    },
+    i18n: {
+      height: theme.spacing(6),
+    },
+    language: {
+      margin: theme.spacing(0, 0.5, 0, 1),
+      display: 'none',
+      [theme.breakpoints.up('md')]: {
+        display: 'block',
+      },
+    },
+  });
 
 function Index(props: any) {
   const { classes } = props;
-  const { t, i18n }: { t: any, i18n: any } = useTranslation();
+  const { t, i18n }: { t: any; i18n: any } = useTranslation();
   const userLanguage = i18n.language || 'en';
   const [languageMenu, setLanguageMenu] = React.useState(null);
   const handleLanguageIconClick = (event: any) => {
@@ -111,8 +113,10 @@ function Index(props: any) {
   };
 
   // set a default value before locales/*/transaction.json is loaded
-  const current = LANGUAGES_LABEL.filter((language) => language.code === userLanguage);
-  const currentLabel = current[0] && current[0].text || '-';
+  const current = LANGUAGES_LABEL.filter(
+    (language) => language.code === userLanguage,
+  );
+  const currentLabel = (current[0] && current[0].text) || '-';
   const i18nMenu = (
     <>
       <Tooltip title={t('header.changeLanguage')} enterDelay={300}>
@@ -124,9 +128,7 @@ function Index(props: any) {
           onClick={handleLanguageIconClick}
         >
           <LanguageIcon />
-          <span className={classes.language}>
-            {currentLabel}
-          </span>
+          <span className={classes.language}>{currentLabel}</span>
           <ExpandMoreIcon fontSize="small" />
         </Button>
       </Tooltip>
@@ -180,13 +182,17 @@ function Index(props: any) {
         <div className={classes.tabs}>
           <BaseRouteLink to="/" underline="none">
             <div className={classes.logoLink}>
-              <img src={`${process.env.PUBLIC_URL}/starmask-logo-horizontal.svg`} alt="logo" />
+              <img
+                src={`${process.env.PUBLIC_URL}/starmask-logo-horizontal.svg`}
+                alt="logo"
+              />
               <Typography className={classes.logo} variant="h3">
                 &nbsp;
               </Typography>
             </div>
           </BaseRouteLink>
           {tabs}
+          <Networks />
           {i18nMenu}
         </div>
       </div>
