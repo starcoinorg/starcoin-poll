@@ -8,6 +8,10 @@
   "footer": {
     "content": "版权所有"
   },
+  "home": {
+    "searchNotFound": "对不起, 查无此页.",
+    "searchNotFoundDetail": "请返回重试或者回到<a href=\"/\">首页</a>."
+  },
   "poll": {
     "title": "标题",
     "detail": "详情",
