@@ -37,6 +37,7 @@ import { arrayify, hexlify } from '@ethersproject/bytes';
 import { providers, utils, bcs } from '@starcoin/starcoin';
 import { POLL_STATUS } from '@/utils/constants';
 import client from '@/utils/client';
+import qs from 'qs';
 import BorderLinearProgress from '../BorderLinearProgress';
 
 const useStyles = (theme: Theme) =>
@@ -215,6 +216,7 @@ interface IndexProps {
   accounts: string[];
   isRevokeable: boolean;
   getPoll: (data: any, callback?: any) => any;
+  history: any;
 }
 
 interface IndexState {
@@ -268,12 +270,18 @@ class Detail extends PureComponent<IndexProps, IndexState> {
   }
 
   componentDidMount = async () => {
-    const { match } = this.props;
+    const { match, history } = this.props;
     const id = match.params.id;
     const detail = await client.get(`polls/detail/${id}`);
-    console.log('detail: ', detail);
+    const { network: networkFromUrl } = qs.parse(window.location.search, {
+      ignoreQueryPrefix: true,
+    });
+    const { network: networkFromResp } = detail;
+    if (networkFromResp !== networkFromUrl) {
+      history.push('/error')
+      return
+    }
     getPollData(detail.creator, detail.typeArgs1).then((data) => {
-      console.log('getPollData: ', data);
       if (data && data.id === detail.id) {
         this.setState({ pollData: data });
       }
@@ -292,10 +300,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     try {
       const { detail } = this.state;
       const functionId = '0x1::Dao::queue_proposal_action';
-      const strTypeArgs = [
-        '0x1::STC::STC',
-        detail.type_args_1,
-      ];
+      const strTypeArgs = ['0x1::STC::STC', detail.type_args_1];
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
       const proposerAdressHex = detail.creator;
       const proposalId = detail.id;
@@ -711,8 +716,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ]);
       const selectedVoteLog = pollVotes.value
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
-          pollVotes.value,
-        )} NanoSTC) `
+            pollVotes.value,
+          )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
       const buttons = this.allowedButtons(detail.status);

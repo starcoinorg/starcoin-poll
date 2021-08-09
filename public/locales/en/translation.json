@@ -8,6 +8,10 @@
   "footer": {
     "content": "All rights reserved"
   },
+  "home": {
+    "searchNotFound": "Sorry, that page was not found.",
+    "searchNotFoundDetail": "Try going back to where you were or heading to the <a href=\"/\">home</a> page."
+  },
   "poll": {
     "title": "Title",
     "detail": "Poll Detail",
