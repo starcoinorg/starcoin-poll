@@ -277,15 +277,11 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ignoreQueryPrefix: true,
     });
     const { network: networkFromResp } = detail;
-    console.log('networkFromUrl: ', networkFromUrl);
-    console.log('networkFromResp: ', networkFromResp);
-    console.log('props: ', this.props);
     if (networkFromResp !== networkFromUrl) {
       history.push('/error')
       return
     }
     getPollData(detail.creator, detail.typeArgs1).then((data) => {
-      console.log('getPollData: ', data);
       if (data && data.id === detail.id) {
         this.setState({ pollData: data });
       }
