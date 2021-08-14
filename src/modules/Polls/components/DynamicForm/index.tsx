@@ -131,7 +131,6 @@ const DynamicForm = (props: DynamicFormProps) => {
 
   const handleCodeChange = (event: React.ChangeEvent<{ value: string }>) => {
     const { value } = event.target;
-    console.log('value: ', value);
     setTimeout(() => {
       setSchema(initSchema);
     }, 1000);

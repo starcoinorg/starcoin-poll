@@ -1,14 +1,17 @@
 import axios from 'axios';
 
-const apiUrl = process.env.REACT_APP_STARCOIN_POLL_API_URL;
-const baseURL = `${apiUrl}/v1`;
+const apiUrl = window.location.host.includes('localhost')
+  ? 'http://localhost:3333'
+  : process.env.REACT_APP_STARCOIN_POLL_API_URL;
+
+const baseURL = `${apiUrl}/poll`;
 const clientConfig = {
   baseURL,
   timeout: 120000, // 2 minutes, xhr status will be 'canceled'
   headers: {
     'Content-Type': 'application/json; charsett=UTF-8',
-    accept: 'application/json'
-  }
+    accept: 'application/json',
+  },
 };
 
 const successHandler = (result: any) => {
@@ -19,7 +22,7 @@ const successHandler = (result: any) => {
     }
     const reject = {
       code: response.code || 400,
-      message: response.message || 'unknown errors'
+      message: response.message || 'unknown errors',
     };
     return Promise.reject(reject);
   }
@@ -32,40 +35,49 @@ const errorHandler = (error: any) => {
   if (response) {
     reject = {
       code: response.data.code,
-      message: response.data.message
+      message: response.data.message,
     };
   } else if (error.request) {
     reject = {
       code: 400,
-      message: error.message || 'unknown errors'
+      message: error.message || 'unknown errors',
     };
   } else {
     reject = {
-      message: 'unknown errors'
+      message: 'unknown errors',
     };
   }
 
   return Promise.reject(reject);
 };
 
-class Client{
+class Client {
   instance: any;
 
   constructor(config?: any) {
-    if (!this.instance){
+    if (!this.instance) {
       this.instance = axios.create({
         ...clientConfig,
-        ...config
+        ...config,
       });
       this.instance.interceptors.response.use(successHandler, errorHandler);
     }
   }
 
-  get(url: string, params?: any, option= {}) {
+  get(url: string, params?: any, option = {}) {
     const defaultOption = {
       url,
       params,
-      method: 'GET'
+      method: 'GET',
+    };
+    return this.request(defaultOption, option);
+  }
+
+  post(url: string, data?: any, option = {}) {
+    const defaultOption = {
+      url,
+      data,
+      method: 'POST',
     };
     return this.request(defaultOption, option);
   }

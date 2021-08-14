@@ -5,6 +5,8 @@ import Helmet from 'react-helmet';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
@@ -24,7 +26,25 @@ import client from '@/utils/client';
 import { getNetwork } from '@/utils/helper';
 import { LoadingOutlined } from '@ant-design/icons';
 import PollCard from './PollCard';
-import DynamicForm from '../DynamicForm';
+// import DynamicForm from '../DynamicForm';
+
+const fields = {
+  title: '',
+  title_en: '',
+  description_en: '',
+  description: '',
+  creator: '',
+  network: 'main',
+  // t('poll.statusText')
+  status: '1',
+  link: '',
+  type_args_1: '',
+  id_on_chain: '',
+  // deposite: '',
+  duration: 7,
+};
+
+const requiredFields = Object.keys(fields);
 
 const useStyles = (theme: Theme) =>
   createStyles({
@@ -113,7 +133,6 @@ interface InternalProps {
 interface Props extends ExternalProps, InternalProps {}
 
 interface IndexState {
-  currentPage: number;
   filter: string;
   status: number;
   hideVoted: boolean;
@@ -139,20 +158,11 @@ class List extends PureComponent<Props, IndexState> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      currentPage: parseInt(props.match.params.page, 10) || 1,
       filter: '',
       status: 0,
       hideVoted: false,
       open: false,
-      form: {
-        enTitle: '',
-        cnTitle: '',
-        enDesc: '',
-        cnDesc: '',
-        url: '',
-        deposite: '',
-        duration: 7,
-      },
+      form: fields,
       errors: {},
       loading: true,
       page: 1,
@@ -162,22 +172,20 @@ class List extends PureComponent<Props, IndexState> {
   }
 
   componentDidMount() {
-    // this.fetchListPage(this.state.currentPage);
-    this.fetchList();
+    this.fetchList(parseInt(this.props.match.params.page, 10) || 1);
   }
 
-  fetchListPage = (page: number) => {
-    this.props.getPollList({ page });
-  };
-
   fetchList = async (page = 1) => {
-    const { list } = this.state;
+    let { list } = this.state;
+    if (page === 1) {
+      list = [];
+    }
     this.setState({
       loading: true,
     });
     try {
       const resp = await client.get(
-        `polls/page/${getNetwork()}?page=${page}&count=20`,
+        `list?network=${getNetwork()}&page=${page}&count=20`,
       );
       const newlist = list.concat(resp.list);
       const totalPage = resp.totalPage;
@@ -215,14 +223,6 @@ class List extends PureComponent<Props, IndexState> {
 
   validateFields = async () => {
     const { form, errors } = this.state;
-    const requiredFields = [
-      'enTitle',
-      'cnTitle',
-      'enDesc',
-      'cnDesc',
-      'url',
-      'duration',
-    ];
     let hasError = errors.endTime;
     requiredFields.forEach((field) => {
       if (!form[field]) {
@@ -244,14 +244,7 @@ class List extends PureComponent<Props, IndexState> {
 
   closeFormDialog = () => {
     this.setState({
-      form: {
-        enTitle: '',
-        cnTitle: '',
-        enDesc: '',
-        cnDesc: '',
-        url: '',
-        deposite: '',
-      },
+      form: fields,
       errors: {},
       open: false,
     });
@@ -259,7 +252,9 @@ class List extends PureComponent<Props, IndexState> {
 
   handleSubmit = async () => {
     try {
-      await this.validateFields();
+      const values = await this.validateFields();
+      await client.post('add', values);
+      await this.fetchList();
       this.closeFormDialog();
     } catch (e) {
       console.error(e);
@@ -282,13 +277,17 @@ class List extends PureComponent<Props, IndexState> {
     } = this.state;
 
     const helperTextMaps = {
-      enTitle: 'Please input title.',
-      cnTitle: '请输入中文标题.',
-      enDesc: 'Please input description.',
-      cnDesc: '请输入中文描述.',
-      url: t('poll.urlHelperText'),
+      title_en: 'Please input title.',
+      title: '请输入中文标题.',
+      description_en: 'Please input description.',
+      description: '请输入中文描述.',
       deposite: t('poll.depositeHelperText'),
       duration: t('poll.durationHelperText'),
+      creator: t('poll.creatorHelperText'),
+      link: t('poll.urlHelperText'),
+      network: t('poll.networkHelperText'),
+      type_args_1: t('poll.type_args_1HelperText'),
+      id_on_chain: t('poll.id_on_chainHelperText'),
     };
 
     const menus = [{ label: t('poll.all'), value: 0 }];
@@ -299,7 +298,19 @@ class List extends PureComponent<Props, IndexState> {
       });
     }
 
-    const { enTitle, cnTitle, enDesc, cnDesc, url, deposite, duration } = form;
+    const {
+      title,
+      title_en,
+      description_en,
+      description,
+      link,
+      // deposite,
+      duration,
+      creator,
+      network,
+      type_args_1,
+      id_on_chain,
+    } = form;
 
     let renderList = list.concat() || [];
     if (hideVoted) {
@@ -316,8 +327,6 @@ class List extends PureComponent<Props, IndexState> {
           startIcon: <LoadingOutlined />,
         }
       : {};
-
-    console.log('loadingProps: ', loadingProps);
     return (
       <div>
         <Helmet>
@@ -333,16 +342,16 @@ class List extends PureComponent<Props, IndexState> {
             {t('poll.createAPoll')}
           </DialogTitle>
           <DialogContent>
-            <DynamicForm />
+            {/* <DynamicForm /> */}
             <TextField
               autoFocus
               required
               margin="dense"
-              id="enTitle"
-              name="enTitle"
-              error={errors.enTitle}
-              helperText={errors.enTitle ? helperTextMaps.enTitle : undefined}
-              value={enTitle}
+              id="title_en"
+              name="title_en"
+              error={errors.title_en}
+              helperText={errors.title_en ? helperTextMaps.title_en : undefined}
+              value={title_en}
               label="Title"
               fullWidth
               onChange={this.handleFormChange}
@@ -350,11 +359,11 @@ class List extends PureComponent<Props, IndexState> {
             <TextField
               margin="dense"
               required
-              id="cnTitle"
-              name="cnTitle"
-              helperText={errors.cnTitle ? helperTextMaps.cnTitle : undefined}
-              error={errors.cnTitle}
-              value={cnTitle}
+              id="title"
+              name="title"
+              helperText={errors.title ? helperTextMaps.title : undefined}
+              error={errors.title}
+              value={title}
               label="中文标题"
               fullWidth
               onChange={this.handleFormChange}
@@ -362,24 +371,48 @@ class List extends PureComponent<Props, IndexState> {
             <TextField
               margin="dense"
               required
-              id="enDesc"
-              name="enDesc"
-              error={errors.enDesc}
-              helperText={errors.enDesc ? helperTextMaps.enDesc : undefined}
-              value={enDesc}
+              id="description_en"
+              name="description_en"
+              error={errors.description_en}
+              helperText={
+                errors.description_en
+                  ? helperTextMaps.description_en
+                  : undefined
+              }
+              value={description_en}
               label="Description"
+              multiline
+              rowsMax="4"
               fullWidth
               onChange={this.handleFormChange}
             />
             <TextField
               margin="dense"
-              id="cnDesc"
+              id="description"
               required
-              name="cnDesc"
-              helperText={errors.cnDesc ? helperTextMaps.cnDesc : undefined}
-              error={errors.cnDesc}
-              value={cnDesc}
+              name="description"
+              multiline
+              rowsMax="4"
+              helperText={
+                errors.description ? helperTextMaps.description : undefined
+              }
+              error={errors.description}
+              value={description}
               label="中文描述"
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+            <TextField
+              margin="dense"
+              id="creator"
+              required
+              name="creator"
+              multiline
+              rowsMax="4"
+              helperText={errors.creator ? helperTextMaps.creator : undefined}
+              error={errors.creator}
+              value={creator}
+              label={t('poll.creator')}
               fullWidth
               onChange={this.handleFormChange}
             />
@@ -387,11 +420,11 @@ class List extends PureComponent<Props, IndexState> {
               autoFocus
               margin="dense"
               required
-              id="url"
-              name="url"
-              helperText={errors.url ? helperTextMaps.url : undefined}
-              error={errors.url}
-              value={url}
+              id="link"
+              name="link"
+              helperText={errors.link ? helperTextMaps.link : undefined}
+              error={errors.link}
+              value={link}
               label={t('poll.externalUrl')}
               fullWidth
               onChange={this.handleFormChange}
@@ -415,6 +448,103 @@ class List extends PureComponent<Props, IndexState> {
             <TextField
               autoFocus
               margin="dense"
+              id="type_args_1"
+              name="type_args_1"
+              error={errors.type_args_1}
+              helperText={
+                errors.type_args_1 ? helperTextMaps.type_args_1 : undefined
+              }
+              value={type_args_1}
+              label={t('poll.type_args_1')}
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+            <TextField
+              autoFocus
+              margin="dense"
+              id="id_on_chain"
+              name="id_on_chain"
+              error={errors.id_on_chain}
+              helperText={
+                errors.id_on_chain ? helperTextMaps.id_on_chain : undefined
+              }
+              value={id_on_chain}
+              label={t('poll.id_on_chain')}
+              fullWidth
+              onChange={this.handleFormChange}
+            />
+            <FormControl style={{ marginRight: 8 }}>
+              <InputLabel id="demo-simple-select-label">
+                {t('poll.status')}
+              </InputLabel>
+              <Select
+                margin="dense"
+                labelId="demo-simple-select-label"
+                id="status"
+                name="status"
+                style={{ width: 150 }}
+                value={form.status}
+                error={errors.status}
+                label={t('poll.status')}
+                onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                  this.setState((prevState) => ({
+                    form: {
+                      ...prevState.form,
+                      status: event.target.value as number,
+                    },
+                    errors: {
+                      ...prevState.errors,
+                      status: false,
+                    },
+                  }));
+                }}
+              >
+                {menus.slice(1).map(({ label, value }) => (
+                  <MenuItem value={value} key={value}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel id="network-simple-select-label">
+                {t('poll.network')}
+              </InputLabel>
+              <Select
+                margin="dense"
+                labelId="network-simple-select-label"
+                id="network"
+                name="network"
+                style={{ width: 150 }}
+                value={network}
+                error={errors.network}
+                label={t('poll.network')}
+                onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                  this.setState((prevState) => ({
+                    form: {
+                      ...prevState.form,
+                      network: event.target.value as number,
+                    },
+                    errors: {
+                      ...prevState.errors,
+                      network: false,
+                    },
+                  }));
+                }}
+              >
+                {process.env.REACT_APP_STARCOIN_NETWORKS &&
+                  process.env.REACT_APP_STARCOIN_NETWORKS.split(',').map(
+                    (net) => (
+                      <MenuItem value={net} key={net}>
+                        {net}
+                      </MenuItem>
+                    ),
+                  )}
+              </Select>
+            </FormControl>
+            {/* <TextField
+              autoFocus
+              margin="dense"
               id="deposite"
               name="deposite"
               error={errors.deposite}
@@ -423,7 +553,7 @@ class List extends PureComponent<Props, IndexState> {
               label={t('poll.deposite')}
               fullWidth
               onChange={this.handleFormChange}
-            />
+            /> */}
           </DialogContent>
           <DialogActions>
             <Button color="primary" onClick={this.closeFormDialog}>
