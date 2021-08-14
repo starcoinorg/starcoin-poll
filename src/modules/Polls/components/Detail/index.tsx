@@ -272,10 +272,11 @@ class Detail extends PureComponent<IndexProps, IndexState> {
   componentDidMount = async () => {
     const { match, history } = this.props;
     const id = match.params.id;
-    const detail = await client.get(`polls/detail/${id}`);
     const { network: networkFromUrl } = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
     });
+    const detail = await client.get(`get?id=${id}&network=${networkFromUrl}`);
+    console.log('detail: ', detail)
     const { network: networkFromResp } = detail;
     if (networkFromResp !== networkFromUrl) {
       history.push('/error')
