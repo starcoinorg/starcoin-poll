@@ -253,6 +253,8 @@ class List extends PureComponent<Props, IndexState> {
   handleSubmit = async () => {
     try {
       const values = await this.validateFields();
+      values.description = values.description.replaceAll('\n', '\n\n')
+      values.description_en = values.description_en.replaceAll('\n', '\n\n')
       await client.post('add', values);
       await this.fetchList();
       this.closeFormDialog();
