@@ -5,8 +5,6 @@ import Helmet from 'react-helmet';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
@@ -15,36 +13,15 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
 import { POLL_STATUS } from '@/utils/constants';
 import client from '@/utils/client';
 import { getNetwork } from '@/utils/helper';
 import { LoadingOutlined } from '@ant-design/icons';
+import ConnectWallet from '@/Polls/components/ConnectWallet/adapter';
+import PollDialog from '@/Polls/components/PollDialog';
 import PollCard from './PollCard';
 // import DynamicForm from '../DynamicForm';
-
-const fields = {
-  title: '',
-  title_en: '',
-  description_en: '',
-  description: '',
-  creator: '',
-  network: 'main',
-  // t('poll.statusText')
-  status: '1',
-  link: '',
-  type_args_1: '',
-  id_on_chain: '',
-  // deposite: '',
-  duration: 7,
-};
-
-const requiredFields = Object.keys(fields);
 
 const useStyles = (theme: Theme) =>
   createStyles({
@@ -137,12 +114,11 @@ interface IndexState {
   status: number;
   hideVoted: boolean;
   open: boolean;
-  form: Record<string, any>;
-  errors: Record<string, boolean>;
   list: Record<string, any>[];
   page: number;
   loading: boolean;
   totalPage: number;
+  accounts: Array<any>;
 }
 
 const isLocal = window.location.host.includes('localhost');
@@ -162,12 +138,11 @@ class List extends PureComponent<Props, IndexState> {
       status: 0,
       hideVoted: false,
       open: false,
-      form: fields,
-      errors: {},
       loading: true,
       page: 1,
       list: [],
       totalPage: 1,
+      accounts: [],
     };
   }
 
@@ -205,64 +180,6 @@ class List extends PureComponent<Props, IndexState> {
     this.setState({ filter: value });
   };
 
-  handleFormChange = (
-    event: React.ChangeEvent<{ value: unknown; name: string }>,
-  ) => {
-    const { value, name } = event.target;
-    this.setState((prevState) => ({
-      form: {
-        ...prevState.form,
-        [name]: value,
-      },
-      errors: {
-        ...prevState.errors,
-        [name]: false,
-      },
-    }));
-  };
-
-  validateFields = async () => {
-    const { form, errors } = this.state;
-    let hasError = errors.endTime;
-    requiredFields.forEach((field) => {
-      if (!form[field]) {
-        hasError = true;
-        this.setState((prevState) => ({
-          errors: {
-            ...prevState.errors,
-            [field]: true,
-          },
-        }));
-      }
-    });
-    if (hasError) {
-      throw new Error('Error occured！');
-    } else {
-      return form;
-    }
-  };
-
-  closeFormDialog = () => {
-    this.setState({
-      form: fields,
-      errors: {},
-      open: false,
-    });
-  };
-
-  handleSubmit = async () => {
-    try {
-      const values = await this.validateFields();
-      values.description = values.description.replaceAll('\n', '\n\n')
-      values.description_en = values.description_en.replaceAll('\n', '\n\n')
-      await client.post('add', values);
-      await this.fetchList();
-      this.closeFormDialog();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   render() {
     const { t, classes } = this.props;
     const suffix = i18n.language === 'en' ? 'En' : '';
@@ -270,27 +187,12 @@ class List extends PureComponent<Props, IndexState> {
       hideVoted,
       status,
       open,
-      form,
-      errors,
       list,
       loading,
       page,
       totalPage,
+      accounts,
     } = this.state;
-
-    const helperTextMaps = {
-      title_en: 'Please input title.',
-      title: '请输入中文标题.',
-      description_en: 'Please input description.',
-      description: '请输入中文描述.',
-      deposite: t('poll.depositeHelperText'),
-      duration: t('poll.durationHelperText'),
-      creator: t('poll.creatorHelperText'),
-      link: t('poll.urlHelperText'),
-      network: t('poll.networkHelperText'),
-      type_args_1: t('poll.type_args_1HelperText'),
-      id_on_chain: t('poll.id_on_chainHelperText'),
-    };
 
     const menus = [{ label: t('poll.all'), value: 0 }];
     for (let i = 1; i < 8; i++) {
@@ -299,20 +201,6 @@ class List extends PureComponent<Props, IndexState> {
         value: i,
       });
     }
-
-    const {
-      title,
-      title_en,
-      description_en,
-      description,
-      link,
-      // deposite,
-      duration,
-      creator,
-      network,
-      type_args_1,
-      id_on_chain,
-    } = form;
 
     let renderList = list.concat() || [];
     if (hideVoted) {
@@ -329,243 +217,26 @@ class List extends PureComponent<Props, IndexState> {
           startIcon: <LoadingOutlined />,
         }
       : {};
+
+    console.log('accounts: ', accounts);
     return (
       <div>
         <Helmet>
           <title>{t('header.polls')}</title>
         </Helmet>
 
-        <Dialog
+        <PollDialog
           open={open}
-          aria-labelledby="simple-dialog-title"
-          onClose={this.closeFormDialog}
-        >
-          <DialogTitle id="simple-dialog-title">
-            {t('poll.createAPoll')}
-          </DialogTitle>
-          <DialogContent>
-            {/* <DynamicForm /> */}
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="title_en"
-              name="title_en"
-              error={errors.title_en}
-              helperText={errors.title_en ? helperTextMaps.title_en : undefined}
-              value={title_en}
-              label="Title"
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              margin="dense"
-              required
-              id="title"
-              name="title"
-              helperText={errors.title ? helperTextMaps.title : undefined}
-              error={errors.title}
-              value={title}
-              label="中文标题"
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              margin="dense"
-              required
-              id="description_en"
-              name="description_en"
-              error={errors.description_en}
-              helperText={
-                errors.description_en
-                  ? helperTextMaps.description_en
-                  : undefined
-              }
-              value={description_en}
-              label="Description"
-              multiline
-              rowsMax="4"
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              margin="dense"
-              id="description"
-              required
-              name="description"
-              multiline
-              rowsMax="4"
-              helperText={
-                errors.description ? helperTextMaps.description : undefined
-              }
-              error={errors.description}
-              value={description}
-              label="中文描述"
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              margin="dense"
-              id="creator"
-              required
-              name="creator"
-              multiline
-              rowsMax="4"
-              helperText={errors.creator ? helperTextMaps.creator : undefined}
-              error={errors.creator}
-              value={creator}
-              label={t('poll.creator')}
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              required
-              id="link"
-              name="link"
-              helperText={errors.link ? helperTextMaps.link : undefined}
-              error={errors.link}
-              value={link}
-              label={t('poll.externalUrl')}
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="duration"
-              name="duration"
-              type="number"
-              error={errors.duration}
-              helperText={errors.duration ? helperTextMaps.duration : undefined}
-              value={duration}
-              inputProps={{
-                min: 7,
-              }}
-              label={t('poll.duration')}
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="type_args_1"
-              name="type_args_1"
-              error={errors.type_args_1}
-              helperText={
-                errors.type_args_1 ? helperTextMaps.type_args_1 : undefined
-              }
-              value={type_args_1}
-              label={t('poll.type_args_1')}
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="id_on_chain"
-              name="id_on_chain"
-              error={errors.id_on_chain}
-              helperText={
-                errors.id_on_chain ? helperTextMaps.id_on_chain : undefined
-              }
-              value={id_on_chain}
-              label={t('poll.id_on_chain')}
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <FormControl style={{ marginRight: 8 }}>
-              <InputLabel id="demo-simple-select-label">
-                {t('poll.status')}
-              </InputLabel>
-              <Select
-                margin="dense"
-                labelId="demo-simple-select-label"
-                id="status"
-                name="status"
-                style={{ width: 150 }}
-                value={form.status}
-                error={errors.status}
-                label={t('poll.status')}
-                onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                  this.setState((prevState) => ({
-                    form: {
-                      ...prevState.form,
-                      status: event.target.value as number,
-                    },
-                    errors: {
-                      ...prevState.errors,
-                      status: false,
-                    },
-                  }));
-                }}
-              >
-                {menus.slice(1).map(({ label, value }) => (
-                  <MenuItem value={value} key={value}>
-                    {label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <InputLabel id="network-simple-select-label">
-                {t('poll.network')}
-              </InputLabel>
-              <Select
-                margin="dense"
-                labelId="network-simple-select-label"
-                id="network"
-                name="network"
-                style={{ width: 150 }}
-                value={network}
-                error={errors.network}
-                label={t('poll.network')}
-                onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                  this.setState((prevState) => ({
-                    form: {
-                      ...prevState.form,
-                      network: event.target.value as number,
-                    },
-                    errors: {
-                      ...prevState.errors,
-                      network: false,
-                    },
-                  }));
-                }}
-              >
-                {process.env.REACT_APP_STARCOIN_NETWORKS &&
-                  process.env.REACT_APP_STARCOIN_NETWORKS.split(',').map(
-                    (net) => (
-                      <MenuItem value={net} key={net}>
-                        {net}
-                      </MenuItem>
-                    ),
-                  )}
-              </Select>
-            </FormControl>
-            {/* <TextField
-              autoFocus
-              margin="dense"
-              id="deposite"
-              name="deposite"
-              error={errors.deposite}
-              helperText={errors.deposite ? helperTextMaps.deposite : undefined}
-              value={deposite}
-              label={t('poll.deposite')}
-              fullWidth
-              onChange={this.handleFormChange}
-            /> */}
-          </DialogContent>
-          <DialogActions>
-            <Button color="primary" onClick={this.closeFormDialog}>
-              {t('poll.cancel')}
-            </Button>
-            <Button color="primary" autoFocus onClick={this.handleSubmit}>
-              {t('poll.ok')}
-            </Button>
-          </DialogActions>
-        </Dialog>
+          defaultCreator={accounts[0]}
+          onClose={() => {
+            this.setState({
+              open: false,
+            });
+          }}
+          afterSubmit={async () => {
+            await this.fetchList();
+          }}
+        />
 
         <CenteredView>
           <Card>
@@ -616,18 +287,28 @@ class List extends PureComponent<Props, IndexState> {
                   </Grid>
                   {isLocal && (
                     <Grid item>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        onClick={() => {
-                          this.setState({
-                            open: true,
-                          });
-                        }}
-                      >
-                        {t('poll.create')}
-                      </Button>
+                      {accounts.length ? (
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          size="small"
+                          onClick={() => {
+                            this.setState({
+                              open: true,
+                            });
+                          }}
+                        >
+                          {t('poll.create')}
+                        </Button>
+                      ) : (
+                        <ConnectWallet
+                          onAccountChange={(accounts: Array<any>) => {
+                            this.setState({
+                              accounts,
+                            });
+                          }}
+                        />
+                      )}
                     </Grid>
                   )}
                 </Grid>
