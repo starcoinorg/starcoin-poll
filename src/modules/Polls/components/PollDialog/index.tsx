@@ -70,7 +70,6 @@ const PollDialog = ({
 
   const validateFields = async () => {
     let hasError;
-    console.log('form: ', form);
     requiredFields.forEach((field) => {
       if (!form[field]) {
         hasError = true;
@@ -113,7 +112,7 @@ const PollDialog = ({
       values.description = values.description.replaceAll('\n', '\n\n');
       values.description_en = values.description_en.replaceAll('\n', '\n\n');
       values.end_time = moment(values.end_time).valueOf();
-      await client.post('edit', values);
+      await client.post(values.id ? 'edit' : 'add', values);
       await afterSubmit();
       handleClose();
     } catch (e) {
