@@ -692,7 +692,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         t('poll.creator'),
         <CommonLink
           key={detail.creator}
-          path={`https://explorer.starcoin.org/main/address/${detail.creator}`}
+          path={`https://stcscan.io/main/address/${detail.creator}`}
           title={detail.creator}
         />,
       ],
@@ -710,14 +710,14 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         t('poll.selectedAccount'),
         <CommonLink
           key={pollVotes.selectedAccount}
-          path={`https://explorer.starcoin.org/main/address/${pollVotes.selectedAccount}`}
+          path={`https://stcscan.io/main/address/${pollVotes.selectedAccount}`}
           title={pollVotes.selectedAccount}
         />,
       ]);
       const selectedVoteLog = pollVotes.value
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
-            pollVotes.value,
-          )} NanoSTC) `
+          pollVotes.value,
+        )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
       const buttons = this.allowedButtons(detail.status);
