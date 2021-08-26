@@ -1626,9 +1626,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@starcoin/starcoin@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/@starcoin/starcoin/-/starcoin-1.3.0.tgz#9f620aa42eb9bed746e03270589d51feb79ae4cb"
+"@starcoin/starcoin@^1.4.9":
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/@starcoin/starcoin/-/starcoin-1.5.0.tgz#1939e3c5a43d4a50dc100e087d34350192dbab09"
+  integrity sha512-f7na/SS38blD/BdUt39b41loo3Rj8gd4v65aRADopV1oAUZCX5GaTNeDVUtarcMVG5tGs+MCi6EDR7zOlSbM/A==
   dependencies:
     "@ethersproject/basex" "^5.0.4"
     "@ethersproject/bignumber" "^5.0"

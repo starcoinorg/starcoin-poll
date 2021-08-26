@@ -325,9 +325,6 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       })();
       await this.starcoinProvider.getSigner().sendUncheckedTransaction({
         data: payloadInHex,
-        // ScriptFunction and Package need to speific gasLimit here.
-        gasLimit: 10000000,
-        gasPrice: 1,
       });
     } catch (error) {
       console.error(error);
@@ -367,9 +364,6 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       })();
       await this.starcoinProvider.getSigner().sendUncheckedTransaction({
         data: payloadInHex,
-        // ScriptFunction and Package need to speific gasLimit here.
-        gasLimit: 10000000,
-        gasPrice: 1,
       });
     } catch (error) {
       console.error(error);
@@ -431,9 +425,6 @@ class Detail extends PureComponent<IndexProps, IndexState> {
 
       await this.starcoinProvider.getSigner().sendUncheckedTransaction({
         data: payloadInHex,
-        // ScriptFunction and Package need to speific gasLimit here.
-        gasLimit: 10000000,
-        gasPrice: 1,
       });
     } catch (error) {
       console.error(error);
