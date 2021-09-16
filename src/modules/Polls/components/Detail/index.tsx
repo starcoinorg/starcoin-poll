@@ -303,7 +303,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
       const proposerAdressHex = detail.creator;
-      const proposalId = parseInt(detail.idOnChain);
+      const proposalId = parseInt(detail.idOnChain, 10);
 
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
       const proposalIdSCSHex = (function () {
