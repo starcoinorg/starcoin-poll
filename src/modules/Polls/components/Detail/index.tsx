@@ -300,10 +300,10 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     try {
       const { detail } = this.state;
       const functionId = '0x1::Dao::queue_proposal_action';
-      const strTypeArgs = ['0x1::STC::STC', detail.type_args_1];
+      const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
       const proposerAdressHex = detail.creator;
-      const proposalId = detail.id;
+      const proposalId = parseInt(detail.idOnChain);
 
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
       const proposalIdSCSHex = (function () {
