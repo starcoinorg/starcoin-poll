@@ -214,7 +214,6 @@ interface IndexProps {
   poll: any;
   pollVotes: any;
   accounts: string[];
-  isRevokeable: boolean;
   getPoll: (data: any, callback?: any) => any;
   history: any;
 }
@@ -241,7 +240,6 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     poll: undefined,
     pollVotes: undefined,
     accounts: [],
-    isRevokeable: false,
   };
 
   constructor(props: IndexProps) {
@@ -373,6 +371,47 @@ class Detail extends PureComponent<IndexProps, IndexState> {
 
   // async onClickExecute() {
   // }
+
+  async onClickRevoke() {
+    try {
+      const { detail } = this.state;
+      const functionId = '0x1::DaoVoteScripts::revoke_vote';
+      const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
+      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
+
+      const proposerAdressHex = detail.creator;
+      const proposalId = detail.id;
+
+      const proposalIdSCSHex = (function () {
+        const se = new bcs.BcsSerializer();
+        se.serializeU64(proposalId);
+        return hexlify(se.getBytes());
+      })();
+
+      const args = [
+        arrayify(proposerAdressHex),
+        arrayify(proposalIdSCSHex),
+      ];
+
+      const scriptFunction = utils.tx.encodeScriptFunction(
+        functionId,
+        structTypeTags,
+        args,
+      );
+      const payloadInHex = (function () {
+        const se = new bcs.BcsSerializer();
+        scriptFunction.serialize(se);
+        return hexlify(se.getBytes());
+      })();
+
+      await this.starcoinProvider.getSigner().sendUncheckedTransaction({
+        data: payloadInHex,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    return false;
+  }
 
   async onClickVoteConfirm() {
     try {
@@ -604,21 +643,20 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           <Typography variant="body1">{t('poll.buttonText.vote')}</Typography>
         </Button>,
       );
-      // TODO: enable this while starcoin bug fixed
-      // if (!this.props.isRevokeable) {
-      //   buttons.push(
-      //     <Button
-      //       key="revoke"
-      //       className={classes.button}
-      //       color="primary"
-      //       variant="contained"
-      //       onClick={() => {
-      //         this.onClickRevoke()
-      //       }}
-      //     >
-      //       <Typography variant="body1">{t('poll.buttonText.revoke')}</Typography>
-      //     </Button>)
-      // }
+      if (status === POLL_STATUS.ACTIVE && this.props.pollVotes && this.props.pollVotes.value) {
+        buttons.push(
+          <Button
+            key="revoke"
+            className={classes.button}
+            color="primary"
+            variant="contained"
+            onClick={() => {
+              this.onClickRevoke()
+            }}
+          >
+            <Typography variant="body1">{t('poll.buttonText.revoke')}</Typography>
+          </Button>)
+      }
     }
     if (status > POLL_STATUS.ACTIVE && this.props.pollVotes.isVoted) {
       buttons.push(
