@@ -42,6 +42,7 @@
     "votes": "Votes",
     "yes": "Yes",
     "no": "No",
+    "max": "max",
     "install": "Install Wallet",
     "connect": "Connect Wallet",
     "connected": "Wallet Connected",
