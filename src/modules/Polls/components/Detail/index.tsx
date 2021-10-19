@@ -300,7 +300,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       const functionId = '0x1::Dao::queue_proposal_action';
       const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
-      const proposerAdressHex = detail.creator;
+      const proposerAddressHex = detail.creator;
       const proposalId = parseInt(detail.idOnChain, 10);
 
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
@@ -309,7 +309,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         se.serializeU64(proposalId);
         return hexlify(se.getBytes());
       })();
-      const args = [arrayify(proposerAdressHex), arrayify(proposalIdSCSHex)];
+      const args = [arrayify(proposerAddressHex), arrayify(proposalIdSCSHex)];
 
       const scriptFunction = utils.tx.encodeScriptFunction(
         functionId,
@@ -339,7 +339,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       const functionId = '0x1::DaoVoteScripts::unstake_vote';
       const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
-      const proposerAdressHex = detail.creator;
+      const proposerAddressHex = detail.creator;
       const proposalId = detail.id;
 
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
@@ -348,7 +348,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         se.serializeU64(proposalId);
         return hexlify(se.getBytes());
       })();
-      const args = [arrayify(proposerAdressHex), arrayify(proposalIdSCSHex)];
+      const args = [arrayify(proposerAddressHex), arrayify(proposalIdSCSHex)];
 
       const scriptFunction = utils.tx.encodeScriptFunction(
         functionId,
@@ -379,7 +379,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
 
-      const proposerAdressHex = detail.creator;
+      const proposerAddressHex = detail.creator;
       const proposalId = detail.id;
 
       const proposalIdSCSHex = (function () {
@@ -389,7 +389,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       })();
 
       const args = [
-        arrayify(proposerAdressHex),
+        arrayify(proposerAddressHex),
         arrayify(proposalIdSCSHex),
       ];
 
@@ -418,44 +418,31 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       const { detail } = this.state;
       const { checked, sendAmount } = this.state;
       const functionId = '0x1::DaoVoteScripts::cast_vote';
-      const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
-      const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
+      const tyArgs = ['0x1::STC::STC', detail.typeArgs1];
 
-      const proposerAdressHex = detail.creator;
+      const proposerAddress = detail.creator;
       const proposalId = detail.id;
       const agree = checked; // yes: true; no: false
       const votes = new BigNumber(sendAmount).times('1000000000'); // sendAmount * 1e9
 
-      // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
-      const proposalIdSCSHex = (function () {
-        const se = new bcs.BcsSerializer();
-        se.serializeU64(proposalId);
-        return hexlify(se.getBytes());
-      })();
-      // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
-      const agreeSCSHex = (function () {
-        const se = new bcs.BcsSerializer();
-        se.serializeBool(agree);
-        return hexlify(se.getBytes());
-      })();
-      // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
-      const votesSCSHex = (function () {
-        const se = new bcs.BcsSerializer();
-        se.serializeU128(new BigNumber(votes).toNumber());
-        return hexlify(se.getBytes());
-      })();
       const args = [
-        arrayify(proposerAdressHex),
-        arrayify(proposalIdSCSHex),
-        arrayify(agreeSCSHex),
-        arrayify(votesSCSHex),
+        proposerAddress,
+        proposalId,
+        agree,
+        votes,
       ];
 
-      const scriptFunction = utils.tx.encodeScriptFunction(
-        functionId,
-        structTypeTags,
-        args,
-      );
+      const nodeUrlMap: any = {
+        '1': 'https://main-seed.starcoin.org',
+        '252': 'https://proxima-seed.starcoin.org',
+        '251': 'https://barnard-seed.starcoin.org',
+        '253': 'https://halley-seed.starcoin.org',
+        '254': 'http://localhost:9850',
+      }
+
+      const nodeUrl = nodeUrlMap[window.starcoin.networkVersion]
+      const scriptFunction = await utils.tx.encodeScriptFunctionByResolve(functionId, tyArgs, args, nodeUrl)
+
       const payloadInHex = (function () {
         const se = new bcs.BcsSerializer();
         scriptFunction.serialize(se);

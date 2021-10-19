@@ -9,7 +9,7 @@
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.58",
-    "@starcoin/starcoin": "^1.4.9",
+    "@starcoin/starcoin": "^1.5.3",
     "@starcoin/starmask-onboarding": "^1.0.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
