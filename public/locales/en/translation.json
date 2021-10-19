@@ -43,6 +43,7 @@
     "yes": "Yes",
     "no": "No",
     "max": "max",
+    "clear": "clear",
     "install": "Install Wallet",
     "connect": "Connect Wallet",
     "connected": "Wallet Connected",

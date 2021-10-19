@@ -276,8 +276,6 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const { network: networkFromUrl } = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
     });
-    // console.log('detail: ', detail)
-    detail.status = 2;
     const { network: networkFromResp } = detail;
     if (networkFromResp !== networkFromUrl) {
       history.push('/error');
@@ -756,8 +754,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ]);
       const selectedVoteLog = pollVotes.value
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
-            pollVotes.value,
-          )} NanoSTC) `
+          pollVotes.value,
+        )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
       const buttons = this.allowedButtons(detail.status);
@@ -854,16 +852,24 @@ class Detail extends PureComponent<IndexProps, IndexState> {
                       !sendAmount && startToVerify ? '请输入' : undefined
                     }
                   />
-                  <a
-                    style={{ color: '#3f51b5', cursor: 'pointer' }}
+                  <Button
+                    color="secondary"
+                    onClick={async () => {
+                      this.setState({
+                        sendAmount: '0.00',
+                      });
+                    }}>
+                      {t('poll.clear')}
+                  </Button>
+                  <Button
+                    color="primary"
                     onClick={async () => {
                       this.setState({
                         sendAmount: this.maxFee,
                       });
-                    }}
-                  >
-                    {t('poll.max')}
-                  </a>
+                    }}>
+                      {t('poll.max')}
+                  </Button>
                 </div>
               </Grid>
             </Grid>
