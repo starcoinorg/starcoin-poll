@@ -32,7 +32,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 // import TableHead from '@material-ui/core/TableHead';
 // import TableRow from '@material-ui/core/TableRow';
 // import TablePagination from '@material-ui/core/TablePagination';
-import { getPollData } from '@/utils/sdk';
+import { getPollData, getAddressSTCBalance } from '@/utils/sdk';
 import { arrayify, hexlify } from '@ethersproject/bytes';
 import { providers, utils, bcs } from '@starcoin/starcoin';
 import { POLL_STATUS } from '@/utils/constants';
@@ -232,8 +232,6 @@ interface IndexState {
 let startToVerify: boolean = false;
 
 class Detail extends PureComponent<IndexProps, IndexState> {
-  starcoinProvider: any;
-
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     match: {},
@@ -241,6 +239,10 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     pollVotes: undefined,
     accounts: [],
   };
+
+  maxFee: number = 0;
+
+  starcoinProvider: any;
 
   constructor(props: IndexProps) {
     super(props);
@@ -276,8 +278,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     });
     const { network: networkFromResp } = detail;
     if (networkFromResp !== networkFromUrl) {
-      history.push('/error')
-      return
+      history.push('/error');
+      return;
     }
     getPollData(detail.creator, detail.typeArgs1).then((data) => {
       if (data && data.id === detail.id) {
@@ -387,6 +389,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         se.serializeU64(proposalId);
         return hexlify(se.getBytes());
       })();
+
 
       const args = [
         arrayify(proposerAddressHex),
@@ -609,7 +612,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
   // | 6 | EXECUTABLE |  unstake (if not) | execute          |
   // | 7 | EXTRACTED  |  unstake (if not) |                  |
   allowedButtons(status: number) {
-    const { t, classes } = this.props;
+    const { t, classes, accounts } = this.props;
     const buttons = [];
     if (status === POLL_STATUS.ACTIVE) {
       buttons.push(
@@ -618,11 +621,14 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           className={classes.button}
           color="primary"
           variant="contained"
-          onClick={() => {
+          onClick={async () => {
             startToVerify = false;
+            const resp = await getAddressSTCBalance(accounts[0]);
+            const balance = get(resp, 'token.value', 0);
+            this.maxFee = new BigNumber(balance).div(1e9).minus(0.1).toNumber();
             this.setState({
               checked: true,
-              sendAmount: '1',
+              sendAmount: this.maxFee,
               open: true,
             });
           }}
@@ -630,7 +636,11 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           <Typography variant="body1">{t('poll.buttonText.vote')}</Typography>
         </Button>,
       );
-      if (status === POLL_STATUS.ACTIVE && this.props.pollVotes && this.props.pollVotes.value) {
+      if (
+        status === POLL_STATUS.ACTIVE &&
+        this.props.pollVotes &&
+        this.props.pollVotes.value
+      ) {
         buttons.push(
           <Button
             key="revoke"
@@ -638,11 +648,14 @@ class Detail extends PureComponent<IndexProps, IndexState> {
             color="primary"
             variant="contained"
             onClick={() => {
-              this.onClickRevoke()
+              this.onClickRevoke();
             }}
           >
-            <Typography variant="body1">{t('poll.buttonText.revoke')}</Typography>
-          </Button>)
+            <Typography variant="body1">
+              {t('poll.buttonText.revoke')}
+            </Typography>
+          </Button>,
+        );
       }
     }
     if (status > POLL_STATUS.ACTIVE && this.props.pollVotes.isVoted) {
@@ -697,7 +710,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
 
   render() {
     const suffix = i18n.language === 'en' ? 'En' : '';
-    const { poll, pollVotes, match, t, classes } = this.props;
+    const { pollVotes, t, classes } = this.props;
     const { open, checked, sendAmount, detail } = this.state;
 
     const columns = [
@@ -801,34 +814,54 @@ class Detail extends PureComponent<IndexProps, IndexState> {
                 </Grid>
               </Grid>
               <Grid item style={{ width: '100%' }}>
-                <TextField
-                  id="outlined-number"
-                  label={t('poll.number')}
-                  type="number"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  required
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="start">STC</InputAdornment>
-                    ),
-                  }}
-                  fullWidth
-                  variant="outlined"
-                  placeholder="0.0000"
-                  value={sendAmount}
-                  onChange={(e) => {
-                    startToVerify = true;
-                    this.setState({
-                      sendAmount: e.target.value,
-                    });
-                  }}
-                  error={!sendAmount && startToVerify}
-                  helperText={
-                    !sendAmount && startToVerify ? '请输入' : undefined
-                  }
-                />
+                <div style={{ textAlign: 'right' }}>
+                  <TextField
+                    id="outlined-number"
+                    label={t('poll.number')}
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="start">STC</InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                    variant="outlined"
+                    placeholder="0.0000"
+                    value={sendAmount}
+                    onChange={(e) => {
+                      startToVerify = true;
+                      this.setState({
+                        sendAmount: e.target.value,
+                      });
+                    }}
+                    error={!sendAmount && startToVerify}
+                    helperText={
+                      !sendAmount && startToVerify ? '请输入' : undefined
+                    }
+                  />
+                  <Button
+                    color="secondary"
+                    onClick={async () => {
+                      this.setState({
+                        sendAmount: '0.00',
+                      });
+                    }}>
+                      {t('poll.clear')}
+                  </Button>
+                  <Button
+                    color="primary"
+                    onClick={async () => {
+                      this.setState({
+                        sendAmount: this.maxFee,
+                      });
+                    }}>
+                      {t('poll.max')}
+                  </Button>
+                </div>
               </Grid>
             </Grid>
           </DialogContent>
