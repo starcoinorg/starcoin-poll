@@ -26,6 +26,12 @@ const useStyles = (theme: Theme) =>
     cardInProgress: {
       opacity: 1,
     },
+    cardExtracted: {
+      border: `1px solid ${theme.palette.primary.main}`
+    },
+    cardDefeated: {
+      border: `1px solid ${theme.palette.secondary.light}`
+    },
     [theme.breakpoints.down('xs')]: {
       cardCommon: {
         transition: '.4s ease box-shadow',
@@ -195,6 +201,8 @@ class PollCard extends PureComponent<Props, PollCardState> {
             [classes.cardHover]: this.state.displayHover,
             [classes.cardNoHover]: !this.state.displayHover,
             [classes.cardInProgress]: status !== POLL_STATUS.EXTRACTED,
+            [classes.cardExtracted]: status === POLL_STATUS.EXTRACTED,
+            [classes.cardDefeated]: status === POLL_STATUS.DEFEATED,
           })}
           onMouseEnter={this.onCardEnter}
           onMouseLeave={this.onCardLeave}
