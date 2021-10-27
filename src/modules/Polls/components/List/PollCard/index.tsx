@@ -222,7 +222,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
               </Typography>
               <Typography variant="body2" gutterBottom>
                 {t('poll.endTime')}:{' '}
-                {new Date(parseInt(end_time, 10)).toLocaleString()}
+                {new Date(parseInt(end_time, 10)).toLocaleString()}{' '}{new Date().toTimeString().slice(9,17)}
               </Typography>
               <BorderLinearProgress
                 variant="buffer"
