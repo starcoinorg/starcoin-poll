@@ -727,7 +727,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ],
       [
         t('poll.endTime'),
-        new Date(parseInt(detail.endTime, 10)).toLocaleString(),
+        `${new Date(parseInt(detail.endTime, 10)).toLocaleString()} ${new Date().toTimeString().slice(9,17)}`,
       ],
       [
         t('poll.discussion'),

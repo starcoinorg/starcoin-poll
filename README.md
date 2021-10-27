@@ -30,7 +30,7 @@ export REACT_APP_STARCOIN_POLL_API_URL=https://poll-api.starcoin.org
 >
 >`$git clone git@github.com:starcoinorg/starcoin-poll.git`\
 >`$cd starcoin-poll`\
->`$npm install`
+>`$yarn`
 
 `$yarn start`
 
