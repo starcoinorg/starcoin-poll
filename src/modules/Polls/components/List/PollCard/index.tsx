@@ -27,10 +27,11 @@ const useStyles = (theme: Theme) =>
       opacity: 1,
     },
     cardExtracted: {
-      border: `1px solid ${theme.palette.primary.main}`
+      border: `1px solid ${theme.palette.primary.main}`,
     },
     cardDefeated: {
-      border: `1px solid ${theme.palette.secondary.light}`
+      border: `1px solid ${theme.palette.secondary.light}`,
+      opacity: 0.5,
     },
     [theme.breakpoints.down('xs')]: {
       cardCommon: {
