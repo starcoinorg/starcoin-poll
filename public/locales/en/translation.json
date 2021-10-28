@@ -63,7 +63,7 @@
     "warning": "Vote cannot be changed after submission. Staked STC used to vote in polls are locked and cannot be withdrawn until the poll finishes.",
     "quorum": "Quorum",
     "threshold": "Threshold",
-    "hideVoted": "Hide voted polls",
+    "hideVoted": "Hide closed polls",
     "all": "All",
     "create": "Create",
     "createAPoll": "Create A Poll",
