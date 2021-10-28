@@ -73,3 +73,13 @@ Your app is ready to be deployed!
 `./publish.sh`
 
 > PS: use proxy to speed up
+
+
+## How to CI/CD
+
+```
+$git tag vx.y.z
+$git push --tag
+```
+
+A github action will be triggered and deploy the newest version.
