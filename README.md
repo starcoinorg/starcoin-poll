@@ -46,20 +46,22 @@ You will also see any lint errors in the console.
 
 Launches the test runner in the interactive watch mode.
 
-## How to test deploy
+## How to test deploying
+
+Build the app for production to the `build` folder:
 
 `$yarn build`
 
-Builds the app for production to the `build` folder.
-
 Your app is ready to be deployed!
 
->You may serve it locally with a static server for test before deploying.
->
->  `npm install -g serve`\
->  `serve -s build`
->
->then visit: [http://localhost:5000](http://localhost:5000)
+You may want to serve it locally with a static server for test before deploying:
+
+```
+npm install -g serve
+serve -s build
+```
+
+Then visit: [http://localhost:5000](http://localhost:5000)
 
 
 ## How to publish
