@@ -515,6 +515,7 @@ class List extends PureComponent<Props, IndexState> {
                       title={poll[`title${suffix}`]}
                       for_votes={poll.forVotes}
                       against_votes={poll.againstVotes}
+                      quorum_votes={poll.quorumVotes}
                       status={poll.status}
                       end_time={poll.endTime}
                       creator={poll.creator}

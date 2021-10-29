@@ -467,7 +467,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const { /* page, rowsPerPage,  */ detail } = this.state;
 
     const isPollDataLoading = !this.state.pollData;
-    const total = 168171610282100220;
+    // const total = 168171610282100220;
+    const total = this.state.pollData && new BigNumber(25 * this.state.pollData.quorum_votes);
     const yesPercent =
       this.state.pollData &&
       new BigNumber(this.state.pollData.for_votes)
@@ -492,6 +493,10 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         proposer: '0x3f19d5422824f47e6c021978cee98f35',
       });
     }
+
+    // console.log(this.state.pollData);
+    // console.log(this.state.detail);
+
     const votes = (
       <div>
         <br />
