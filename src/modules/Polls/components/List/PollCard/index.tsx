@@ -107,6 +107,7 @@ interface ExternalProps {
   id: number;
   for_votes: number;
   against_votes: number;
+  quorum_votes: number;
   status: number;
   end_time: string;
   creator: string;
@@ -137,6 +138,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
     id: undefined,
     for_votes: undefined,
     against_votes: undefined,
+    quorum_votes: undefined,
     status: undefined,
     end_time: undefined,
     creator: undefined,
@@ -177,6 +179,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
       url,
       for_votes = 0,
       against_votes = 0,
+      quorum_votes = 0,
       status,
       end_time,
       classes,
@@ -190,7 +193,12 @@ class PollCard extends PureComponent<Props, PollCardState> {
       status === POLL_STATUS.ACTIVE && this.state.pollData
         ? this.state.pollData.against_votes
         : against_votes;
-    const total = 168171610282100220;
+    // const total = 168171610282100220;
+    const quorum =
+      status === POLL_STATUS.ACTIVE && this.state.pollData
+        ? this.state.pollData.quorum_votes
+        : quorum_votes;
+    const total = new BigNumber(25 * quorum);
     const yesPercent = new BigNumber(yes).div(total).times(100).toFixed(2);
     const noPercent = new BigNumber(no).div(total).times(100).toFixed(2);
     const voted = new BigNumber(yes).plus(new BigNumber(no));
