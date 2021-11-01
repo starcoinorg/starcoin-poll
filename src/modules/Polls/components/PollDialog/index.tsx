@@ -111,7 +111,6 @@ const PollDialog = ({
       const values = await validateFields();
       values.description = values.description.replaceAll('\n', '\n\n');
       values.description_en = values.description_en.replaceAll('\n', '\n\n');
-      values.end_time = moment(values.end_time).valueOf();
       await client.post(values.id ? 'edit' : 'add', values);
       await afterSubmit();
       handleClose();
