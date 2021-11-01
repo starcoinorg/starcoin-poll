@@ -38,7 +38,7 @@ const fields = {
   link: '',
   type_args_1: '',
   id_on_chain: '',
-  end_time: moment().add('7', 'days'),
+  end_time: '',
 };
 
 const requiredFields = Object.keys(fields);
@@ -147,7 +147,8 @@ const PollDialog = ({
       if (open) {
         // 此时为添加，会带上默认 creator
         if (id === undefined) {
-          setForm({ ...fields, creator: defaultCreator });
+          // setForm({ ...fields, creator: defaultCreator });
+          setForm({ ...fields });
         } else {
           const detail = await client.get(`get?id=${id}&network=${network}`);
           setForm({
@@ -245,7 +246,6 @@ const PollDialog = ({
           id="creator"
           required
           name="creator"
-          disabled
           multiline
           rowsMax="4"
           helperText={errors.creator ? helperTextMaps.creator : undefined}
@@ -268,24 +268,19 @@ const PollDialog = ({
           fullWidth
           onChange={handleFormChange}
         />
-        <MuiPickersUtilsProvider
-          libInstance={moment}
-          utils={MomentUtils}
-          locale={t('poll.locale')}
-        >
-          <DateTimePicker
-            label={t('poll.endTime')}
-            // inputVariant="outlined"
-            value={end_time}
-            onChange={(date) => {
-              setForm({
-                ...form,
-                end_time: date,
-              });
-            }}
-            style={{ marginTop: 16 }}
-          />
-        </MuiPickersUtilsProvider>
+        <TextField
+          autoFocus
+          margin="dense"
+          required
+          id="end_time"
+          name="end_time"
+          helperText={errors.end_time ? helperTextMaps.end_time : undefined}
+          error={errors.end_time}
+          value={end_time}
+          label={t('poll.endTime')}
+          fullWidth
+          onChange={handleFormChange}
+        />
         <TextField
           autoFocus
           margin="dense"
