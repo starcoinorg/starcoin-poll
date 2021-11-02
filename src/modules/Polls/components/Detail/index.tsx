@@ -428,7 +428,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const { network: networkFromUrl } = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
     });
-    const detail = await client.get(`get?id=${id}&network=${networkFromUrl}`);
+    const detail = await client.get(`polls/detail/${id}`);
     const { network: networkFromResp } = detail;
     if (networkFromResp !== networkFromUrl) {
       history.push('/error');
@@ -724,8 +724,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ]);
       const selectedVoteLog = pollVotes.value
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
-            pollVotes.value,
-          )} NanoSTC) `
+          pollVotes.value,
+        )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
       const buttons = this.allowedButtons(detail.status);

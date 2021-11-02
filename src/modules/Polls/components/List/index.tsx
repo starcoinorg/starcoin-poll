@@ -107,7 +107,7 @@ interface InternalProps {
   match: any;
 }
 
-interface Props extends ExternalProps, InternalProps {}
+interface Props extends ExternalProps, InternalProps { }
 
 interface IndexState {
   filter: string;
@@ -128,7 +128,7 @@ class List extends PureComponent<Props, IndexState> {
   static defaultProps = {
     pollList: null,
     isLoadingMore: undefined,
-    getPollList: () => {},
+    getPollList: () => { },
   };
 
   constructor(props: Props) {
@@ -160,7 +160,7 @@ class List extends PureComponent<Props, IndexState> {
     });
     try {
       const resp = await client.get(
-        `list?network=${getNetwork()}&page=${page}&count=20`,
+        `polls/page/${getNetwork()}?page=${page}&count=20`,
       );
       const newlist = list.concat(resp.list);
       const totalPage = resp.totalPage;
@@ -213,9 +213,9 @@ class List extends PureComponent<Props, IndexState> {
     }
     const loadingProps = loading
       ? {
-          disabled: true,
-          startIcon: <LoadingOutlined />,
-        }
+        disabled: true,
+        startIcon: <LoadingOutlined />,
+      }
       : {};
 
     console.log('accounts: ', accounts);
@@ -318,20 +318,20 @@ class List extends PureComponent<Props, IndexState> {
             <div className={classes.gridCards}>
               {renderList.length
                 ? renderList.map((poll: any, index: number) => (
-                    <PollCard
-                      key={`key_${index}`}
-                      id={poll.id}
-                      url={`/polls/detail/${poll.id}`}
-                      link={poll.link}
-                      title={poll[`title${suffix}`]}
-                      for_votes={poll.forVotes}
-                      against_votes={poll.againstVotes}
-                      status={poll.status}
-                      end_time={poll.endTime}
-                      creator={poll.creator}
-                      type_args_1={poll.typeArgs1}
-                    />
-                  ))
+                  <PollCard
+                    key={`key_${index}`}
+                    id={poll.id}
+                    url={`/polls/detail/${poll.id}`}
+                    link={poll.link}
+                    title={poll[`title${suffix}`]}
+                    for_votes={poll.forVotes}
+                    against_votes={poll.againstVotes}
+                    status={poll.status}
+                    end_time={poll.endTime}
+                    creator={poll.creator}
+                    type_args_1={poll.typeArgs1}
+                  />
+                ))
                 : t('poll.NoPoll')}
             </div>
             {page < totalPage ? (

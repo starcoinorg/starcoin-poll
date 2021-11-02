@@ -1,10 +1,14 @@
 import axios from 'axios';
 
-const apiUrl = window.location.host.includes('localhost')
-  ? 'http://localhost:3333'
-  : process.env.REACT_APP_STARCOIN_POLL_API_URL;
+// const apiUrl = window.location.host.includes('localhost')
+//   ? 'http://localhost:33330'
+//   : process.env.REACT_APP_STARCOIN_POLL_API_URL;
 
-const baseURL = `${apiUrl}/poll`;
+// const baseURL = `${apiUrl}/poll`;
+
+const apiUrl = process.env.REACT_APP_STARCOIN_POLL_API_URL;
+const baseURL = `${apiUrl}/v1`;
+
 const clientConfig = {
   baseURL,
   timeout: 120000, // 2 minutes, xhr status will be 'canceled'
