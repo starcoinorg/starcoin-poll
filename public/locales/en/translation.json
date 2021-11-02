@@ -76,6 +76,7 @@
     "depositeHelperText": "Please input deposite.",
     "durationHelperText": "Please input time of duration.",
     "code": "Contract ByteCode",
+    "votedForAnotherPollWarning": "You have voted for another poll. Please unstake in that poll and then vote for this poll.",
     "": ""
   }
 }

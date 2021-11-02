@@ -76,6 +76,7 @@
     "depositeHelperText": "请输入保证金",
     "durationHelperText": "请输入持续时间",
     "code": "合约字节码",
+    "votedForAnotherPollWarning": "你已经为其他提案投票，请前往该提案进行赎回操作(Unstake)，然后再为本提案投票",
     "": ""
   }
 }

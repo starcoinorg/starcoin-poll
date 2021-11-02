@@ -23,6 +23,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
+import Alert from '@material-ui/lab/Alert';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 // import Table from '@material-ui/core/Table';
@@ -32,7 +33,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 // import TableHead from '@material-ui/core/TableHead';
 // import TableRow from '@material-ui/core/TableRow';
 // import TablePagination from '@material-ui/core/TablePagination';
-import { getPollData, getAddressSTCBalance } from '@/utils/sdk';
+import { getPollData, getAddressSTCBalance, getPollAccountVotes } from '@/utils/sdk';
 import { arrayify, hexlify } from '@ethersproject/bytes';
 import { providers, utils, bcs } from '@starcoin/starcoin';
 import { POLL_STATUS } from '@/utils/constants';
@@ -222,6 +223,7 @@ interface IndexState {
   id?: number;
   pollData: any;
   checked: boolean;
+  votedForAnotherPoll: boolean;
   open: boolean;
   sendAmount: string | number;
   page: number;
@@ -260,6 +262,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     this.state = {
       id: parseInt(props.match.params.id, 10),
       pollData: undefined,
+      votedForAnotherPoll: false,
       checked: true,
       open: false,
       sendAmount: '1',
@@ -618,6 +621,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
   // | 7 | EXTRACTED  |  unstake (if not) |                  |
   allowedButtons(status: number) {
     const { t, classes, accounts } = this.props;
+    const currentPollID = this.state.id;
     const buttons = [];
     if (status === POLL_STATUS.ACTIVE) {
       buttons.push(
@@ -630,11 +634,21 @@ class Detail extends PureComponent<IndexProps, IndexState> {
             startToVerify = false;
             const resp = await getAddressSTCBalance(accounts[0]);
             const balance = get(resp, 'token.value', 0);
+            const address = this.props.pollVotes.selectedAccount;
+            const accountVoteResource = await getPollAccountVotes(address);
+            let ifVotedForAnotherPoll = false;
+            if (accountVoteResource !== undefined) {
+              const votedPollID = get(accountVoteResource, 'id');
+              if (votedPollID !== currentPollID) {
+                ifVotedForAnotherPoll = true;
+              };
+            }
             this.maxFee = new BigNumber(balance).div(1e9).minus(0.1).toNumber();
             this.setState({
               checked: true,
               sendAmount: this.maxFee,
               open: true,
+              votedForAnotherPoll: ifVotedForAnotherPoll,
             });
           }}
         >
@@ -784,6 +798,11 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           <DialogTitle id="confirmation-dialog-title" disableTypography>
             <Typography variant="h5">{t('poll.vote')}</Typography>
           </DialogTitle>
+          <div>
+            { this.state.votedForAnotherPoll &&
+              <Alert severity="error">{t('poll.votedForAnotherPollWarning')}</Alert>
+            }
+          </div>
           <DialogContent dividers className={classes.voteActionsContent}>
             <Grid container direction="column" alignItems="center" spacing={3}>
               <Grid item container justify="center" spacing={3}>
@@ -883,6 +902,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
               {t('poll.cancel')}
             </Button>
             <Button
+              disabled={this.state.votedForAnotherPoll}
               color="primary"
               onClick={() => {
                 this.onClickVoteConfirm();
