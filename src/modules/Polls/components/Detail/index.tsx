@@ -18,6 +18,9 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -119,6 +122,11 @@ const useStyles = (theme: Theme) =>
     },
     button: {
       marginLeft: theme.spacing(2),
+    },
+    tooltipIcon: {
+      "&:hover": {
+        background: '#fff!important',
+      }
     },
     [theme.breakpoints.down('sm')]: {
       cardContainer: {
@@ -498,7 +506,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     }
 
     // console.log(this.state.pollData);
-    // console.log(this.state.detail);
+    console.log(this.state.detail);
 
     const votes = (
       <div>
@@ -732,10 +740,23 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const { pollVotes, t, classes } = this.props;
     const { open, checked, sendAmount, detail } = this.state;
 
+    const tooltipText = <div style={{fontSize: '0.8rem', lineHeight: '1rem', whiteSpace: 'pre-line'}}>{'1 | PENDING \n 2 | ACTIVE | vote | revoke (if voted) \n 3 | DEFEATED \n 4 | AGREED | unstake (if not) | queue \n 5 | QUEUED | unstake (if not) \n 6 | EXECUTABLE | unstake (if not) | execute \n 7 | EXTRACTED | unstake (if not)'}</div>;
+
     const columns = [
       [t('poll.id'), detail.id],
       [t('poll.title'), detail[`title${suffix}`]],
-      [t('poll.status'), t(`poll.statusText.${detail.status}`)],
+      [t('poll.status'),
+        (
+          <div style={{paddingTop: '3px'}}>
+            {t(`poll.statusText.${detail.status}`)}
+            <Tooltip title={tooltipText} placement="right">
+              <IconButton className={classes.tooltipIcon} style={{padding: '0', height: '18px', marginTop: '-2px'}}>
+                &nbsp; <HelpOutlineIcon style={{fontSize: '20px'}}/>
+              </IconButton>
+            </Tooltip>
+          </div>
+        )
+      ],
       [
         t('poll.creator'),
         <CommonLink
