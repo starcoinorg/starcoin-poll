@@ -23,6 +23,8 @@ import { POLL_STATUS } from '@/utils/constants';
 import client from '@/utils/client';
 import { getNetwork } from '@/utils/helper';
 import { LoadingOutlined } from '@ant-design/icons';
+import Link from '@material-ui/core/Link';
+import { NavLink } from 'react-router-dom';
 import PollCard from './PollCard';
 import DynamicForm from '../DynamicForm';
 
@@ -326,6 +328,7 @@ class List extends PureComponent<Props, IndexState> {
           <title>{t('header.polls')}</title>
         </Helmet>
 
+        {/*
         <Dialog
           open={open}
           aria-labelledby="simple-dialog-title"
@@ -436,6 +439,7 @@ class List extends PureComponent<Props, IndexState> {
             </Button>
           </DialogActions>
         </Dialog>
+        */}
 
         <CenteredView>
           <Card>
@@ -486,6 +490,7 @@ class List extends PureComponent<Props, IndexState> {
                   </Grid>
                   {isLocal && (
                     <Grid item>
+                      {/*
                       <Button
                         variant="outlined"
                         color="primary"
@@ -498,6 +503,17 @@ class List extends PureComponent<Props, IndexState> {
                       >
                         {t('poll.create')}
                       </Button>
+                      */}
+
+                      <Link component={NavLink} to='/create_poll' underline="none">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="medium"
+                        >
+                          {t('poll.create')}
+                        </Button>
+                      </Link>
                     </Grid>
                   )}
                 </Grid>
