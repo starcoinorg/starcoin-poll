@@ -15,6 +15,7 @@ import store, { history } from './rootStore';
 
 const NetworkRedirect = lazy(() => import('./modules/NetworkRedirect/index'));
 const Polls = lazy(() => import('./modules/Polls/containers'));
+const CreatePoll = lazy(() => import('./modules/Polls/components/CreatePoll'));
 const Error404 = lazy(() => import('./modules/Error404'));
 
 const RouteWithLayout = (props: any) => {
@@ -53,6 +54,7 @@ ReactDOM.render(
       <Switch>
         <RouteWithLayout exact path={withBaseRoute('/')} title="NetworkRedirect" layout={MainLayout} component={NetworkRedirect} />
         <RouteWithLayout path={withBaseRoute('/polls')} title="Poll" layout={MainLayout} component={Polls} />
+        <RouteWithLayout path={withBaseRoute('/create_poll')} title="Poll" layout={MainLayout} component={CreatePoll} />
         <RouteWithLayout exact path={withBaseRoute('/error')} title="404" layout={MainLayout} component={Error404} />
         <RouteWithLayout path={undefined} title="404" layout={MainLayout} component={Error404} />
       </Switch>
