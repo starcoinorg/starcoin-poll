@@ -13,18 +13,15 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
 import { POLL_STATUS } from '@/utils/constants';
 import client from '@/utils/client';
 import { getNetwork } from '@/utils/helper';
 import { LoadingOutlined } from '@ant-design/icons';
+import ConnectWallet from '@/Polls/components/ConnectWallet/adapter';
+import PollDialog from '@/Polls/components/PollDialog';
 import PollCard from './PollCard';
-import DynamicForm from '../DynamicForm';
+// import DynamicForm from '../DynamicForm';
 
 const useStyles = (theme: Theme) =>
   createStyles({
@@ -110,20 +107,18 @@ interface InternalProps {
   match: any;
 }
 
-interface Props extends ExternalProps, InternalProps {}
+interface Props extends ExternalProps, InternalProps { }
 
 interface IndexState {
-  currentPage: number;
   filter: string;
   status: number;
   hideVoted: boolean;
   open: boolean;
-  form: Record<string, any>;
-  errors: Record<string, boolean>;
   list: Record<string, any>[];
   page: number;
   loading: boolean;
   totalPage: number;
+  accounts: Array<any>;
 }
 
 const isLocal = window.location.host.includes('localhost');
@@ -133,45 +128,33 @@ class List extends PureComponent<Props, IndexState> {
   static defaultProps = {
     pollList: null,
     isLoadingMore: undefined,
-    getPollList: () => {},
+    getPollList: () => { },
   };
 
   constructor(props: Props) {
     super(props);
     this.state = {
-      currentPage: parseInt(props.match.params.page, 10) || 1,
       filter: '',
       status: 0,
       hideVoted: false,
       open: false,
-      form: {
-        enTitle: '',
-        cnTitle: '',
-        enDesc: '',
-        cnDesc: '',
-        url: '',
-        deposite: '',
-        duration: 7,
-      },
-      errors: {},
       loading: true,
       page: 1,
       list: [],
       totalPage: 1,
+      accounts: [],
     };
   }
 
   componentDidMount() {
-    // this.fetchListPage(this.state.currentPage);
-    this.fetchList();
+    this.fetchList(parseInt(this.props.match.params.page, 10) || 1);
   }
 
-  fetchListPage = (page: number) => {
-    this.props.getPollList({ page });
-  };
-
   fetchList = async (page = 1) => {
-    const { list } = this.state;
+    let { list } = this.state;
+    if (page === 1) {
+      list = [];
+    }
     this.setState({
       loading: true,
     });
@@ -197,75 +180,6 @@ class List extends PureComponent<Props, IndexState> {
     this.setState({ filter: value });
   };
 
-  handleFormChange = (
-    event: React.ChangeEvent<{ value: unknown; name: string }>,
-  ) => {
-    const { value, name } = event.target;
-    this.setState((prevState) => ({
-      form: {
-        ...prevState.form,
-        [name]: value,
-      },
-      errors: {
-        ...prevState.errors,
-        [name]: false,
-      },
-    }));
-  };
-
-  validateFields = async () => {
-    const { form, errors } = this.state;
-    const requiredFields = [
-      'enTitle',
-      'cnTitle',
-      'enDesc',
-      'cnDesc',
-      'url',
-      'duration',
-    ];
-    let hasError = errors.endTime;
-    requiredFields.forEach((field) => {
-      if (!form[field]) {
-        hasError = true;
-        this.setState((prevState) => ({
-          errors: {
-            ...prevState.errors,
-            [field]: true,
-          },
-        }));
-      }
-    });
-    if (hasError) {
-      throw new Error('Error occured！');
-    } else {
-      return form;
-    }
-  };
-
-  closeFormDialog = () => {
-    this.setState({
-      form: {
-        enTitle: '',
-        cnTitle: '',
-        enDesc: '',
-        cnDesc: '',
-        url: '',
-        deposite: '',
-      },
-      errors: {},
-      open: false,
-    });
-  };
-
-  handleSubmit = async () => {
-    try {
-      await this.validateFields();
-      this.closeFormDialog();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   render() {
     const { t, classes } = this.props;
     const suffix = i18n.language === 'en' ? 'En' : '';
@@ -273,23 +187,12 @@ class List extends PureComponent<Props, IndexState> {
       hideVoted,
       status,
       open,
-      form,
-      errors,
       list,
       loading,
       page,
       totalPage,
+      accounts,
     } = this.state;
-
-    const helperTextMaps = {
-      enTitle: 'Please input title.',
-      cnTitle: '请输入中文标题.',
-      enDesc: 'Please input description.',
-      cnDesc: '请输入中文描述.',
-      url: t('poll.urlHelperText'),
-      deposite: t('poll.depositeHelperText'),
-      duration: t('poll.durationHelperText'),
-    };
 
     const menus = [{ label: t('poll.all'), value: 0 }];
     for (let i = 1; i < 8; i++) {
@@ -298,8 +201,6 @@ class List extends PureComponent<Props, IndexState> {
         value: i,
       });
     }
-
-    const { enTitle, cnTitle, enDesc, cnDesc, url, deposite, duration } = form;
 
     let renderList = list.concat() || [];
     if (hideVoted) {
@@ -312,13 +213,14 @@ class List extends PureComponent<Props, IndexState> {
     }
     const loadingProps = loading
       ? {
-          disabled: true,
-          startIcon: <LoadingOutlined />,
-        }
+        disabled: true,
+        startIcon: <LoadingOutlined />,
+      }
       : {};
 
     //  console.log('loadingProps: ', loadingProps);
     // console.log('renderList: ', renderList);
+    // console.log('accounts: ', accounts);
 
     return (
       <div>
@@ -326,116 +228,18 @@ class List extends PureComponent<Props, IndexState> {
           <title>{t('header.polls')}</title>
         </Helmet>
 
-        <Dialog
+        <PollDialog
           open={open}
-          aria-labelledby="simple-dialog-title"
-          onClose={this.closeFormDialog}
-        >
-          <DialogTitle id="simple-dialog-title">
-            {t('poll.createAPoll')}
-          </DialogTitle>
-          <DialogContent>
-            <DynamicForm />
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="enTitle"
-              name="enTitle"
-              error={errors.enTitle}
-              helperText={errors.enTitle ? helperTextMaps.enTitle : undefined}
-              value={enTitle}
-              label="Title"
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              margin="dense"
-              required
-              id="cnTitle"
-              name="cnTitle"
-              helperText={errors.cnTitle ? helperTextMaps.cnTitle : undefined}
-              error={errors.cnTitle}
-              value={cnTitle}
-              label="中文标题"
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              margin="dense"
-              required
-              id="enDesc"
-              name="enDesc"
-              error={errors.enDesc}
-              helperText={errors.enDesc ? helperTextMaps.enDesc : undefined}
-              value={enDesc}
-              label="Description"
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              margin="dense"
-              id="cnDesc"
-              required
-              name="cnDesc"
-              helperText={errors.cnDesc ? helperTextMaps.cnDesc : undefined}
-              error={errors.cnDesc}
-              value={cnDesc}
-              label="中文描述"
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              required
-              id="url"
-              name="url"
-              helperText={errors.url ? helperTextMaps.url : undefined}
-              error={errors.url}
-              value={url}
-              label={t('poll.externalUrl')}
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="duration"
-              name="duration"
-              type="number"
-              error={errors.duration}
-              helperText={errors.duration ? helperTextMaps.duration : undefined}
-              value={duration}
-              inputProps={{
-                min: 7,
-              }}
-              label={t('poll.duration')}
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="deposite"
-              name="deposite"
-              error={errors.deposite}
-              helperText={errors.deposite ? helperTextMaps.deposite : undefined}
-              value={deposite}
-              label={t('poll.deposite')}
-              fullWidth
-              onChange={this.handleFormChange}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button color="primary" onClick={this.closeFormDialog}>
-              {t('poll.cancel')}
-            </Button>
-            <Button color="primary" autoFocus onClick={this.handleSubmit}>
-              {t('poll.ok')}
-            </Button>
-          </DialogActions>
-        </Dialog>
+          defaultCreator={accounts[0]}
+          onClose={() => {
+            this.setState({
+              open: false,
+            });
+          }}
+          afterSubmit={async () => {
+            await this.fetchList();
+          }}
+        />
 
         <CenteredView>
           <Card>
@@ -486,18 +290,28 @@ class List extends PureComponent<Props, IndexState> {
                   </Grid>
                   {isLocal && (
                     <Grid item>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        onClick={() => {
-                          this.setState({
-                            open: true,
-                          });
-                        }}
-                      >
-                        {t('poll.create')}
-                      </Button>
+                      {accounts.length ? (
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          size="small"
+                          onClick={() => {
+                            this.setState({
+                              open: true,
+                            });
+                          }}
+                        >
+                          {t('poll.create')}
+                        </Button>
+                      ) : (
+                        <ConnectWallet
+                          onAccountChange={(accounts: Array<any>) => {
+                            this.setState({
+                              accounts,
+                            });
+                          }}
+                        />
+                      )}
                     </Grid>
                   )}
                 </Grid>

@@ -38,6 +38,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 // import TablePagination from '@material-ui/core/TablePagination';
 import { getPollData, getAddressSTCBalance, getPollAccountVotes } from '@/utils/sdk';
 import { arrayify, hexlify } from '@ethersproject/bytes';
+import PollDialog from '@/Polls/components/PollDialog';
 import { providers, utils, bcs } from '@starcoin/starcoin';
 import { POLL_STATUS } from '@/utils/constants';
 import client from '@/utils/client';
@@ -237,6 +238,7 @@ interface IndexState {
   page: number;
   rowsPerPage: number;
   detail: Record<string, any>;
+  pollDialogOpen: boolean;
 }
 
 let startToVerify: boolean = false;
@@ -277,6 +279,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       page: 0,
       rowsPerPage: 5,
       detail: {},
+      pollDialogOpen: false,
     };
   }
 
@@ -301,6 +304,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     this.setState({
       detail,
     });
+    this.init();
   };
 
   handleCheck = (value: boolean) => {
@@ -471,6 +475,29 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     }
     return false;
   }
+
+  init = async () => {
+    const { match, history } = this.props;
+    const id = match.params.id;
+    const { network: networkFromUrl } = qs.parse(window.location.search, {
+      ignoreQueryPrefix: true,
+    });
+    const detail = await client.get(`polls/detail/${id}`);
+    const { network: networkFromResp } = detail;
+    if (networkFromResp !== networkFromUrl) {
+      history.push('/error');
+      return;
+    }
+    getPollData(detail.creator, detail.typeArgs1).then((data) => {
+      if (data && data.id === detail.id) {
+        this.setState({ pollData: data });
+      }
+    });
+
+    this.setState({
+      detail,
+    });
+  };
 
   generateExtra() {
     const suffix = i18n.language === 'en' ? 'En' : '';
@@ -737,8 +764,14 @@ class Detail extends PureComponent<IndexProps, IndexState> {
 
   render() {
     const suffix = i18n.language === 'en' ? 'En' : '';
-    const { pollVotes, t, classes } = this.props;
-    const { open, checked, sendAmount, detail } = this.state;
+    // const { pollVotes, t, classes } = this.props;
+    // const { open, checked, sendAmount, detail } = this.state;
+    const { pollVotes, t, classes, match, accounts } = this.props;
+    const { open, checked, sendAmount, detail, pollDialogOpen } = this.state;
+    const id = match.params.id;
+    const { network } = qs.parse(window.location.search, {
+      ignoreQueryPrefix: true,
+    });
 
     const tooltipText = <div style={{fontSize: '0.8rem', lineHeight: '1rem', whiteSpace: 'pre-line'}}>{'1 | PENDING \n 2 | ACTIVE | vote | revoke (if voted) \n 3 | DEFEATED \n 4 | AGREED | unstake (if not) | queue \n 5 | QUEUED | unstake (if not) \n 6 | EXECUTABLE | unstake (if not) | execute \n 7 | EXTRACTED | unstake (if not)'}</div>;
 
@@ -799,15 +832,39 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       columns.push([t('poll.selectedVoteLog'), accountDetail]);
     }
 
+    console.log('accounts: ', accounts);
+
     return (
       <>
         <PageView
           id={detail.id}
-          title={t('poll.detail')}
+          title={
+            <div>
+              <span>{t('poll.detail')}</span>
+              {accounts && accounts[0] === detail.creator && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  style={{ marginLeft: 8 }}
+                  onClick={() => {
+                    this.setState({
+                      pollDialogOpen: true,
+                    });
+                  }}
+                >
+                  {t('poll.edit')}
+                </Button>
+              )}
+            </div>
+          }
           name={t('poll.detail')}
           pluralName={t('header.polls')}
           bodyColumns={columns}
           extra={this.generateExtra()}
+          onAccountChange={(initAccounts) => {
+            console.log('initAccounts: ', initAccounts);
+          }}
         />
         <Dialog
           disableBackdropClick
@@ -936,6 +993,17 @@ class Detail extends PureComponent<IndexProps, IndexState> {
             </Button>
           </DialogActions>
         </Dialog>
+        <PollDialog
+          open={pollDialogOpen}
+          id={id}
+          network={network as string}
+          afterSubmit={this.init}
+          onClose={() => {
+            this.setState({
+              pollDialogOpen: false,
+            });
+          }}
+        />
       </>
     );
   }
