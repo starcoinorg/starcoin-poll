@@ -46,6 +46,8 @@
     "clear": "clear",
     "install": "Install Wallet",
     "connect": "Connect Wallet",
+    "installWallet": "Install Wallet",
+    "connectWallet": "Connect Wallet",
     "connected": "Wallet Connected",
     "selectedAccount": "Selected Account",
     "selectedVoteLog": "Selected Vote Log",
