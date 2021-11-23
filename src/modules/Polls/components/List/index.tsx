@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { useEffect, PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import Helmet from 'react-helmet';
@@ -22,6 +22,7 @@ import ConnectWallet from '@/Polls/components/ConnectWallet/adapter';
 import PollDialog from '@/Polls/components/PollDialog';
 import Link from '@material-ui/core/Link';
 import { NavLink } from 'react-router-dom';
+import account from 'mobxStore/account';
 import PollCard from './PollCard';
 // import DynamicForm from '../DynamicForm';
 
@@ -121,9 +122,12 @@ interface IndexState {
   loading: boolean;
   totalPage: number;
   accounts: Array<any>;
+  isAdmin: boolean;
 }
 
-const isLocal = window.location.host.includes('localhost');
+// const isLocal = window.location.host.includes('localhost');
+// const isLocal = window.starcoin.selectedAddrerss === '0xc4800d2c0c24ac6e068010fadacd2d5e';
+// let isLocal = false;
 
 class List extends PureComponent<Props, IndexState> {
   // eslint-disable-next-line react/static-property-placement
@@ -145,11 +149,20 @@ class List extends PureComponent<Props, IndexState> {
       list: [],
       totalPage: 1,
       accounts: [],
+      isAdmin: false,
     };
   }
 
   componentDidMount() {
     this.fetchList(parseInt(this.props.match.params.page, 10) || 1);
+    this.setState({
+      accounts: [window.starcoin.selectedAddress]
+    })
+    if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
+      this.setState({
+        isAdmin: true
+      })
+    }
   }
 
   fetchList = async (page = 1) => {
@@ -194,6 +207,7 @@ class List extends PureComponent<Props, IndexState> {
       page,
       totalPage,
       accounts,
+      isAdmin
     } = this.state;
 
     const menus = [{ label: t('poll.all'), value: 0 }];
@@ -222,7 +236,6 @@ class List extends PureComponent<Props, IndexState> {
 
     //  console.log('loadingProps: ', loadingProps);
     // console.log('renderList: ', renderList);
-    // console.log('accounts: ', accounts);
 
     return (
       <div>
@@ -402,21 +415,18 @@ class List extends PureComponent<Props, IndexState> {
                   <Grid item>
                     <Typography>{t('header.polls')}</Typography>
                   </Grid>
-                  {isLocal && (
+                  {isAdmin && (
                     <Grid item>
                       {accounts.length ? (
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          size="small"
-                          onClick={() => {
-                            this.setState({
-                              open: true,
-                            });
-                          }}
-                        >
-                          {t('poll.create')}
-                        </Button>
+                        <Link component={NavLink} to='/create_poll' underline="none">
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="medium"
+                          >
+                            {t('poll.create')}
+                          </Button>
+                        </Link>
                       ) : (
                         <ConnectWallet
                           onAccountChange={(accounts: Array<any>) => {
@@ -426,6 +436,7 @@ class List extends PureComponent<Props, IndexState> {
                           }}
                         />
                       )}
+
                       {/*
                       <Button
                         variant="outlined"
@@ -441,6 +452,7 @@ class List extends PureComponent<Props, IndexState> {
                       </Button>
                       */}
 
+                      {/*
                       <Link component={NavLink} to='/create_poll' underline="none">
                         <Button
                           variant="contained"
@@ -450,6 +462,7 @@ class List extends PureComponent<Props, IndexState> {
                           {t('poll.create')}
                         </Button>
                       </Link>
+                      */}
                     </Grid>
                   )}
                 </Grid>
