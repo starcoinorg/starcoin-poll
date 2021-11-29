@@ -85,6 +85,7 @@
     "type_args_1HelperText": "请输入类型参数",
     "id_on_chain": "链上 ID",
     "id_on_chainHelperText": "请输入链上 id",
+    "databaseIDHelperText": "请输入数据库主键 id",
     "forVotes": "同意票数",
     "forVotesHelperText": "请输入同意票数",
     "againstVotes": "反对票数",

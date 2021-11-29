@@ -85,6 +85,7 @@
     "type_args_1HelperText": "Please input Type_Args_1",
     "id_on_chain": "ID on chain",
     "id_on_chainHelperText": "Please input id on chain",
+    "databaseIDHelperText": "Please input database primary key id",
     "forVotes": "For Votes",
     "forVotesHelperText": "Please input For Votes",
     "againstVotes": "Against Votes",
