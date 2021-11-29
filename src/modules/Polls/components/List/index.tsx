@@ -475,6 +475,7 @@ class List extends PureComponent<Props, IndexState> {
                     <PollCard
                       key={`key_${index}`}
                       id={poll.id}
+                      id_on_chain={poll.idOnChain}
                       url={`/polls/detail/${poll.id}`}
                       link={poll.link}
                       title={poll[`title${suffix}`]}
