@@ -107,8 +107,8 @@ interface PollDialogProps {
   network?: string;
   t: any;
   classes: any;
-  onClose: () => void;
-  afterSubmit: () => void;
+  // onClose: () => void;
+  // afterSubmit: () => void;
   defaultCreator?: string;
 }
 
@@ -134,8 +134,8 @@ const PollDialog = ({
   open,
   t,
   classes,
-  onClose,
-  afterSubmit,
+  // onClose,
+  // afterSubmit,
   id,
   defaultCreator,
 }: PollDialogProps) => {
@@ -194,7 +194,7 @@ const PollDialog = ({
   const handleClose = () => {
     setForm(fields);
     setErrors({});
-    onClose();
+    // onClose();
   };
 
   const handleSubmit = async () => {
@@ -244,8 +244,10 @@ const PollDialog = ({
       // await client.post(addURL, params, postCconfig);
       // await client.post(`${addURL}?${params.toString()}`, params, postConfig);
       await client.post(addURL, params, postConfig);
-      await afterSubmit();
+      // await afterSubmit();
       handleClose();
+      alert('Success');
+      window.location.href = '/';
     } catch (e) {
       console.error(e);
     }
