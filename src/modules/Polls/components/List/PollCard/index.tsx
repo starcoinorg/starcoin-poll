@@ -105,6 +105,7 @@ interface ExternalProps {
   link: string;
   className?: string;
   id: number;
+  id_on_chain: number;
   for_votes: number;
   against_votes: number;
   quorum_votes: number;
@@ -136,6 +137,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
     url: undefined,
     link: undefined,
     id: undefined,
+    id_on_chain: undefined,
     for_votes: undefined,
     against_votes: undefined,
     quorum_votes: undefined,
@@ -154,7 +156,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
   }
 
   componentDidMount() {
-    const { id, status, creator, type_args_1 } = this.props;
+    const { id, id_on_chain, status, creator, type_args_1 } = this.props;
     if (status < POLL_STATUS.EXTRACTED) {
       getPollData(creator, type_args_1).then((data) => {
         if (data && data.id === id) {
@@ -176,6 +178,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
     const {
       title,
       id,
+      id_on_chain,
       url,
       for_votes = 0,
       against_votes = 0,
@@ -224,7 +227,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
             </div>
             <div className={classes.content}>
               <Typography variant="body2" gutterBottom>
-                Id: {id}
+                Id: {id_on_chain}
               </Typography>
               <Typography variant="body2" gutterBottom>
                 {t('poll.status')}: {t(`poll.statusText.${status}`)}

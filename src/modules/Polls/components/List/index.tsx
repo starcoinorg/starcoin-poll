@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { useEffect, PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import Helmet from 'react-helmet';
@@ -13,18 +13,18 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
 import CenteredView from '@/common/View/CenteredView';
 import { POLL_STATUS } from '@/utils/constants';
 import client from '@/utils/client';
 import { getNetwork } from '@/utils/helper';
 import { LoadingOutlined } from '@ant-design/icons';
+import ConnectWallet from '@/Polls/components/ConnectWallet/adapter';
+import PollDialog from '@/Polls/components/PollDialog';
+import Link from '@material-ui/core/Link';
+import { NavLink } from 'react-router-dom';
+import account from 'mobxStore/account';
 import PollCard from './PollCard';
-import DynamicForm from '../DynamicForm';
+// import DynamicForm from '../DynamicForm';
 
 const useStyles = (theme: Theme) =>
   createStyles({
@@ -110,68 +110,66 @@ interface InternalProps {
   match: any;
 }
 
-interface Props extends ExternalProps, InternalProps {}
+interface Props extends ExternalProps, InternalProps { }
 
 interface IndexState {
-  currentPage: number;
   filter: string;
   status: number;
   hideVoted: boolean;
   open: boolean;
-  form: Record<string, any>;
-  errors: Record<string, boolean>;
   list: Record<string, any>[];
   page: number;
   loading: boolean;
   totalPage: number;
+  accounts: Array<any>;
+  isAdmin: boolean;
 }
 
-const isLocal = window.location.host.includes('localhost');
+// const isLocal = window.location.host.includes('localhost');
+// const isLocal = window.starcoin.selectedAddrerss === '0xc4800d2c0c24ac6e068010fadacd2d5e';
+// let isLocal = false;
 
 class List extends PureComponent<Props, IndexState> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     pollList: null,
     isLoadingMore: undefined,
-    getPollList: () => {},
+    getPollList: () => { },
   };
 
   constructor(props: Props) {
     super(props);
     this.state = {
-      currentPage: parseInt(props.match.params.page, 10) || 1,
       filter: '',
       status: 0,
       hideVoted: false,
       open: false,
-      form: {
-        enTitle: '',
-        cnTitle: '',
-        enDesc: '',
-        cnDesc: '',
-        url: '',
-        deposite: '',
-        duration: 7,
-      },
-      errors: {},
       loading: true,
       page: 1,
       list: [],
       totalPage: 1,
+      accounts: [],
+      isAdmin: false,
     };
   }
 
   componentDidMount() {
-    // this.fetchListPage(this.state.currentPage);
-    this.fetchList();
+    this.fetchList(parseInt(this.props.match.params.page, 10) || 1);
+    this.setState({
+      accounts: [window.starcoin.selectedAddress]
+    })
+    if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
+      this.setState({
+        isAdmin: true
+      })
+    }
   }
 
-  fetchListPage = (page: number) => {
-    this.props.getPollList({ page });
-  };
-
   fetchList = async (page = 1) => {
-    const { list } = this.state;
+    let { list } = this.state;
+    if (page === 1) {
+      list = [];
+    }
     this.setState({
       loading: true,
     });
@@ -197,75 +195,6 @@ class List extends PureComponent<Props, IndexState> {
     this.setState({ filter: value });
   };
 
-  handleFormChange = (
-    event: React.ChangeEvent<{ value: unknown; name: string }>,
-  ) => {
-    const { value, name } = event.target;
-    this.setState((prevState) => ({
-      form: {
-        ...prevState.form,
-        [name]: value,
-      },
-      errors: {
-        ...prevState.errors,
-        [name]: false,
-      },
-    }));
-  };
-
-  validateFields = async () => {
-    const { form, errors } = this.state;
-    const requiredFields = [
-      'enTitle',
-      'cnTitle',
-      'enDesc',
-      'cnDesc',
-      'url',
-      'duration',
-    ];
-    let hasError = errors.endTime;
-    requiredFields.forEach((field) => {
-      if (!form[field]) {
-        hasError = true;
-        this.setState((prevState) => ({
-          errors: {
-            ...prevState.errors,
-            [field]: true,
-          },
-        }));
-      }
-    });
-    if (hasError) {
-      throw new Error('Error occured！');
-    } else {
-      return form;
-    }
-  };
-
-  closeFormDialog = () => {
-    this.setState({
-      form: {
-        enTitle: '',
-        cnTitle: '',
-        enDesc: '',
-        cnDesc: '',
-        url: '',
-        deposite: '',
-      },
-      errors: {},
-      open: false,
-    });
-  };
-
-  handleSubmit = async () => {
-    try {
-      await this.validateFields();
-      this.closeFormDialog();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   render() {
     const { t, classes } = this.props;
     const suffix = i18n.language === 'en' ? 'En' : '';
@@ -273,23 +202,13 @@ class List extends PureComponent<Props, IndexState> {
       hideVoted,
       status,
       open,
-      form,
-      errors,
       list,
       loading,
       page,
       totalPage,
+      accounts,
+      isAdmin
     } = this.state;
-
-    const helperTextMaps = {
-      enTitle: 'Please input title.',
-      cnTitle: '请输入中文标题.',
-      enDesc: 'Please input description.',
-      cnDesc: '请输入中文描述.',
-      url: t('poll.urlHelperText'),
-      deposite: t('poll.depositeHelperText'),
-      duration: t('poll.durationHelperText'),
-    };
 
     const menus = [{ label: t('poll.all'), value: 0 }];
     for (let i = 1; i < 8; i++) {
@@ -298,8 +217,6 @@ class List extends PureComponent<Props, IndexState> {
         value: i,
       });
     }
-
-    const { enTitle, cnTitle, enDesc, cnDesc, url, deposite, duration } = form;
 
     let renderList = list.concat() || [];
     if (hideVoted) {
@@ -312,9 +229,9 @@ class List extends PureComponent<Props, IndexState> {
     }
     const loadingProps = loading
       ? {
-          disabled: true,
-          startIcon: <LoadingOutlined />,
-        }
+        disabled: true,
+        startIcon: <LoadingOutlined />,
+      }
       : {};
 
     //  console.log('loadingProps: ', loadingProps);
@@ -326,6 +243,19 @@ class List extends PureComponent<Props, IndexState> {
           <title>{t('header.polls')}</title>
         </Helmet>
 
+        <PollDialog
+          open={open}
+          defaultCreator={accounts[0]}
+          onClose={() => {
+            this.setState({
+              open: false,
+            });
+          }}
+          afterSubmit={async () => {
+            await this.fetchList();
+          }}
+        />
+        {/*
         <Dialog
           open={open}
           aria-labelledby="simple-dialog-title"
@@ -436,6 +366,7 @@ class List extends PureComponent<Props, IndexState> {
             </Button>
           </DialogActions>
         </Dialog>
+        */}
 
         <CenteredView>
           <Card>
@@ -484,8 +415,29 @@ class List extends PureComponent<Props, IndexState> {
                   <Grid item>
                     <Typography>{t('header.polls')}</Typography>
                   </Grid>
-                  {isLocal && (
+                  {isAdmin && (
                     <Grid item>
+                      {accounts.length ? (
+                        <Link component={NavLink} to='/create_poll' underline="none">
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="medium"
+                          >
+                            {t('poll.create')}
+                          </Button>
+                        </Link>
+                      ) : (
+                        <ConnectWallet
+                          onAccountChange={(accounts: Array<any>) => {
+                            this.setState({
+                              accounts,
+                            });
+                          }}
+                        />
+                      )}
+
+                      {/*
                       <Button
                         variant="outlined"
                         color="primary"
@@ -498,6 +450,19 @@ class List extends PureComponent<Props, IndexState> {
                       >
                         {t('poll.create')}
                       </Button>
+                      */}
+
+                      {/*
+                      <Link component={NavLink} to='/create_poll' underline="none">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="medium"
+                        >
+                          {t('poll.create')}
+                        </Button>
+                      </Link>
+                      */}
                     </Grid>
                   )}
                 </Grid>
@@ -510,6 +475,7 @@ class List extends PureComponent<Props, IndexState> {
                     <PollCard
                       key={`key_${index}`}
                       id={poll.id}
+                      id_on_chain={poll.idOnChain}
                       url={`/polls/detail/${poll.id}`}
                       link={poll.link}
                       title={poll[`title${suffix}`]}

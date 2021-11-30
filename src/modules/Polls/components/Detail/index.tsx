@@ -22,6 +22,8 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
+import { NavLink } from 'react-router-dom';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -38,6 +40,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 // import TablePagination from '@material-ui/core/TablePagination';
 import { getPollData, getAddressSTCBalance, getPollAccountVotes } from '@/utils/sdk';
 import { arrayify, hexlify } from '@ethersproject/bytes';
+import PollDialog from '@/Polls/components/PollDialog';
 import { providers, utils, bcs } from '@starcoin/starcoin';
 import { POLL_STATUS } from '@/utils/constants';
 import client from '@/utils/client';
@@ -237,6 +240,8 @@ interface IndexState {
   page: number;
   rowsPerPage: number;
   detail: Record<string, any>;
+  pollDialogOpen: boolean;
+  isAdmin: boolean;
 }
 
 let startToVerify: boolean = false;
@@ -277,6 +282,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       page: 0,
       rowsPerPage: 5,
       detail: {},
+      pollDialogOpen: false,
+      isAdmin: false,
     };
   }
 
@@ -284,6 +291,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const { match, history } = this.props;
     const id = match.params.id;
     const detail = await client.get(`polls/detail/${id}`);
+    console.log(detail);
     const { network: networkFromUrl } = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
     });
@@ -301,6 +309,14 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     this.setState({
       detail,
     });
+
+    if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
+      this.setState({
+        isAdmin: true
+      })
+    }
+
+    this.init();
   };
 
   handleCheck = (value: boolean) => {
@@ -472,6 +488,29 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     return false;
   }
 
+  init = async () => {
+    const { match, history } = this.props;
+    const id = match.params.id;
+    const { network: networkFromUrl } = qs.parse(window.location.search, {
+      ignoreQueryPrefix: true,
+    });
+    const detail = await client.get(`polls/detail/${id}`);
+    const { network: networkFromResp } = detail;
+    if (networkFromResp !== networkFromUrl) {
+      history.push('/error');
+      return;
+    }
+    getPollData(detail.creator, detail.typeArgs1).then((data) => {
+      if (data && data.id === detail.id) {
+        this.setState({ pollData: data });
+      }
+    });
+
+    this.setState({
+      detail,
+    });
+  };
+
   generateExtra() {
     const suffix = i18n.language === 'en' ? 'En' : '';
     const { t, classes } = this.props;
@@ -506,7 +545,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     }
 
     // console.log(this.state.pollData);
-    console.log(this.state.detail);
+    // console.log(this.state.detail);
 
     const votes = (
       <div>
@@ -717,6 +756,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         </Button>,
       );
     }
+
     // TODO: enable this while starcoin bug fixed
     // if (status === POLL_STATUS.EXECUTABLE) {
     //   buttons.push(
@@ -737,13 +777,19 @@ class Detail extends PureComponent<IndexProps, IndexState> {
 
   render() {
     const suffix = i18n.language === 'en' ? 'En' : '';
-    const { pollVotes, t, classes } = this.props;
-    const { open, checked, sendAmount, detail } = this.state;
+    // const { pollVotes, t, classes } = this.props;
+    // const { open, checked, sendAmount, detail } = this.state;
+    const { pollVotes, t, classes, match, accounts } = this.props;
+    const { open, checked, sendAmount, detail, pollDialogOpen } = this.state;
+    const id = match.params.id;
+    const { network } = qs.parse(window.location.search, {
+      ignoreQueryPrefix: true,
+    });
 
     const tooltipText = <div style={{fontSize: '0.8rem', lineHeight: '1rem', whiteSpace: 'pre-line'}}>{'1 | PENDING \n 2 | ACTIVE | vote | revoke (if voted) \n 3 | DEFEATED \n 4 | AGREED | unstake (if not) | queue \n 5 | QUEUED | unstake (if not) \n 6 | EXECUTABLE | unstake (if not) | execute \n 7 | EXTRACTED | unstake (if not)'}</div>;
 
     const columns = [
-      [t('poll.id'), detail.id],
+      [t('poll.id'), detail.idOnChain],
       [t('poll.title'), detail[`title${suffix}`]],
       [t('poll.status'),
         (
@@ -789,6 +835,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
+      // console.log('detail', detail);
       const buttons = this.allowedButtons(detail.status);
       const accountDetail = (
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -799,15 +846,37 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       columns.push([t('poll.selectedVoteLog'), accountDetail]);
     }
 
+    // console.log('accounts: ', accounts);
+    // console.log('selecte addr: ', window.starcoin.selectedAddress);
+
     return (
       <>
         <PageView
           id={detail.id}
-          title={t('poll.detail')}
+          title={
+            <div>
+              <span>{t('poll.detail')}</span>
+              {window.starcoin && window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS &&  (
+                <Link component={NavLink} to={`/edit_poll/${this.state.detail.id}`} underline="none">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="medium"
+                    style={{ marginLeft: '1rem' }}
+                  >
+                    {t('poll.edit')}
+                  </Button>
+                </Link>
+              )}
+            </div>
+          }
           name={t('poll.detail')}
           pluralName={t('header.polls')}
           bodyColumns={columns}
           extra={this.generateExtra()}
+          onAccountChange={(initAccounts) => {
+            console.log('initAccounts: ', initAccounts);
+          }}
         />
         <Dialog
           disableBackdropClick
@@ -936,6 +1005,17 @@ class Detail extends PureComponent<IndexProps, IndexState> {
             </Button>
           </DialogActions>
         </Dialog>
+        <PollDialog
+          open={pollDialogOpen}
+          id={id}
+          network={network as string}
+          afterSubmit={this.init}
+          onClose={() => {
+            this.setState({
+              pollDialogOpen: false,
+            });
+          }}
+        />
       </>
     );
   }

@@ -4,11 +4,12 @@ import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
 import StarMaskOnboarding from '@starcoin/starmask-onboarding';
 import Fab from '@material-ui/core/Fab';
 
-const useStyles = (theme: Theme) => createStyles({
-  margin: {
-    marginRight: theme.spacing(1),
-  },
-});
+const useStyles = (theme: Theme) =>
+  createStyles({
+    margin: {
+      marginRight: theme.spacing(1),
+    },
+  });
 
 interface IndexProps {
   classes: any;
@@ -19,38 +20,40 @@ interface IndexProps {
   getPollVotes: (data: any, callback?: any) => any;
   setWalletAccounts: (data: any, callback?: any) => any;
   connectWallet: (callback: any) => any;
+  // 脱离 saga 外部传入的函数
+  onAccountChange: (accounts?: Array<any>) => void;
 }
 
 interface IndexState {
-  pollData: any,
-  connectText: string,
+  pollData: any;
+  connectText: string;
   isStarMaskInstalled: boolean;
   isStarMaskConnected: boolean;
   connectDisabled: boolean;
 }
 
 class ConnectWallet extends PureComponent<IndexProps, IndexState> {
-  onboarding: any
+  onboarding: any;
 
-  onClick: any
+  onClick: any;
 
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     id: undefined,
     accounts: [],
-    getPoll: () => { },
-    getPollVotes: () => { },
-    setWalletAccounts: () => { },
-    connectWallet: () => { },
+    getPoll: () => {},
+    getPollVotes: () => {},
+    setWalletAccounts: () => {},
+    connectWallet: () => {},
+    onAccountChange: () => {},
   };
 
   constructor(props: IndexProps) {
     super(props);
 
     const currentUrl = new URL(window.location.href);
-    const forwarderOrigin = currentUrl.hostname === 'localhost'
-      ? 'http://localhost:9032'
-      : undefined;
+    const forwarderOrigin =
+      currentUrl.hostname === 'localhost' ? 'http://localhost:9032' : undefined;
 
     try {
       this.onboarding = new StarMaskOnboarding({ forwarderOrigin });
@@ -90,11 +93,12 @@ class ConnectWallet extends PureComponent<IndexProps, IndexState> {
   }
 
   handleNewAccounts(newAccounts: string[]) {
-    const { t, getPollVotes, id } = this.props;
+    const { t, getPollVotes, id, onAccountChange } = this.props;
     const isStarMaskConnected = newAccounts.length > 0;
     if (isStarMaskConnected) {
       let text;
       if (isStarMaskConnected) {
+        onAccountChange(newAccounts);
         text = t('poll.connected');
         if (this.onboarding) {
           this.onboarding.stopOnboarding();
@@ -114,13 +118,19 @@ class ConnectWallet extends PureComponent<IndexProps, IndexState> {
   }
 
   onClickInstall() {
-    this.setState({ connectText: this.props.t('poll.installing'), connectDisabled: true });
+    this.setState({
+      connectText: this.props.t('poll.installing'),
+      connectDisabled: true,
+    });
     this.onboarding.startOnboarding();
   }
 
   async onClickConnect() {
     const self = this;
-    this.setState({ connectDisabled: true, connectText: this.props.t('poll.connecting') });
+    this.setState({
+      connectDisabled: true,
+      connectText: this.props.t('poll.connecting'),
+    });
     this.props.connectWallet((data: any) => self.handleNewAccounts(data));
   }
 
