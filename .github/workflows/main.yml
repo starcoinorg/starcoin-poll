@@ -25,6 +25,7 @@ jobs:
         env:
           REACT_APP_STARCOIN_POLL_API_URL: ${{ secrets.API_URL }}
           REACT_APP_STARCOIN_NETWORKS: ${{ secrets.AVAILABLE_NETWORKS }}
+          REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS: ${{ secrets.ADMIN_ADDRESS }}
           CI: false
 
       - name: Deploy to S3

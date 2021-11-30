@@ -158,7 +158,7 @@ class List extends PureComponent<Props, IndexState> {
     this.setState({
       accounts: [window.starcoin.selectedAddress]
     })
-    if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
+    if (process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS?.split(',').filter((address) => address.toLowerCase() === window.starcoin.selectedAddress).length) {
       this.setState({
         isAdmin: true
       })
@@ -472,22 +472,22 @@ class List extends PureComponent<Props, IndexState> {
             <div className={classes.gridCards}>
               {renderList.length
                 ? renderList.map((poll: any, index: number) => (
-                    <PollCard
-                      key={`key_${index}`}
-                      id={poll.id}
-                      id_on_chain={poll.idOnChain}
-                      url={`/polls/detail/${poll.id}`}
-                      link={poll.link}
-                      title={poll[`title${suffix}`]}
-                      for_votes={poll.forVotes}
-                      against_votes={poll.againstVotes}
-                      quorum_votes={poll.quorumVotes}
-                      status={poll.status}
-                      end_time={poll.endTime}
-                      creator={poll.creator}
-                      type_args_1={poll.typeArgs1}
-                    />
-                  ))
+                  <PollCard
+                    key={`key_${index}`}
+                    id={poll.id}
+                    id_on_chain={poll.idOnChain}
+                    url={`/polls/detail/${poll.id}`}
+                    link={poll.link}
+                    title={poll[`title${suffix}`]}
+                    for_votes={poll.forVotes}
+                    against_votes={poll.againstVotes}
+                    quorum_votes={poll.quorumVotes}
+                    status={poll.status}
+                    end_time={poll.endTime}
+                    creator={poll.creator}
+                    type_args_1={poll.typeArgs1}
+                  />
+                ))
                 : t('poll.NoPoll')}
             </div>
             {page < totalPage ? (

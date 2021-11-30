@@ -310,7 +310,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       detail,
     });
 
-    if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
+    if (process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS?.split(',').filter((address) => address.toLowerCase() === window.starcoin.selectedAddress).length) {
       this.setState({
         isAdmin: true
       })
@@ -786,22 +786,22 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ignoreQueryPrefix: true,
     });
 
-    const tooltipText = <div style={{fontSize: '0.8rem', lineHeight: '1rem', whiteSpace: 'pre-line'}}>{'1 | PENDING \n 2 | ACTIVE | vote | revoke (if voted) \n 3 | DEFEATED \n 4 | AGREED | unstake (if not) | queue \n 5 | QUEUED | unstake (if not) \n 6 | EXECUTABLE | unstake (if not) | execute \n 7 | EXTRACTED | unstake (if not)'}</div>;
+    const tooltipText = <div style={{ fontSize: '0.8rem', lineHeight: '1rem', whiteSpace: 'pre-line' }}>{'1 | PENDING \n 2 | ACTIVE | vote | revoke (if voted) \n 3 | DEFEATED \n 4 | AGREED | unstake (if not) | queue \n 5 | QUEUED | unstake (if not) \n 6 | EXECUTABLE | unstake (if not) | execute \n 7 | EXTRACTED | unstake (if not)'}</div>;
 
     const columns = [
       [t('poll.id'), detail.idOnChain],
       [t('poll.title'), detail[`title${suffix}`]],
       [t('poll.status'),
-        (
-          <div style={{paddingTop: '3px'}}>
-            {t(`poll.statusText.${detail.status}`)}
-            <Tooltip title={tooltipText} placement="right">
-              <IconButton className={classes.tooltipIcon} style={{padding: '0', height: '18px', marginTop: '-2px'}}>
-                &nbsp; <HelpOutlineIcon style={{fontSize: '20px'}}/>
-              </IconButton>
-            </Tooltip>
-          </div>
-        )
+      (
+        <div style={{ paddingTop: '3px' }}>
+          {t(`poll.statusText.${detail.status}`)}
+          <Tooltip title={tooltipText} placement="right">
+            <IconButton className={classes.tooltipIcon} style={{ padding: '0', height: '18px', marginTop: '-2px' }}>
+              &nbsp; <HelpOutlineIcon style={{ fontSize: '20px' }} />
+            </IconButton>
+          </Tooltip>
+        </div>
+      )
       ],
       [
         t('poll.creator'),
@@ -813,7 +813,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ],
       [
         t('poll.endTime'),
-        `${new Date(parseInt(detail.endTime, 10)).toLocaleString()} ${new Date().toTimeString().slice(9,17)}`,
+        `${new Date(parseInt(detail.endTime, 10)).toLocaleString()} ${new Date().toTimeString().slice(9, 17)}`,
       ],
       [
         t('poll.discussion'),
@@ -856,7 +856,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           title={
             <div>
               <span>{t('poll.detail')}</span>
-              {window.starcoin && window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS &&  (
+              {window.starcoin && process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS?.split(',').filter((address) => address.toLowerCase() === window.starcoin.selectedAddress).length && (
                 <Link component={NavLink} to={`/edit_poll/${this.state.detail.id}`} underline="none">
                   <Button
                     variant="contained"
@@ -889,7 +889,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
             <Typography variant="h5">{t('poll.vote')}</Typography>
           </DialogTitle>
           <div>
-            { this.state.votedForAnotherPoll &&
+            {this.state.votedForAnotherPoll &&
               <Alert severity="error">{t('poll.votedForAnotherPollWarning')}</Alert>
             }
           </div>
@@ -964,7 +964,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
                         sendAmount: '0.00',
                       });
                     }}>
-                      {t('poll.clear')}
+                    {t('poll.clear')}
                   </Button>
                   <Button
                     color="primary"
@@ -973,7 +973,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
                         sendAmount: this.maxFee,
                       });
                     }}>
-                      {t('poll.max')}
+                    {t('poll.max')}
                   </Button>
                 </div>
               </Grid>
