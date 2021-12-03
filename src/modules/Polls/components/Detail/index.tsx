@@ -665,7 +665,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
   // | 4 | AGREED     |  unstake (if not) | queue            |
   // | 5 | QUEUED     |  unstake (if not) |                  |
   // | 6 | EXECUTABLE |  unstake (if not) | execute          |
-  // | 7 | EXTRACTED  |  unstake (if not) |                  |
+  // | 7 | EXECUTED  |  unstake (if not) |                  |
   allowedButtons(status: number) {
     const { t, classes, accounts } = this.props;
     const currentPollID = this.state.id;
@@ -786,7 +786,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ignoreQueryPrefix: true,
     });
 
-    const tooltipText = <div style={{ fontSize: '0.8rem', lineHeight: '1rem', whiteSpace: 'pre-line' }}>{'1 | PENDING \n 2 | ACTIVE | vote | revoke (if voted) \n 3 | DEFEATED \n 4 | AGREED | unstake (if not) | queue \n 5 | QUEUED | unstake (if not) \n 6 | EXECUTABLE | unstake (if not) | execute \n 7 | EXTRACTED | unstake (if not)'}</div>;
+    const tooltipText = <div style={{ fontSize: '0.8rem', lineHeight: '1rem', whiteSpace: 'pre-line' }}>{'1 | PENDING \n 2 | ACTIVE | vote | revoke (if voted) \n 3 | DEFEATED \n 4 | AGREED | unstake (if not) | queue \n 5 | QUEUED | unstake (if not) \n 6 | EXECUTABLE | unstake (if not) | execute \n 7 | EXECUTED | unstake (if not)'}</div>;
 
     const columns = [
       [t('poll.id'), detail.idOnChain],

@@ -221,7 +221,7 @@ class List extends PureComponent<Props, IndexState> {
     let renderList = list.concat() || [];
     if (hideVoted) {
       renderList = renderList.filter(
-        (l: any) => (l.status !== POLL_STATUS.EXTRACTED && l.status !== POLL_STATUS.DEFEATED),
+        (l: any) => (l.status !== POLL_STATUS.EXECUTED && l.status !== POLL_STATUS.DEFEATED),
       );
     }
     if (status) {
