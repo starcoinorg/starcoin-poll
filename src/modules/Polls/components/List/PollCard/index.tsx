@@ -26,7 +26,7 @@ const useStyles = (theme: Theme) =>
     cardInProgress: {
       opacity: 1,
     },
-    cardExtracted: {
+    cardExecuted: {
       border: `1px solid ${theme.palette.primary.main}`,
     },
     cardDefeated: {
@@ -53,15 +53,12 @@ const useStyles = (theme: Theme) =>
     },
     cardHover: {
       boxShadow: `
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
-        theme.spacing(1) * 3
-      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${
-        theme.spacing(1) * 1
-      }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
-    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${
-        theme.spacing(1) * 1
-      }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 3
+        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.2),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 1}px ${theme.spacing(1) * 1
+        }px ${theme.spacing(1) * 0}px rgba(0,0,0,0.14),
+    ${theme.spacing(1) * 0}px ${theme.spacing(1) * 2}px ${theme.spacing(1) * 1
+        }px -${theme.spacing(1) * 1}px rgba(0,0,0,0.12)
     `,
       cursor: 'pointer',
     },
@@ -157,7 +154,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
 
   componentDidMount() {
     const { id, id_on_chain, status, creator, type_args_1 } = this.props;
-    if (status < POLL_STATUS.EXTRACTED) {
+    if (status < POLL_STATUS.EXECUTED) {
       getPollData(creator, type_args_1).then((data) => {
         if (data && data.id === id) {
           this.setState({ pollData: data });
@@ -212,8 +209,8 @@ class PollCard extends PureComponent<Props, PollCardState> {
           className={classNames(classes.cardCommon, {
             [classes.cardHover]: this.state.displayHover,
             [classes.cardNoHover]: !this.state.displayHover,
-            [classes.cardInProgress]: status !== POLL_STATUS.EXTRACTED,
-            [classes.cardExtracted]: status === POLL_STATUS.EXTRACTED,
+            [classes.cardInProgress]: status !== POLL_STATUS.EXECUTED,
+            [classes.cardExecuted]: status === POLL_STATUS.EXECUTED,
             [classes.cardDefeated]: status === POLL_STATUS.DEFEATED,
           })}
           onMouseEnter={this.onCardEnter}
@@ -234,7 +231,7 @@ class PollCard extends PureComponent<Props, PollCardState> {
               </Typography>
               <Typography variant="body2" gutterBottom>
                 {t('poll.endTime')}:{' '}
-                {new Date(parseInt(end_time, 10)).toLocaleString()}{' '}{new Date().toTimeString().slice(9,17)}
+                {new Date(parseInt(end_time, 10)).toLocaleString()}{' '}{new Date().toTimeString().slice(9, 17)}
               </Typography>
               <BorderLinearProgress
                 variant="buffer"

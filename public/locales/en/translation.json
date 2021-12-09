@@ -24,7 +24,7 @@
       "4": "AGREED",
       "5": "QUEUED",
       "6": "EXECUTABLE",
-      "7": "EXTRACTED"
+      "7": "EXECUTED"
     },
     "buttonText": {
       "vote": "Vote",
