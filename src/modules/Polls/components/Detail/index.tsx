@@ -5,6 +5,7 @@ import { withTranslation } from 'react-i18next';
 import classnames from 'classnames';
 import BigNumber from 'bignumber.js';
 import get from 'lodash/get';
+import StarMaskOnboarding from '@starcoin/starmask-onboarding';
 import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Loading from '@/common/Loading';
@@ -310,10 +311,13 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       detail,
     });
 
-    if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
-      this.setState({
-        isAdmin: true
-      })
+    const isStarMaskInstalled = StarMaskOnboarding.isStarMaskInstalled();
+    if (isStarMaskInstalled) {
+      if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
+        this.setState({
+          isAdmin: true
+        })
+      }
     }
 
     this.init();

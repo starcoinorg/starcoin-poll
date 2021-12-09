@@ -2,6 +2,7 @@ import React, { useEffect, PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import Helmet from 'react-helmet';
+import StarMaskOnboarding from '@starcoin/starmask-onboarding';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -155,13 +156,17 @@ class List extends PureComponent<Props, IndexState> {
 
   componentDidMount() {
     this.fetchList(parseInt(this.props.match.params.page, 10) || 1);
-    this.setState({
-      accounts: [window.starcoin.selectedAddress]
-    })
-    if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
+
+    const isStarMaskInstalled = StarMaskOnboarding.isStarMaskInstalled();
+    if (isStarMaskInstalled) {
       this.setState({
-        isAdmin: true
+        accounts: [window.starcoin.selectedAddress]
       })
+      if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
+        this.setState({
+          isAdmin: true
+        })
+      }
     }
   }
 
