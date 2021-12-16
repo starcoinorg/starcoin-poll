@@ -159,15 +159,13 @@ class List extends PureComponent<Props, IndexState> {
 
     const isStarMaskInstalled = StarMaskOnboarding.isStarMaskInstalled();
     if (isStarMaskInstalled) {
+      this.setState({
+        accounts: [window.starcoin.selectedAddress]
+      })
       if (process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS?.split(',').filter((address) => address.toLowerCase() === window.starcoin.selectedAddress).length) {
         this.setState({
-          accounts: [window.starcoin.selectedAddress]
+          isAdmin: true
         })
-        if (window.starcoin.selectedAddress === process.env.REACT_APP_STARCOIN_POLL_ADMIN_ADDRESS) {
-          this.setState({
-            isAdmin: true
-          })
-        }
       }
     }
   }
