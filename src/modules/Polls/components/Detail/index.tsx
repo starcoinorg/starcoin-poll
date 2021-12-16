@@ -521,8 +521,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const { /* page, rowsPerPage,  */ detail } = this.state;
 
     const isPollDataLoading = !this.state.pollData;
-    // const total = 168171610282100220;
-    const total = this.state.pollData && new BigNumber(25 * this.state.pollData.quorum_votes);
+    const total = 168171610282100220;
+    // const total = this.state.pollData && new BigNumber(25 * this.state.pollData.quorum_votes);
     const yesPercent =
       this.state.pollData &&
       new BigNumber(this.state.pollData.for_votes)
