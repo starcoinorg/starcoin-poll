@@ -194,14 +194,13 @@ class PollCard extends PureComponent<Props, PollCardState> {
         ? this.state.pollData.against_votes
         : against_votes;
     // const total = 168171610282100220;
-    /*
+
     const quorum =
-      status === POLL_STATUS.ACTIVE && this.state.pollData
+      status === POLL_STATUS.ACTIVE && this.state.pollData && this.state.pollData.quorum_votes
         ? this.state.pollData.quorum_votes
         : quorum_votes;
-    */
-   const quorum = 0;
-    const total = new BigNumber(25 * quorum);
+
+    const total = new BigNumber(25 * Number(quorum));
     const yesPercent = new BigNumber(yes).div(total).times(100).toFixed(2);
     const noPercent = new BigNumber(no).div(total).times(100).toFixed(2);
     const voted = new BigNumber(yes).plus(new BigNumber(no));
