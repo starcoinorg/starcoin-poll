@@ -241,8 +241,10 @@ const PollDialog = ({
 
       const postConfig = {
         headers: {
+          // 'Authorization': 'Basic YWRtaW46YWRtaW4=',
+          'Authorization': 'Basic c3RhcmNvaW46QClAIUBTdGFyY29pbk9yZw==',
           'Content-Type': 'application/x-www-form-urlencoded',
-          'accept': '*/*'
+          'Accept': '*/*'
         }
       };
 
