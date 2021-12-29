@@ -373,7 +373,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       const strTypeArgs = ['0x1::STC::STC', detail.typeArgs1];
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
       const proposerAddressHex = detail.creator;
-      const proposalId = detail.id;
+      const proposalId = parseInt(detail.idOnChain, 10);
 
       // Multiple BcsSerializers should be used in different closures, otherwise, the latter will be contaminated by the former.
       const proposalIdSCSHex = (function () {
@@ -413,7 +413,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       const structTypeTags = utils.tx.encodeStructTypeTags(strTypeArgs);
 
       const proposerAddressHex = detail.creator;
-      const proposalId = detail.id;
+      const proposalId = parseInt(detail.idOnChain, 10);
 
       const proposalIdSCSHex = (function () {
         const se = new bcs.BcsSerializer();
@@ -455,7 +455,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       const tyArgs = ['0x1::STC::STC', detail.typeArgs1];
 
       const proposerAddress = detail.creator;
-      const proposalId = detail.id;
+      const proposalId = parseInt(detail.idOnChain, 10);
       const agree = checked; // yes: true; no: false
       const votes = new BigNumber(sendAmount).times('1000000000'); // sendAmount * 1e9
 
@@ -465,7 +465,6 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         agree,
         votes,
       ];
-
       const nodeUrlMap: any = {
         '1': 'https://main-seed.starcoin.org',
         '252': 'https://proxima-seed.starcoin.org',
