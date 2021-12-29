@@ -16,7 +16,7 @@ export const getPollVotes = async (params: any) => {
         value: undefined,
         isVoted: false,
     };
-    if (result && result.id === params.id) {
+    if (result && result.id === parseInt(params.id, 10)) {
         votes.agree = result.agree;
         votes.value = result.stake.value;
         votes.isVoted = true;

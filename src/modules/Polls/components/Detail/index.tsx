@@ -292,7 +292,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const { match, history } = this.props;
     const id = match.params.id;
     const detail = await client.get(`polls/detail/${id}`);
-    console.log(detail);
+    const proposalId = parseInt(detail.idOnChain, 10);
     const { network: networkFromUrl } = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
     });
@@ -302,7 +302,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       return;
     }
     getPollData(detail.creator, detail.typeArgs1).then((data) => {
-      if (data && data.id === detail.id) {
+      if (data && data.id === proposalId) {
         this.setState({ pollData: data });
       }
     });
@@ -518,38 +518,36 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     const suffix = i18n.language === 'en' ? 'En' : '';
     const { t, classes } = this.props;
     const { /* page, rowsPerPage,  */ detail } = this.state;
-
-    const isPollDataLoading = !this.state.pollData;
-    const total = this.state.pollData && this.state.pollData.quorum_votes
-      ? new BigNumber(25 * Number(this.state.pollData.quorum_votes))
+    const isPollDetailLoading = !detail;
+    const total = detail.quorumVotes
+      ? new BigNumber(25 * Number(detail.quorumVotes))
       : 0;
     const yesPercent =
-      this.state.pollData &&
-      new BigNumber(this.state.pollData.for_votes)
+    detail &&
+      new BigNumber(detail.forVotes)
         .div(total)
         .times(100)
         .toFixed(2);
     const noPercent =
-      this.state.pollData &&
-      new BigNumber(this.state.pollData.against_votes)
+      detail &&
+      new BigNumber(detail.againstVotes)
         .div(total)
         .times(100)
         .toFixed(2);
-    const absYes = formatBalance(get(this.state, 'pollData.for_votes', 0));
-    const absNo = formatBalance(get(this.state, 'pollData.against_votes', 0));
-    const rows = [];
-    for (let i = 0; i < 20; i++) {
-      rows.push({
-        agree: true,
-        vote: '11000000',
-        voter: '0xb2aa52f94db4516c5beecef363af850a',
-        proposal_id: i,
-        proposer: '0x3f19d5422824f47e6c021978cee98f35',
-      });
-    }
+    const absYes = formatBalance(get(detail, 'forVotes', 0));
+    const absNo = formatBalance(get(detail, 'againstVotes', 0));
+    // const rows = [];
+    // for (let i = 0; i < 20; i++) {
+    //   rows.push({
+    //     agree: true,
+    //     vote: '11000000',
+    //     voter: '0xb2aa52f94db4516c5beecef363af850a',
+    //     proposal_id: i,
+    //     proposer: '0x3f19d5422824f47e6c021978cee98f35',
+    //   });
+    // }
 
-    // console.log(this.state.pollData);
-    // console.log(this.state.detail);
+    // console.log('state  detail',this.state.detail);
 
     const votes = (
       <div>
@@ -654,7 +652,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.table}>
-              {isPollDataLoading ? <Loading /> : votes}
+              {isPollDetailLoading ? <Loading /> : votes}
             </div>
           </AccordionDetails>
         </Accordion>
@@ -856,7 +854,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     return (
       <>
         <PageView
-          id={detail.id}
+          id={detail.idOnChain}
           title={
             <div>
               <span>{t('poll.detail')}</span>
