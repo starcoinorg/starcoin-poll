@@ -669,8 +669,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
   // | 6 | EXECUTABLE |  unstake (if not) | execute          |
   // | 7 | EXECUTED  |  unstake (if not) |                  |
   allowedButtons(status: number) {
-    const { t, classes, accounts } = this.props;
-    const currentPollID = this.state.id;
+    const { t, classes, accounts, pollVotes } = this.props;
+    const {id: currentPollID, pollData, detail }= this.state;
     const buttons = [];
     if (status === POLL_STATUS.ACTIVE) {
       buttons.push(
@@ -683,7 +683,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
             startToVerify = false;
             const resp = await getAddressSTCBalance(accounts[0]);
             const balance = get(resp, 'token.value', 0);
-            const address = this.props.pollVotes.selectedAccount;
+            const address = pollVotes.selectedAccount;
             const accountVoteResource = await getPollAccountVotes(address);
             let ifVotedForAnotherPoll = false;
             if (accountVoteResource !== undefined) {
@@ -706,8 +706,8 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       );
       if (
         status === POLL_STATUS.ACTIVE &&
-        this.props.pollVotes &&
-        this.props.pollVotes.value
+        pollVotes &&
+        pollVotes.value
       ) {
         buttons.push(
           <Button
@@ -726,7 +726,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         );
       }
     }
-    if (status > POLL_STATUS.ACTIVE && this.props.pollVotes.isVoted) {
+    if (status > POLL_STATUS.ACTIVE && pollVotes.isVoted && pollData && detail && pollData.id === parseInt(detail.idOnChain, 10)) {
       buttons.push(
         <Button
           key="unstake"
@@ -782,7 +782,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     // const { pollVotes, t, classes } = this.props;
     // const { open, checked, sendAmount, detail } = this.state;
     const { pollVotes, t, classes, match, accounts } = this.props;
-    const { open, checked, sendAmount, detail, pollDialogOpen } = this.state;
+    const { open, checked, sendAmount, detail, pollDialogOpen, pollData} = this.state;
     const id = match.params.id;
     const { network } = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
@@ -831,7 +831,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           title={pollVotes.selectedAccount}
         />,
       ]);
-      const selectedVoteLog = pollVotes.value
+      const selectedVoteLog = pollVotes.value && pollData && pollData.id === parseInt(detail.idOnChain, 10)
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
           pollVotes.value,
         )} NanoSTC) `
