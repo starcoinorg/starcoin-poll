@@ -523,7 +523,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
       ? new BigNumber(25 * Number(detail.quorumVotes))
       : 0;
     const yesPercent =
-    detail &&
+      detail &&
       new BigNumber(detail.forVotes)
         .div(total)
         .times(100)
@@ -670,7 +670,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
   // | 7 | EXECUTED  |  unstake (if not) |                  |
   allowedButtons(status: number) {
     const { t, classes, accounts, pollVotes } = this.props;
-    const {id: currentPollID, pollData, detail }= this.state;
+    const { id: currentPollID, pollData, detail } = this.state;
     const buttons = [];
     if (status === POLL_STATUS.ACTIVE) {
       buttons.push(
@@ -782,7 +782,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
     // const { pollVotes, t, classes } = this.props;
     // const { open, checked, sendAmount, detail } = this.state;
     const { pollVotes, t, classes, match, accounts } = this.props;
-    const { open, checked, sendAmount, detail, pollDialogOpen, pollData} = this.state;
+    const { open, checked, sendAmount, detail, pollDialogOpen, pollData } = this.state;
     const id = match.params.id;
     const { network } = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
