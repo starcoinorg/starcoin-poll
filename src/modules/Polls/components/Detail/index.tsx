@@ -670,8 +670,9 @@ class Detail extends PureComponent<IndexProps, IndexState> {
   // | 7 | EXECUTED  |  unstake (if not) |                  |
   allowedButtons(status: number) {
     const { t, classes, accounts, pollVotes } = this.props;
-    const { id: currentPollID, pollData, detail } = this.state;
+    const { pollData, detail } = this.state;
     const buttons = [];
+    const currentPollID = parseInt(detail.idOnChain, 10);
     if (status === POLL_STATUS.ACTIVE) {
       buttons.push(
         <Button
