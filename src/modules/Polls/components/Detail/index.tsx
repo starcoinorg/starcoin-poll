@@ -726,7 +726,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
         );
       }
     }
-    if (status > POLL_STATUS.ACTIVE && pollVotes.isVoted && pollData && detail && pollData.id === parseInt(detail.idOnChain, 10)) {
+    if (status > POLL_STATUS.ACTIVE && pollVotes.isVoted) {
       buttons.push(
         <Button
           key="unstake"
@@ -831,13 +831,12 @@ class Detail extends PureComponent<IndexProps, IndexState> {
           title={pollVotes.selectedAccount}
         />,
       ]);
-      const selectedVoteLog = pollVotes.value && pollData && pollData.id === parseInt(detail.idOnChain, 10)
+      const selectedVoteLog = pollVotes.value
         ? `${pollVotes.agree ? t('poll.yes') : t('poll.no')} (${formatNumber(
           pollVotes.value,
         )} NanoSTC) `
         : t('poll.selectedNoVotes');
 
-      // console.log('detail', detail);
       const buttons = this.allowedButtons(detail.status);
       const accountDetail = (
         <div style={{ display: 'flex', alignItems: 'center' }}>
