@@ -153,10 +153,7 @@ class PageViewHeader extends React.PureComponent<Props> {
           </Typography>
         </div>
         <div className={classes.rightHeader}>
-          <ConnectWallet
-            id={this.props.id}
-            onAccountChange={onAccountChange}
-          />
+          {/* <ConnectWallet id={this.props.id} onAccountChange={onAccountChange} /> */}
         </div>
       </div>
     );
