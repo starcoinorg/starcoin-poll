@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES_LABEL } from '@/utils/constants';
-import { observer } from 'mobx-react';
+import { useDispatch } from 'react-redux';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import BaseRouteLink from '@/common/BaseRouteLink';
@@ -15,9 +15,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import LanguageIcon from '@material-ui/icons/Translate';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import StarMaskOnboarding from '@starcoin/starmask-onboarding';
+import store from '@/Polls/store';
 import Networks from '../../Networks';
 import Tabs from './Tabs';
-import { useStores } from '../../../useMobxStore';
 
 const useStyles = (theme: Theme) =>
   createStyles({
@@ -68,13 +68,13 @@ const useStyles = (theme: Theme) =>
     buttonStyle: {
       borderColor: '#1C4BDE',
       borderRadius: '25px',
-      marginRight: '0.3rem'
+      marginRight: '0.3rem',
     },
     darkBgButton: {
       color: '#000',
       backgroundColor: '#F7F9FA',
       borderRadius: '25px',
-      marginRight: '0.3rem'
+      marginRight: '0.3rem',
     },
     search: {
       alignItems: 'center',
@@ -123,72 +123,144 @@ function Index(props: any) {
     setLanguageMenu(event.currentTarget);
   };
 
-  const [accountStatus, setAccountStatus] = useState(-1)
-  const [accountAddress, setAccountAddress] = useState('')
-  const [network, setNetwork] = useState('')
-  const { AccountStore } = useStores()
+  const [network, setNetwork] = useState('');
 
-  const isStarMaskInstalled = StarMaskOnboarding.isStarMaskInstalled();
+  // initial data
+  const dispatch = useDispatch();
+  // get window.starcoin
+  const [starcoin, setStarcoin] = useState(window.starcoin);
+  const [connectStatus, setConnectStatus] = useState(0);
+  const [accountAddress, setAccountAddress] = useState('');
+
+  // statusText fix: Solve problems that cannot be translated.
+  const textContent = [
+    t('poll.install'),
+    t('poll.connect'),
+    t('poll.installing'),
+    t('poll.connecting'),
+  ];
+  const [textStatus, setTextStatus] = useState(0);
+  const [buttonDisable, setButtonDisable] = useState(false);
+  const [onboarding, setOnBoarding] = useState<any>();
+  const networkVersion: Map<string, string> = new Map([
+    ['253', 'Halley'],
+    ['1', 'Main'],
+    ['251', 'Barnard'],
+    ['252', 'Proxima'],
+    ['254', 'Localhost:9850'],
+  ]);
+
+  // connectStatusChange callback
+  const handleNewAccounts = (newAccounts: string[]) => {
+    let id = window.location.href.split('/')[5]?.split('?')[0];
+    id = typeof +id === 'number' ? id : '';
+
+    const isStarMaskConnected = newAccounts.length > 0;
+    console.log(id, isStarMaskConnected, 'sss');
+    if (isStarMaskConnected) {
+      // onAccountChange(newAccounts);
+      setTextStatus(4);
+      setConnectStatus(4);
+      setAccountAddress(newAccounts[0]);
+      if (onboarding) {
+        onboarding.stopOnboarding();
+      }
+      dispatch(
+        store.actions.getPollVotes({ id, selectedAccount: newAccounts[0] }),
+      );
+    } else {
+      // disconnect
+      setTextStatus(1);
+      setConnectStatus(1);
+
+      // clean [accounts, pollvotes]store
+      dispatch(store.actions.setPollVotes(null));
+    }
+
+    dispatch(store.actions.setWalletAccounts(newAccounts));
+    setButtonDisable(false);
+  };
+
+  // initialConnectStatus
+  // Fixed the issue of refreshing page data presentation
+  const initialConnectStatus = () => {
+    const isStarMaskInstalled = StarMaskOnboarding.isStarMaskInstalled();
+    const isStarMaskConnected = starcoin._state.accounts?.length > 0;
+
+    if (!isStarMaskInstalled) {
+      setTextStatus(0);
+      setConnectStatus(0);
+    } else if (isStarMaskConnected) {
+      const accounts = starcoin._state.accounts;
+      setTextStatus(4);
+      setConnectStatus(4);
+      setAccountAddress(accounts[0]);
+
+      handleNewAccounts(accounts);
+      if (onboarding) {
+        onboarding.stopOnboarding();
+      }
+    } else {
+      setTextStatus(1);
+      setConnectStatus(1);
+    }
+
+    if (isStarMaskInstalled) {
+      // window.starcoin.on('chainChanged', handleNewChain)
+      // window.starcoin.on('networkChanged', handleNewNetwork)
+      starcoin.on('accountsChanged', handleNewAccounts);
+    }
+  };
 
   useEffect(() => {
-    // console.log(window.starcoin && window.starcoin.selectedAddress,  window.starcoin.selectedAddress)
-    if (window.starcoin && window.starcoin.selectedAddress) {
-      setAccountAddress(window.starcoin.selectedAddress)
-      setAccountStatus(1)
-    // } else if (AccountStore.isInstall) {
-    } else if (isStarMaskInstalled) {
-      setAccountStatus(0)
-    } else {
-      setAccountStatus(-1)
-    }
-  }, [AccountStore.isInstall, AccountStore.accountStatus])
+    const currentUrl = new URL(window.location.href);
+    const forwarderOrigin =
+      currentUrl.hostname === 'localhost' ? 'http://localhost:9032' : undefined;
 
-  function handleNewAccounts(accounts: any) {
-    if (accounts.length === 0) {
-      setAccountStatus(0)
-      setAccountAddress("")
-    } else {
-      setAccountAddress(accounts[0])
+    try {
+      setOnBoarding(new StarMaskOnboarding({ forwarderOrigin }));
+    } catch (error) {
+      console.error(error);
     }
-  }
+
+    initialConnectStatus();
+  }, []);
 
   function handleNewNetwork(network: any) {
-    setNetwork(network)
+    setNetwork(network);
   }
 
   if (window.starcoin) {
-    window.starcoin.on('accountsChanged', handleNewAccounts)
-    window.starcoin.on('networkChanged', handleNewNetwork)
+    window.starcoin.on('accountsChanged', handleNewAccounts);
+    window.starcoin.on('networkChanged', handleNewNetwork);
   }
-
 
   useEffect(() => {
     if (window.starcoin && window.starcoin.networkVersion) {
-      setNetwork(window.starcoin && window.starcoin.networkVersion)
+      setNetwork(window.starcoin && window.starcoin.networkVersion);
     }
-  }, [])
-
-
+  }, []);
 
   useEffect(() => {
     if (window.starcoin && window.starcoin.selectedAddress) {
-      setAccountAddress(window.starcoin.selectedAddress)
+      setAccountAddress(window.starcoin.selectedAddress);
     }
-  }, [])
+  }, []);
 
   async function connectWallet() {
-    if (accountStatus === 0) {
-      window.starcoin.request({
-        method: 'stc_requestAccounts',
-      }).then((res: any) => {
-        if (res.length > 0) {
-          setAccountStatus(1)
-          setAccountAddress(res[0] || '')
-          AccountStore.setCurrentAccount(res[0] || '')
-        }
-      })
-    } else if (accountStatus === -1) {
-      window.open("https://chrome.google.com/webstore/detail/starmask/mfhbebgoclkghebffdldpobeajmbecfk")
+    // wallet click
+    if (connectStatus === 0) {
+      // setText installing
+      setTextStatus(2);
+      setButtonDisable(true);
+      // open chrome extension page
+      onboarding.startOnboarding();
+    } else if (connectStatus === 1) {
+      setTextStatus(3);
+      setButtonDisable(true);
+      dispatch(
+        store.actions.connectWallet((data: any) => handleNewAccounts(data)),
+      );
     }
   }
 
@@ -283,13 +355,23 @@ function Index(props: any) {
           {i18nMenu}
         </div>
         <Box display="flex" alignItems="center" className={classes.rightBox}>
-          {accountStatus === 1 ? <Button variant="outlined" className={classes.darkBgButton}>
-            {AccountStore.networkVersion[window.starcoin.networkVersion]}
-          </Button> : null}
-          <Button variant="contained" color="primary" className={classes.buttonStyle} onClick={connectWallet}>
-            {accountStatus === -1 ? t('poll.installWallet') : ''}
-            {accountStatus === 0 ? t('poll.connectWallet') : ''}
-            {accountStatus === 1 ? `${accountAddress.substr(0, 4)}....${accountAddress.substring(accountAddress.length - 4)}` : ''}
+          {connectStatus === 4 ? (
+            <Button variant="outlined" className={classes.darkBgButton}>
+              {networkVersion.get(starcoin.networkVersion)}
+            </Button>
+          ) : null}
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.buttonStyle}
+            onClick={connectWallet}
+            disabled={buttonDisable}
+          >
+            {textStatus !== 4
+              ? textContent[textStatus]
+              : `${accountAddress.substr(0, 4)}....${accountAddress.substring(
+                  accountAddress.length - 4,
+                )}`}
           </Button>
         </Box>
       </div>
@@ -301,4 +383,4 @@ Index.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default observer(withStyles(useStyles)(Index));
+export default withStyles(useStyles)(Index);
