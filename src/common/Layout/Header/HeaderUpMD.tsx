@@ -342,7 +342,8 @@ function Index(props: any) {
           <BaseRouteLink to="/" underline="none">
             <div className={classes.logoLink}>
               <img
-                src={`${process.env.PUBLIC_URL}/starmask-logo-horizontal.svg`}
+                src={`${process.env.PUBLIC_URL}/starcoin-logo-text-blue.svg`}
+                height="30"
                 alt="logo"
               />
               <Typography className={classes.logo} variant="h3">
