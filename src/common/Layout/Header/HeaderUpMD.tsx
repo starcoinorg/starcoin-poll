@@ -166,7 +166,7 @@ function Index(props: any) {
         onboarding.stopOnboarding();
       }
       dispatch(
-        store.actions.getPollVotes({ id, selectedAccount: newAccounts[0] }),
+        store.actions.getPollVotes({ id: Number(id) - 1, selectedAccount: newAccounts[0] }),
       );
     } else {
       // disconnect
