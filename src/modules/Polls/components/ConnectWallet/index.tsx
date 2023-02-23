@@ -118,11 +118,13 @@ class ConnectWallet extends PureComponent<IndexProps, IndexState> {
   }
 
   onClickInstall() {
+    console.log('???')
     this.setState({
       connectText: this.props.t('poll.installing'),
       connectDisabled: true,
     });
-    this.onboarding.startOnboarding();
+    // this.onboarding.startOnboarding();
+    window.open('https://chrome.google.com/webstore/detail/starmask/mfhbebgoclkghebffdldpobeajmbecfk')
   }
 
   async onClickConnect() {

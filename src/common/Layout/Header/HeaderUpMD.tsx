@@ -254,7 +254,9 @@ function Index(props: any) {
       setTextStatus(2);
       setButtonDisable(true);
       // open chrome extension page
-      onboarding.startOnboarding();
+    window.open('https://chrome.google.com/webstore/detail/starmask/mfhbebgoclkghebffdldpobeajmbecfk')
+
+      // onboarding.startOnboarding();
     } else if (connectStatus === 1) {
       setTextStatus(3);
       setButtonDisable(true);
