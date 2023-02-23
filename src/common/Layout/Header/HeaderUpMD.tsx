@@ -185,7 +185,7 @@ function Index(props: any) {
   // Fixed the issue of refreshing page data presentation
   const initialConnectStatus = () => {
     const isStarMaskInstalled = StarMaskOnboarding.isStarMaskInstalled();
-    const isStarMaskConnected = starcoin._state.accounts?.length > 0;
+    const isStarMaskConnected = starcoin?._state.accounts?.length > 0;
 
     if (!isStarMaskInstalled) {
       setTextStatus(0);
