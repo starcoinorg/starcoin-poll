@@ -2,6 +2,10 @@
   "name": "starcoin-poll",
   "version": "1.7.0",
   "private": false,
+  "engines": {
+    "node": "16.x",
+    "npm": "8.x"
+  },
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
     "@craco/craco": "^6.0.0",
@@ -82,7 +86,6 @@
     "babel-preset-react-app": "10.0.0",
     "@babel/core": "7.12.3",
     "@types/minimatch": "5.1.2",
-    "@types/react": "16.14.0",
     "csstype": "2.6.13"
   },
   "scripts": {
