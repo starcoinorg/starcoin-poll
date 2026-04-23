@@ -14,7 +14,7 @@ const useStyles = (theme: Theme) =>
     },
     link: {
       color: theme.palette.primary.main,
-      fontWeight: theme.typography.fontWeightRegular,
+      fontWeight: theme.typography.fontWeightRegular as number,
       textDecoration: 'none',
       '&:hover': {
         color: theme.palette.primary.dark,
@@ -23,7 +23,7 @@ const useStyles = (theme: Theme) =>
     },
     linkWhite: {
       color: '#fff',
-      fontWeight: theme.typography.fontWeightRegular,
+      fontWeight: theme.typography.fontWeightRegular as number,
       textDecoration: 'underline',
       '&:hover': {
         color: 'rgba(255, 255, 255, 0.87)',

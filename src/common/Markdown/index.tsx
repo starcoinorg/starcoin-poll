@@ -24,7 +24,7 @@ const styles = (theme: Theme) => {
         marginTop: 8,
       },
       '& strong': {
-        fontWeight: theme.typography.fontWeightMedium,
+        fontWeight: theme.typography.fontWeightMedium as number,
       },
       '& blockquote': {
         borderLeft: `5px solid ${theme.palette.divider}`,

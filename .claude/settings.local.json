@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(aws sts *)",
+      "Bash(aws s3 *)",
+      "Bash(aws rds *)",
+      "Bash(kubectl get *)",
+      "Bash(doctl account *)",
+      "Bash(kubectl config *)",
+      "Bash(kubectl --context do-sgp1-k8s-starcoin get ingress --all-namespaces)",
+      "Bash(kubectl --context do-sgp1-k8s-starcoin get pvc --all-namespaces)",
+      "Bash(kubectl --context do-sgp1-k8s-starcoin get secrets -n default --no-headers -o custom-columns=NAME:.metadata.name)",
+      "Bash(kubectl --context do-sgp1-k8s-starcoin get namespaces -o custom-columns=NAME:.metadata.name --no-headers)",
+      "Bash(kubectl --context do-sgp1-k8s-starcoin get statefulsets --all-namespaces)",
+      "Bash(kubectl --context arn:aws:eks:ap-northeast-1:370341518942:cluster/starcoin3 get deployments -n default -o custom-columns='NAME:.metadata.name,IMAGE:.spec.template.spec.containers[0].image')",
+      "Bash(kubectl --context do-sgp1-k8s-starcoin get deployments --all-namespaces -o custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,IMAGE:.spec.template.spec.containers[0].image')",
+      "Bash(kubectl --context do-sgp1-k8s-starcoin get statefulsets --all-namespaces -o custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,IMAGE:.spec.template.spec.containers[0].image')"
+    ]
+  }
+}

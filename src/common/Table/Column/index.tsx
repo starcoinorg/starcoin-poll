@@ -48,13 +48,13 @@ const useStyles = (theme: Theme) => createStyles({
   row: {
     fontFamily: theme.typography.fontFamily,
     fontSize: 14,
-    fontWeight: theme.typography.fontWeightRegular,
+    fontWeight: theme.typography.fontWeightRegular as number,
     color: theme.palette.text.primary,
   },
   header: {
     fontFamily: theme.typography.fontFamily,
     fontSize: 14,
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: theme.typography.fontWeightBold as number,
     color: theme.palette.text.secondary,
   },
   textRowBase: {

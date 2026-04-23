@@ -1,7 +1,8 @@
 // https://www.npmjs.com/package/@starcoin/starcoin
 import { providers } from '@starcoin/starcoin';
 
-const network = localStorage.getItem('network');
+const defaultNetwork = (process.env.REACT_APP_STARCOIN_NETWORKS || 'main').split(',')[0];
+const network = localStorage.getItem('network') || defaultNetwork;
 const nodeUrl = `https://${network}-seed.starcoin.org`;
 const provider = new providers.JsonRpcProvider(nodeUrl);
 

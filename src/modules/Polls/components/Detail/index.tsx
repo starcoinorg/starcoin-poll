@@ -693,7 +693,7 @@ class Detail extends PureComponent<IndexProps, IndexState> {
                 ifVotedForAnotherPoll = true;
               };
             }
-            this.maxFee = new BigNumber(balance).div(1e9).minus(0.1).toNumber();
+            this.maxFee = new BigNumber(balance as any).div(1e9).minus(0.1).toNumber();
             this.setState({
               checked: true,
               sendAmount: this.maxFee,

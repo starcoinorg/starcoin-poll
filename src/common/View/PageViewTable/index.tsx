@@ -35,7 +35,7 @@ const useStyles = (theme: Theme) => createStyles({
     minWidth: '0',
   },
   label: {
-    fontWeight: theme.typography.fontWeightMedium,
+    fontWeight: theme.typography.fontWeightMedium as number,
   },
   firstColRow: {},
   firstRow: {

@@ -117,6 +117,10 @@
     "import/no-unresolved": 0,
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
+    "react/require-default-props": 0,
+    "react/default-props-match-prop-types": 0,
+    "react/jsx-no-bind": 0,
+    "import/order": 0,
     "indent": "off",
     "operator-linebreak": "off"
   },

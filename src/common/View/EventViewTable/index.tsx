@@ -54,7 +54,7 @@ const useStyles = (theme: Theme) => createStyles({
     overflow: 'auto',
   },
   label: {
-    fontWeight: theme.typography.fontWeightMedium,
+    fontWeight: theme.typography.fontWeightMedium as number,
   },
   firstColRow: {},
   firstRow: {
