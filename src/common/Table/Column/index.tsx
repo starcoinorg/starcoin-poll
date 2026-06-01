@@ -160,17 +160,17 @@ class Index extends React.PureComponent<Props> {
       </div>
     );
 
-    return (
-      <Hidden
-        xsDown={visibleAt === 'xs'}
-        smDown={visibleAt === 'sm'}
-        mdDown={visibleAt === 'md'}
-        lgDown={visibleAt === 'lg'}
-        xlDown={visibleAt === 'xl'}
-        implementation="js"
-      >
-        {element}
-      </Hidden>
+    return React.createElement(
+      Hidden as any,
+      {
+        xsDown: visibleAt === 'xs',
+        smDown: visibleAt === 'sm',
+        mdDown: visibleAt === 'md',
+        lgDown: visibleAt === 'lg',
+        xlDown: visibleAt === 'xl',
+        implementation: 'js',
+      },
+      element,
     );
   }
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, PureComponent } from 'react';
 import { withTranslation } from 'react-i18next';
-import i18n from 'i18next';
+import i18n from '@/utils/i18n';
 import Helmet from 'react-helmet';
 import StarMaskOnboarding from '@starcoin/starmask-onboarding';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';

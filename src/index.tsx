@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
@@ -49,7 +49,9 @@ MainLayout.prototype = {
   children: PropTypes.element.isRequired
 };
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root') as HTMLElement);
+
+root.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <Switch>
@@ -61,6 +63,5 @@ ReactDOM.render(
         <RouteWithLayout path={undefined} title="404" layout={MainLayout} component={Error404} />
       </Switch>
     </ConnectedRouter>
-  </Provider>,
-  document.getElementById('root')
+  </Provider>
 );
