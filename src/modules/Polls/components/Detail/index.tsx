@@ -1,6 +1,6 @@
 /* eslint-disable func-names */
 import React, { PureComponent } from 'react';
-import i18n from 'i18next';
+import i18n from '@/utils/i18n';
 import { withTranslation } from 'react-i18next';
 import classnames from 'classnames';
 import BigNumber from 'bignumber.js';
